@@ -75,7 +75,7 @@ export function SettingsView() {
 
         {/* Version */}
         <div className="text-center text-[9px] text-gray-700 pt-4">
-          Mission Control Pro v0.1.0 · OpenClaw
+          Mission Control Pro v0.1.0 · Alice
         </div>
       </div>
     </div>

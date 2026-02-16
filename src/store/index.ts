@@ -7,6 +7,8 @@ interface AppState {
   selectedProjectId: string | null;
   quality: 'low' | 'medium' | 'high';
   paused: boolean;
+  coreName: string;
+  creatorName: string;
 
   init: () => void;
   tick: () => void;
@@ -112,6 +114,8 @@ export const useStore = create<AppState>((set, get) => ({
   selectedProjectId: null,
   quality: 'high',
   paused: false,
+  coreName: import.meta.env.VITE_CORE_NAME || 'ALICE',
+  creatorName: import.meta.env.VITE_CREATOR_NAME || 'Gonzalo',
 
   init: () => {
     set({ projects: INITIAL_PROJECTS.map(p => ({ ...p })) });

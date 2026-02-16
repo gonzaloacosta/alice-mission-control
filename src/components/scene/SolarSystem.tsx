@@ -6,11 +6,12 @@ import { useStore } from '../../store';
 import { getPhase, PHASE_LABELS } from '../../types';
 import type { Project, ProjectAgent } from '../../types';
 
-// ═══ SUN (OpenClaw Core) ═══
+// ═══ SUN (Core) ═══
 export function Sun() {
   const coreRef = useRef<THREE.Mesh>(null!);
   const glowRef = useRef<THREE.Mesh>(null!);
   const coronaRef = useRef<THREE.Mesh>(null!);
+  const coreName = useStore(s => s.coreName);
 
   useFrame(({ clock }) => {
     const t = clock.getElapsedTime();
@@ -54,7 +55,7 @@ export function Sun() {
       {/* Label */}
       <Html position={[0, 6, 0]} center style={{ pointerEvents: 'none' }}>
         <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '10px', color: '#00f0ff', letterSpacing: '3px', textShadow: '0 0 10px #00f0ff50', textAlign: 'center', opacity: 0.7 }}>
-          OPENCLAW
+          {coreName}
         </div>
       </Html>
     </group>
