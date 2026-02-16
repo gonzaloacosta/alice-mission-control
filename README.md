@@ -1,73 +1,65 @@
-# React + TypeScript + Vite
+# Mission Control Pro
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Real-time 3D agent monitoring dashboard built with React, Vite, Three.js/R3F, and Zustand.
 
-Currently, two official plugins are available:
+## Architecture
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+Browser → Cloudflare (SSL + Zero Trust) → Caddy → Docker (nginx:alpine, port 4445)
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Frontend**: React + Three.js/R3F + Tailwind CSS — built to static files
+- **Serving**: nginx:alpine in Docker (SPA routing via `try_files`)
+- **Reverse Proxy**: Caddy on the host
+- **Auth**: Cloudflare Zero Trust with Google Auth
+- **Domain**: app.gonzaloacosta.me
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Quick Start
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Development
+
+```bash
+npm install
+npm run dev    # Vite dev server on :5173
+```
+
+### Production (Docker)
+
+```bash
+# Build and start
+sudo docker compose up -d --build
+
+# Verify
+curl localhost:4445
+
+# Logs
+sudo docker compose logs -f
+
+# Rebuild after changes
+sudo docker compose up -d --build
+```
+
+## Docker Setup
+
+**Dockerfile** (multi-stage):
+1. `node:22-alpine` — install deps + `vite build`
+2. `nginx:alpine` — copy `dist/` + custom `nginx.conf` for SPA routing
+
+**docker-compose.yml**: single service mapping `4445:80`, restart `unless-stopped`.
+
+## Project Structure
+
+```
+├── Dockerfile
+├── docker-compose.yml
+├── nginx.conf            # SPA routing config
+├── src/
+│   ├── components/
+│   │   ├── hud/          # 2D overlay panels
+│   │   └── scene/        # 3D scene components
+│   ├── services/         # Data fetching
+│   ├── store/            # Zustand state
+│   └── types.ts
+├── public/
+└── vite.config.ts
 ```

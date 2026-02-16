@@ -1,0 +1,6 @@
+services:
+  mission-control:
+    build: .
+    ports:
+      - "4445:80"
+    restart: unless-stopped
