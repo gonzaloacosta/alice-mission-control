@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useStore } from '../../store';
 
@@ -11,8 +11,6 @@ interface ChatMessage {
 }
 
 const API_BASE = import.meta.env.VITE_API_URL || '';
-const MIN_HEIGHT = 200;
-const MAX_HEIGHT_RATIO = 0.85;
 
 export function ChatPanel() {
   const {
@@ -30,12 +28,8 @@ export function ChatPanel() {
 
   const [inputValue, setInputValue] = useState('');
   const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
-  const [panelHeight, setPanelHeight] = useState(() => Math.round(window.innerHeight * 0.5));
-  const [isDragging, setIsDragging] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
 
   const focusedProject = useStore(s => s.projects.find(p => p.id === focusedProjectId));
   const currentMessages = focusedProjectId ? (chatMessages[focusedProjectId] || []) : [];
@@ -51,43 +45,6 @@ export function ChatPanel() {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isChatOpen]);
-
-  // Reset panel height on open
-  useEffect(() => {
-    if (isChatOpen) {
-      setPanelHeight(Math.round(window.innerHeight * 0.5));
-    }
-  }, [isChatOpen]);
-
-  // Resize drag handlers
-  const handleDragStart = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isDragging) return;
-
-    const handleMove = (e: MouseEvent | TouchEvent) => {
-      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-      const maxH = window.innerHeight * MAX_HEIGHT_RATIO;
-      const newHeight = Math.max(MIN_HEIGHT, Math.min(maxH, window.innerHeight - clientY));
-      setPanelHeight(newHeight);
-    };
-
-    const handleUp = () => setIsDragging(false);
-
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('mouseup', handleUp);
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('touchend', handleUp);
-    return () => {
-      window.removeEventListener('mousemove', handleMove);
-      window.removeEventListener('mouseup', handleUp);
-      window.removeEventListener('touchmove', handleMove);
-      window.removeEventListener('touchend', handleUp);
-    };
-  }, [isDragging]);
 
   const handleSendMessage = async () => {
     if (!inputValue.trim() || !focusedProjectId || isStreaming) return;
@@ -202,22 +159,9 @@ export function ChatPanel() {
 
   return (
     <div
-      ref={panelRef}
-      className="fixed bottom-0 left-0 right-0 z-50 flex flex-col"
-      style={{ height: `${panelHeight}px` }}
+      className="fixed left-0 right-0 z-50 flex flex-col bg-[#0a0a2e]/95 backdrop-blur-md border-t border-[#00f0ff]/30"
+      style={{ bottom: '64px', height: 'calc(100vh - 64px)' }}
     >
-      {/* Resize handle */}
-      <div
-        onMouseDown={handleDragStart}
-        onTouchStart={handleDragStart}
-        className={`h-2 cursor-ns-resize flex items-center justify-center group
-          ${isDragging ? 'bg-[#00f0ff]/30' : 'hover:bg-[#00f0ff]/10'}`}
-      >
-        <div className="w-12 h-1 rounded-full bg-[#00f0ff]/40 group-hover:bg-[#00f0ff]/80 transition-colors" />
-      </div>
-
-      {/* Main panel */}
-      <div className="flex-1 bg-[#0a0a2e]/95 backdrop-blur-md border-t border-[#00f0ff]/30 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-2 border-b border-[#00f0ff]/20 shrink-0">
           <div className="flex items-center gap-3">
@@ -242,17 +186,6 @@ export function ChatPanel() {
                 {selectedAgent}
               </span>
             )}
-            <button
-              onClick={() => {
-                const newMax = !isMaximized;
-                setIsMaximized(newMax);
-                setPanelHeight(newMax ? Math.round(window.innerHeight * 0.92) : Math.round(window.innerHeight * 0.5));
-              }}
-              className="text-[#e0e0ff]/50 hover:text-[#00f0ff] text-xs px-2 py-1 rounded border border-[#00f0ff]/15 hover:border-[#00f0ff]/40 transition-colors"
-              title={isMaximized ? 'Restore' : 'Maximize'}
-            >
-              {isMaximized ? '⊟' : '⊞'}
-            </button>
             <button
               onClick={closeChat}
               className="text-[#e0e0ff]/60 hover:text-[#00f0ff] text-xs font-mono px-2 py-1 rounded border border-[#00f0ff]/15 hover:border-[#00f0ff]/40 transition-colors"
@@ -343,11 +276,8 @@ export function ChatPanel() {
               </button>
             )}
           </div>
-          <div className="text-[10px] text-[#e0e0ff]/30 mt-1">
-            Enter to send · Shift+Enter for new line · Drag top edge to resize
-          </div>
+          <p className="text-[10px] text-[#e0e0ff]/30 mt-1">Enter to send</p>
         </div>
-      </div>
     </div>
   );
 }

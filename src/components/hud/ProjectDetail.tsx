@@ -18,8 +18,7 @@ export function ProjectDetail() {
   const unfocusProject = useStore(s => s.unfocusProject);
   const openChat = useStore(s => s.openChat);
   const setSelectedAgent = useStore(s => s.setSelectedAgent);
-  const [height, setHeight] = useState(50);
-  const [isMaximized, setIsMaximized] = useState(false);
+  const [height, setHeight] = useState(85);
   const [apiAgents, setApiAgents] = useState<string[]>([]);
   const dragRef = useRef<{ startY: number; startH: number } | null>(null);
 
@@ -64,13 +63,8 @@ export function ProjectDetail() {
   const phase = getPhase(project.progress);
 
   return (
-    <div className="fixed left-0 right-0 z-20 rounded-t-2xl overflow-hidden transition-[max-height] duration-200"
-         style={{ bottom: 0, maxHeight: `${height}vh`, background: 'rgba(8,12,28,0.94)', borderTop: `1px solid ${project.color}30`, backdropFilter: 'blur(20px)' }}>
-
-      {/* Drag handle */}
-      <div className="flex justify-center pt-2 pb-1 cursor-ns-resize touch-none" onPointerDown={onDragStart}>
-        <div className="w-10 h-1 rounded-full" style={{ background: `${project.color}30` }} />
-      </div>
+    <div className="fixed left-0 right-0 z-20 rounded-t-2xl overflow-hidden flex flex-col"
+         style={{ bottom: '64px', maxHeight: `calc(100vh - 64px)`, height: `${height}vh`, background: 'rgba(8,12,28,0.94)', borderTop: `1px solid ${project.color}30`, backdropFilter: 'blur(20px)' }}>
 
       {/* Header */}
       <div className="px-5 py-2 flex justify-between items-center">
@@ -82,21 +76,13 @@ export function ProjectDetail() {
             <div className="text-[10px] text-gray-500 mt-0.5">{project.description}</div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <button onClick={() => { setIsMaximized(!isMaximized); setHeight(isMaximized ? 50 : 92); }}
-            className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all text-xs"
-            style={{ borderColor: 'rgba(0,240,255,0.15)' }}
-            title={isMaximized ? 'Restore' : 'Maximize'}>
-            {isMaximized ? '⊟' : '⊞'}
-          </button>
-          <button onClick={unfocusProject}
-            className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all"
-            style={{ borderColor: 'rgba(0,240,255,0.15)' }}>✕</button>
-        </div>
+        <button onClick={unfocusProject}
+          className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all"
+          style={{ borderColor: 'rgba(0,240,255,0.15)' }}>✕</button>
       </div>
 
       {/* Body */}
-      <div className="px-5 pb-5 overflow-y-auto" style={{ maxHeight: `calc(${height}vh - 80px)` }}>
+      <div className="px-5 pb-5 overflow-y-auto flex-1">
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-3 mb-4">
           <StatBox label="VERSION" value={project.version} color={project.color} />
