@@ -177,7 +177,6 @@ function Planet({ project }: { project: Project }) {
   const coreRef = useRef<THREE.Mesh>(null!);
   const ringRef = useRef<THREE.Mesh>(null!);
   const focusProject = useStore(s => s.focusProject);
-  const openChat = useStore(s => s.openChat);
   const selectedId = useStore(s => s.selectedProjectId);
   const focusedId = useStore(s => s.focusedProjectId);
   const isSelected = selectedId === project.id;

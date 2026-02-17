@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Scene } from './components/scene/Scene';
 import { TopBar } from './components/hud/TopBar';
 import { RightPanel } from './components/hud/RightPanel';
@@ -7,13 +7,12 @@ import { SettingsView } from './components/hud/SettingsView';
 import { ChatPanel } from './components/hud/ChatPanel';
 import { TerminalView } from './components/hud/TerminalView';
 import { MainLayout } from './components/layout/MainLayout';
-import type { View } from './components/layout/Sidebar';
 import { useStore } from './store';
 
 function App() {
   const init = useStore(s => s.init);
   const tick = useStore(s => s.tick);
-  const [activeView, setActiveView] = useState<View>('projects');
+  const activeView = useStore(s => s.activeView);
 
   useEffect(() => {
     init();
@@ -39,7 +38,7 @@ function App() {
       {activeView === 'projects' && <TopBar />}
 
       {/* Sidebar + layout */}
-      <MainLayout activeView={activeView} onChangeView={setActiveView}>
+      <MainLayout activeView={activeView}>
         {/* Overlay views — shown over 3D scene */}
         {activeView === 'logs' && (
           <div className="overlay-view">
@@ -54,6 +53,11 @@ function App() {
         {activeView === 'settings' && (
           <div className="overlay-view">
             <SettingsView />
+          </div>
+        )}
+        {activeView === 'chat' && (
+          <div className="overlay-view">
+            <ChatPanel />
           </div>
         )}
         {activeView === 'openclaw' && (
@@ -86,9 +90,6 @@ function App() {
 
       {/* Right detail panel — slides in from right */}
       <RightPanel />
-
-      {/* Chat panel — overlay in content area (right of sidebar) */}
-      <ChatPanel />
     </>
   );
 }

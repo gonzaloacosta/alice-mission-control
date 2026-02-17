@@ -4,17 +4,16 @@ import { getPhase, PHASE_LABELS } from '../../types';
 export function RightPanel() {
   const projects = useStore(s => s.projects);
   const focusedId = useStore(s => s.focusedProjectId);
-  const isChatOpen = useStore(s => s.isChatOpen);
   const unfocusProject = useStore(s => s.unfocusProject);
-  const openChat = useStore(s => s.openChat);
-  const setSelectedAgent = useStore(s => s.setSelectedAgent);
+  const openChatTab = useStore(s => s.openChatTab);
 
   const project = projects.find(p => p.id === focusedId);
   const isOpen = !!project;
 
   const handleAgentClick = (agentName: string | null) => {
-    setSelectedAgent(agentName);
-    openChat();
+    if (project) {
+      openChatTab(project.id, agentName);
+    }
   };
 
   return (
@@ -108,7 +107,7 @@ export function RightPanel() {
                   {project.agents.map(agent => (
                     <button
                       key={agent.id}
-                      onClick={() => handleAgentClick(null)}
+                      onClick={() => handleAgentClick(agent.name)}
                       style={{
                         width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '6px',
                         background: 'rgba(0,240,255,0.04)', border: '1px solid var(--border)',

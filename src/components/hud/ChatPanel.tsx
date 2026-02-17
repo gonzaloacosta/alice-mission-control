@@ -14,18 +14,17 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 
 export function ChatPanel() {
   const {
-    focusedProjectId,
-    isChatOpen,
-    selectedAgent,
+    projects,
+    openChats,
+    activeChatKey,
     chatMessages,
-    isStreaming,
+    streamingChats,
     currentSessionId,
-    closeChat,
+    closeChatTab,
     addChatMessage,
     setChatMessages,
-    setStreaming,
+    setStreamingForChat,
     setCurrentSession,
-    setSelectedAgent,
   } = useStore();
 
   const [inputValue, setInputValue] = useState('');
@@ -34,24 +33,15 @@ export function ChatPanel() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const focusedProject = useStore(s => s.projects.find(p => p.id === focusedProjectId));
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth <= 768);
-    window.addEventListener('resize', check);
-    return () => window.removeEventListener('resize', check);
-  }, []);
+  // Get active chat details
+  const activeChat = activeChatKey ? openChats.find(chat => {
+    const chatKey = `${chat.projectId}:${chat.agentName || 'default'}`;
+    return chatKey === activeChatKey;
+  }) : null;
 
-  // Chat key: projectId:agentName (unique per agent)
-  const chatKey = focusedProjectId
-    ? `${focusedProjectId}:${selectedAgent || 'default'}`
-    : '';
-  const currentMessages = chatKey ? (chatMessages[chatKey] || []) : [];
-
-  // All agents for this project (for tabs)
-  const agents = focusedProject
-    ? [{ id: 'default', name: 'Default Agent', role: '', state: 'idle' as const }, ...focusedProject.agents]
-    : [];
+  const activeProject = activeChat ? projects.find(p => p.id === activeChat.projectId) : null;
+  const isStreaming = activeChatKey ? (streamingChats[activeChatKey] || false) : false;
+  const currentMessages = activeChatKey ? (chatMessages[activeChatKey] || []) : [];
 
   // Load chat history from API
   const loadChatHistory = async (projectId: string, agentName: string) => {
@@ -62,7 +52,6 @@ export function ChatPanel() {
       const response = await fetch(`${API_BASE}/api/v1/chat/${projectId}/${agentName}`);
       if (response.ok) {
         const data = await response.json();
-        // Replace the messages in store with API data
         const key = `${projectId}:${agentName}`;
         setChatMessages(key, data.messages || []);
       }
@@ -86,30 +75,28 @@ export function ChatPanel() {
     }
   };
 
-  // Load history when chat opens or agent changes
+  // Load history when active chat changes
   useEffect(() => {
-    if (isChatOpen && focusedProjectId && selectedAgent) {
-      const agentName = selectedAgent === 'default' ? 'default' : selectedAgent;
-      if (agentName) {
-        loadChatHistory(focusedProjectId, agentName);
-      }
+    if (activeChat && activeChatKey) {
+      const agentName = activeChat.agentName || 'default';
+      loadChatHistory(activeChat.projectId, agentName);
     }
-  }, [isChatOpen, focusedProjectId, selectedAgent]);
+  }, [activeChatKey]);
 
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentMessages]);
 
-  // Focus input
+  // Focus input when chat becomes active
   useEffect(() => {
-    if (isChatOpen && inputRef.current) {
+    if (activeChatKey && inputRef.current) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
-  }, [isChatOpen, selectedAgent]);
+  }, [activeChatKey]);
 
   const handleSendMessage = async () => {
-    if (!inputValue.trim() || !focusedProjectId || isStreaming) return;
+    if (!inputValue.trim() || !activeChat || !activeChatKey || isStreaming) return;
 
     const userMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
@@ -118,20 +105,20 @@ export function ChatPanel() {
       timestamp: Date.now()
     };
 
-    addChatMessage(chatKey, userMessage);
+    addChatMessage(activeChatKey, userMessage);
     
     // Save user message to API
-    const agentName = selectedAgent || 'default';
-    await saveMessageToAPI(focusedProjectId, agentName, 'user', userMessage.content);
+    const agentName = activeChat.agentName || 'default';
+    await saveMessageToAPI(activeChat.projectId, agentName, 'user', userMessage.content);
     
     setInputValue('');
-    setStreaming(true);
+    setStreamingForChat(activeChatKey, true);
 
     try {
-      const response = await fetch(`${API_BASE}/api/v1/projects/${focusedProjectId}/prompt`, {
+      const response = await fetch(`${API_BASE}/api/v1/projects/${activeChat.projectId}/prompt`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userMessage.content, agent: selectedAgent })
+        body: JSON.stringify({ prompt: userMessage.content, agent: activeChat.agentName })
       });
 
       if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -158,30 +145,28 @@ export function ChatPanel() {
           case 'stream':
             if (data.data.type === 'text' && data.data.text) {
               assistantMessage.content += data.data.text;
-              addChatMessage(chatKey, { ...assistantMessage });
+              addChatMessage(activeChatKey, { ...assistantMessage });
             }
             break;
           case 'output':
             if (data.text) {
               assistantMessage.content += data.text;
-              addChatMessage(chatKey, { ...assistantMessage });
+              addChatMessage(activeChatKey, { ...assistantMessage });
             }
             break;
           case 'error':
             const errorMessage = {
-              id: `msg-${Date.now()}-error`, type: 'error',
+              id: `msg-${Date.now()}-error`, type: 'error' as const,
               content: `Error: ${data.text}`, timestamp: Date.now(), sessionId
             };
-            addChatMessage(chatKey, errorMessage);
-            // Save error to API
-            await saveMessageToAPI(focusedProjectId, agentName, 'error', errorMessage.content);
+            addChatMessage(activeChatKey, errorMessage);
+            await saveMessageToAPI(activeChat.projectId, agentName, 'error', errorMessage.content);
             break;
           case 'done':
-            // Save final assistant message to API when streaming is done
             if (assistantMessage.content) {
-              await saveMessageToAPI(focusedProjectId, agentName, 'assistant', assistantMessage.content);
+              await saveMessageToAPI(activeChat.projectId, agentName, 'assistant', assistantMessage.content);
             }
-            setStreaming(false);
+            setStreamingForChat(activeChatKey, false);
             setCurrentSession(null);
             ws.close();
             break;
@@ -189,27 +174,27 @@ export function ChatPanel() {
       };
 
       ws.onerror = () => {
-        addChatMessage(chatKey, {
+        addChatMessage(activeChatKey, {
           id: `msg-${Date.now()}-error`, type: 'error',
           content: 'Connection error occurred', timestamp: Date.now()
         });
-        setStreaming(false);
+        setStreamingForChat(activeChatKey, false);
         setCurrentSession(null);
       };
 
       ws.onclose = () => {
         setWsConnection(null);
-        setStreaming(false);
+        setStreamingForChat(activeChatKey, false);
         if (currentSessionId === sessionId) setCurrentSession(null);
       };
 
     } catch (error) {
-      addChatMessage(chatKey, {
+      addChatMessage(activeChatKey, {
         id: `msg-${Date.now()}-error`, type: 'error',
         content: `Failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         timestamp: Date.now()
       });
-      setStreaming(false);
+      setStreamingForChat(activeChatKey, false);
     }
   };
 
@@ -218,7 +203,9 @@ export function ChatPanel() {
     if (currentSessionId) {
       fetch(`${API_BASE}/api/v1/sessions/${currentSessionId}/stop`, { method: 'POST' }).catch(console.error);
     }
-    setStreaming(false);
+    if (activeChatKey) {
+      setStreamingForChat(activeChatKey, false);
+    }
     setCurrentSession(null);
   };
 
@@ -229,93 +216,156 @@ export function ChatPanel() {
     }
   };
 
-  const handleAgentTab = (agentName: string | null) => {
-    if (isStreaming) return; // don't switch while streaming
-    setSelectedAgent(agentName);
+  const handleTabClick = (chat: typeof openChats[0]) => {
+    const chatKey = `${chat.projectId}:${chat.agentName || 'default'}`;
+    useStore.setState({ activeChatKey: chatKey });
   };
 
-  if (!isChatOpen || !focusedProject) return null;
+  const handleCloseTab = (e: React.MouseEvent, chat: typeof openChats[0]) => {
+    e.stopPropagation();
+    const chatKey = `${chat.projectId}:${chat.agentName || 'default'}`;
+    closeChatTab(chatKey);
+  };
 
-  const activeAgentName = selectedAgent || 'default';
-
-  return (
-    <div
-      className="overlay-view"
-      style={{
+  // Empty state when no chats are open
+  if (openChats.length === 0) {
+    return (
+      <div className="overlay-view" style={{
         background: 'var(--panel)',
         backdropFilter: 'blur(20px)',
         display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
         flexDirection: 'column',
-        overflow: 'hidden',
-        left: isMobile ? '0' : 'var(--sidebar-w)',
-        right: !isMobile && focusedProjectId ? '400px' : '0',
-        transition: 'right 0.4s cubic-bezier(0.4,0,0.2,1)',
-        zIndex: 35,
-      }}
-    >
-      {/* Header with back button and project name */}
-      <div className="detail-header" style={{ flexShrink: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <button className="detail-close" onClick={closeChat}>←</button>
-          <div style={{
-            width: '10px', height: '10px', borderRadius: '50%',
-            background: focusedProject.color,
-            boxShadow: `0 0 8px ${focusedProject.color}`,
-          }} />
-          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
-            {focusedProject.name}
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
+          <h2 style={{ 
+            fontFamily: 'Orbitron, sans-serif', 
+            color: 'var(--cyan)', 
+            letterSpacing: '2px', 
+            marginBottom: '12px',
+            fontSize: '18px'
+          }}>
+            MULTI-CHAT
           </h2>
+          <p style={{ 
+            color: '#4a5a6a', 
+            fontSize: '14px', 
+            marginBottom: '24px',
+            fontFamily: 'Share Tech Mono, monospace'
+          }}>
+            Open a chat from any project's agent list
+          </p>
         </div>
       </div>
+    );
+  }
 
-      {/* Agent tabs */}
+  return (
+    <div className="overlay-view" style={{
+      background: 'var(--panel)',
+      backdropFilter: 'blur(20px)',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden',
+    }}>
+      {/* Tab bar */}
       <div style={{
-        display: 'flex', flexShrink: 0, overflowX: 'auto',
+        display: 'flex', 
+        flexShrink: 0, 
+        overflowX: 'auto',
         borderBottom: '1px solid var(--border)',
         background: 'rgba(8,12,28,0.6)',
       }}>
-        {agents.map(agent => {
-          const isDefault = agent.id === 'default';
-          const agentKey = isDefault ? 'default' : agent.name;
-          const isActive = activeAgentName === (isDefault ? 'default' : agent.name);
-          const hasMsgs = (chatMessages[`${focusedProjectId}:${agentKey}`] || []).length > 0;
+        {openChats.map(chat => {
+          const project = projects.find(p => p.id === chat.projectId);
+          const chatKey = `${chat.projectId}:${chat.agentName || 'default'}`;
+          const isActive = activeChatKey === chatKey;
+          const hasMsgs = (chatMessages[chatKey] || []).length > 0;
+          const isStreamingInTab = streamingChats[chatKey] || false;
+          
           return (
             <button
-              key={agent.id}
-              onClick={() => handleAgentTab(isDefault ? null : agent.name)}
+              key={chatKey}
+              onClick={() => handleTabClick(chat)}
               style={{
-                padding: '8px 14px', cursor: isStreaming ? 'default' : 'pointer',
+                padding: '12px 16px',
+                cursor: 'pointer',
                 background: isActive ? 'rgba(0,240,255,0.08)' : 'transparent',
                 borderBottom: isActive ? '2px solid var(--cyan)' : '2px solid transparent',
-                border: 'none', borderRight: '1px solid rgba(0,240,255,0.04)',
+                border: 'none',
+                borderRight: '1px solid rgba(0,240,255,0.04)',
                 color: isActive ? 'var(--cyan)' : '#6a7a8a',
-                fontFamily: 'Share Tech Mono, monospace', fontSize: '11px',
-                whiteSpace: 'nowrap', transition: 'all 0.15s',
-                display: 'flex', alignItems: 'center', gap: '6px',
-                opacity: isStreaming && !isActive ? 0.4 : 1,
+                fontFamily: 'Share Tech Mono, monospace',
+                fontSize: '11px',
+                whiteSpace: 'nowrap',
+                transition: 'all 0.15s',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                position: 'relative',
+                minWidth: '120px',
               }}
             >
-              {!isDefault && (
-                <span style={{
-                  width: '6px', height: '6px', borderRadius: '50%',
-                  background: agent.state === 'active' ? 'var(--green)' : '#3a4a5a',
-                  boxShadow: agent.state === 'active' ? '0 0 6px var(--green)' : 'none',
+              {/* Project color indicator */}
+              <div style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: project?.color || 'var(--cyan)',
+                boxShadow: `0 0 6px ${project?.color || 'var(--cyan)'}`,
+                flexShrink: 0,
+              }} />
+              
+              {/* Tab label */}
+              <span style={{ flex: 1, textAlign: 'left' }}>
+                {project?.name || chat.projectId} / {chat.agentName || 'Default'}
+              </span>
+              
+              {/* Indicators */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                {isStreamingInTab && (
+                  <span className="live-dot" style={{ width: '4px', height: '4px' }} />
+                )}
+                {hasMsgs && !isActive && (
+                  <span style={{
+                    width: '4px',
+                    height: '4px',
+                    borderRadius: '50%',
+                    background: 'var(--cyan)',
+                    flexShrink: 0,
+                  }} />
+                )}
+              </div>
+              
+              {/* Close button */}
+              <span
+                onClick={(e) => handleCloseTab(e, chat)}
+                style={{
+                  width: '14px',
+                  height: '14px',
+                  borderRadius: '2px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '10px',
+                  opacity: 0.5,
+                  transition: 'opacity 0.15s',
+                  cursor: 'pointer',
                   flexShrink: 0,
-                }} />
-              )}
-              {isDefault ? '⚡ Default' : agent.name}
-              {hasMsgs && !isActive && (
-                <span style={{
-                  width: '5px', height: '5px', borderRadius: '50%',
-                  background: 'var(--cyan)', flexShrink: 0,
-                }} />
-              )}
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                onMouseLeave={(e) => e.currentTarget.style.opacity = '0.5'}
+              >
+                ×
+              </span>
             </button>
           );
         })}
       </div>
 
-      {/* Messages */}
+      {/* Messages area */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
         {isLoadingHistory && (
           <div style={{ textAlign: 'center', padding: '20px 0', color: '#4a5a6a' }}>
@@ -325,17 +375,17 @@ export function ChatPanel() {
           </div>
         )}
         
-        {!isLoadingHistory && currentMessages.length === 0 && (
+        {!isLoadingHistory && currentMessages.length === 0 && activeChat && activeProject && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: '#4a5a6a' }}>
             <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚡</div>
             <div style={{ fontSize: '12px', fontFamily: 'Share Tech Mono, monospace' }}>
               Send a task to{' '}
               <span style={{ color: 'var(--cyan)' }}>
-                {selectedAgent || 'Default Agent'}
+                {activeChat.agentName || 'Default Agent'}
               </span>
               {' '}on{' '}
-              <span style={{ color: focusedProject.color }}>
-                {focusedProject.name}
+              <span style={{ color: activeProject.color }}>
+                {activeProject.name}
               </span>
             </div>
           </div>
@@ -345,7 +395,9 @@ export function ChatPanel() {
           <div
             key={message.id}
             style={{
-              padding: '12px 14px', borderRadius: '6px', marginBottom: '10px',
+              padding: '12px 14px',
+              borderRadius: '6px',
+              marginBottom: '10px',
               borderLeft: `3px solid ${
                 message.type === 'user' ? 'var(--cyan)' :
                 message.type === 'error' ? 'var(--red)' : 'var(--green)'
@@ -359,11 +411,20 @@ export function ChatPanel() {
               marginRight: message.type === 'assistant' ? '40px' : '0',
             }}
           >
-            <div style={{ fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>
-              {message.type === 'user' ? 'You' : message.type === 'error' ? 'Error' : (selectedAgent || 'Claude Code')}
+            <div style={{
+              fontSize: '9px',
+              color: '#4a5a6a',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              marginBottom: '6px'
+            }}>
+              {message.type === 'user' ? 'You' : 
+               message.type === 'error' ? 'Error' : 
+               (activeChat?.agentName || 'Claude Code')}
             </div>
             <div className={message.type !== 'user' ? 'markdown-body' : ''} style={{
-              fontSize: '13px', fontFamily: 'Share Tech Mono, monospace',
+              fontSize: '13px',
+              fontFamily: 'Share Tech Mono, monospace',
               color: message.type === 'error' ? 'var(--red)' : '#c8d8e8',
               whiteSpace: message.type === 'user' ? 'pre-wrap' : undefined,
               lineHeight: '1.5',
@@ -378,13 +439,29 @@ export function ChatPanel() {
 
         {isStreaming && currentMessages[currentMessages.length - 1]?.type !== 'assistant' && (
           <div style={{
-            padding: '12px 14px', borderRadius: '6px', marginRight: '40px',
-            borderLeft: '3px solid var(--green)', background: 'rgba(0,255,136,0.04)',
+            padding: '12px 14px',
+            borderRadius: '6px',
+            marginRight: '40px',
+            borderLeft: '3px solid var(--green)',
+            background: 'rgba(0,255,136,0.04)',
           }}>
-            <div style={{ fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>
-              {selectedAgent || 'Claude Code'}
+            <div style={{
+              fontSize: '9px',
+              color: '#4a5a6a',
+              letterSpacing: '1px',
+              textTransform: 'uppercase',
+              marginBottom: '6px'
+            }}>
+              {activeChat?.agentName || 'Claude Code'}
             </div>
-            <div style={{ fontSize: '13px', color: 'var(--green)', fontFamily: 'Share Tech Mono, monospace', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{
+              fontSize: '13px',
+              color: 'var(--green)',
+              fontFamily: 'Share Tech Mono, monospace',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
               <span className="live-dot" />
               <span>Thinking...</span>
             </div>
@@ -394,9 +471,11 @@ export function ChatPanel() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Input area */}
       <div style={{
-        flexShrink: 0, padding: '12px 20px', borderTop: '1px solid var(--border)',
+        flexShrink: 0,
+        padding: '12px 20px',
+        borderTop: '1px solid var(--border)',
         background: 'rgba(8,12,28,0.98)',
       }}>
         <div style={{ display: 'flex', gap: '8px' }}>
@@ -405,31 +484,62 @@ export function ChatPanel() {
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder={`Task for ${selectedAgent || 'Default Agent'}...`}
-            disabled={isStreaming}
+            placeholder={activeChat ? 
+              `Task for ${activeChat.agentName || 'Default Agent'} on ${projects.find(p => p.id === activeChat.projectId)?.name}...` :
+              'Select a chat tab to send messages...'
+            }
+            disabled={isStreaming || !activeChat}
             rows={2}
             style={{
-              flex: 1, background: 'rgba(0,240,255,0.03)', border: '1px solid var(--border)',
-              color: '#c8d8e8', padding: '10px 12px', borderRadius: '6px', resize: 'none',
-              fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', outline: 'none',
+              flex: 1,
+              background: 'rgba(0,240,255,0.03)',
+              border: '1px solid var(--border)',
+              color: '#c8d8e8',
+              padding: '10px 12px',
+              borderRadius: '6px',
+              resize: 'none',
+              fontFamily: 'Share Tech Mono, monospace',
+              fontSize: '12px',
+              outline: 'none',
             }}
           />
           {isStreaming ? (
             <button onClick={handleStopStreaming} style={{
-              padding: '0 16px', background: 'rgba(255,51,85,0.1)', color: 'var(--red)',
-              border: '1px solid rgba(255,51,85,0.3)', borderRadius: '6px', cursor: 'pointer',
-              fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', letterSpacing: '1px',
+              padding: '0 16px',
+              background: 'rgba(255,51,85,0.1)',
+              color: 'var(--red)',
+              border: '1px solid rgba(255,51,85,0.3)',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontFamily: 'Share Tech Mono, monospace',
+              fontSize: '11px',
+              letterSpacing: '1px',
             }}>STOP</button>
           ) : (
-            <button onClick={handleSendMessage} disabled={!inputValue.trim()} style={{
-              padding: '0 16px', background: 'rgba(0,240,255,0.1)', color: 'var(--cyan)',
-              border: '1px solid rgba(0,240,255,0.3)', borderRadius: '6px', cursor: 'pointer',
-              fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', letterSpacing: '1px',
-              opacity: inputValue.trim() ? 1 : 0.3,
-            }}>SEND</button>
+            <button 
+              onClick={handleSendMessage} 
+              disabled={!inputValue.trim() || !activeChat} 
+              style={{
+                padding: '0 16px',
+                background: 'rgba(0,240,255,0.1)',
+                color: 'var(--cyan)',
+                border: '1px solid rgba(0,240,255,0.3)',
+                borderRadius: '6px',
+                cursor: 'pointer',
+                fontFamily: 'Share Tech Mono, monospace',
+                fontSize: '11px',
+                letterSpacing: '1px',
+                opacity: (inputValue.trim() && activeChat) ? 1 : 0.3,
+              }}
+            >SEND</button>
           )}
         </div>
-        <div style={{ fontSize: '9px', color: '#3a4a5a', marginTop: '6px', letterSpacing: '1px' }}>
+        <div style={{
+          fontSize: '9px',
+          color: '#3a4a5a',
+          marginTop: '6px',
+          letterSpacing: '1px'
+        }}>
           ENTER TO SEND · SHIFT+ENTER FOR NEW LINE
         </div>
       </div>

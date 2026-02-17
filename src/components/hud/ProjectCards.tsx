@@ -30,14 +30,14 @@ function AgentDot({ agent }: { agent: ProjectAgent }) {
 
 function ProjectCard({ project }: { project: Project }) {
   const focusProject = useStore(s => s.focusProject);
-  const openChat = useStore(s => s.openChat);
+  const openChatTab = useStore(s => s.openChatTab);
 
   const activeCount = project.agents.filter(a => a.state === 'active').length;
   const pct = Math.round(project.progress * 100);
 
   const handleOpenChat = () => {
     focusProject(project.id);
-    openChat();
+    openChatTab(project.id, null);
   };
 
   return (

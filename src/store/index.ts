@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Project, SystemEvent } from '../types';
+import type { View } from '../components/layout/Sidebar';
 
 interface ChatMessage {
   id: string;
@@ -8,6 +9,11 @@ interface ChatMessage {
   content: string;
   timestamp: number;
   sessionId?: string;
+}
+
+interface ChatTab {
+  projectId: string;
+  agentName: string | null;
 }
 
 interface AppState {
@@ -19,12 +25,15 @@ interface AppState {
   coreName: string;
   creatorName: string;
   
+  // UI state
+  activeView: View;
+  
   // Chat feature state
   focusedProjectId: string | null;
-  isChatOpen: boolean;
-  selectedAgent: string | null;
+  openChats: ChatTab[];
+  activeChatKey: string | null;
   chatMessages: Record<string, ChatMessage[]>;
-  isStreaming: boolean;
+  streamingChats: Record<string, boolean>;
   currentSessionId: string | null;
 
   init: () => void;
@@ -33,15 +42,17 @@ interface AppState {
   setQuality: (q: 'low' | 'medium' | 'high') => void;
   togglePause: () => void;
   
+  // UI actions
+  setActiveView: (view: View) => void;
+  
   // Chat actions
   focusProject: (id: string | null) => void;
-  openChat: () => void;
-  closeChat: () => void;
+  openChatTab: (projectId: string, agentName: string | null) => void;
+  closeChatTab: (key: string) => void;
   unfocusProject: () => void;
-  setSelectedAgent: (agent: string | null) => void;
-  addChatMessage: (projectId: string, message: ChatMessage) => void;
+  addChatMessage: (chatKey: string, message: ChatMessage) => void;
   setChatMessages: (chatKey: string, messages: ChatMessage[]) => void;
-  setStreaming: (streaming: boolean) => void;
+  setStreamingForChat: (chatKey: string, streaming: boolean) => void;
   setCurrentSession: (sessionId: string | null) => void;
 }
 
@@ -145,12 +156,15 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   coreName: import.meta.env.VITE_CORE_NAME || 'ALICE',
   creatorName: import.meta.env.VITE_CREATOR_NAME || 'Gonzalo',
   
+  // UI state
+  activeView: 'projects' as View,
+  
   // Chat feature state
   focusedProjectId: null,
-  isChatOpen: false,
-  selectedAgent: null,
+  openChats: [],
+  activeChatKey: null,
   chatMessages: {},
-  isStreaming: false,
+  streamingChats: {},
   currentSessionId: null,
 
   init: () => {
@@ -193,24 +207,64 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   setQuality: (q) => set({ quality: q }),
   togglePause: () => set(s => ({ paused: !s.paused })),
   
+  // UI actions
+  setActiveView: (view) => set({ activeView: view }),
+  
   // Chat actions
   focusProject: (id) => set({ focusedProjectId: id, selectedProjectId: id }),
-  openChat: () => set({ isChatOpen: true }),
-  closeChat: () => set({ 
-    isChatOpen: false, 
-    selectedAgent: null,
-    isStreaming: false,
-    currentSessionId: null 
+  openChatTab: (projectId, agentName) => set(state => {
+    const chatKey = `${projectId}:${agentName || 'default'}`;
+    const existingIndex = state.openChats.findIndex(
+      chat => chat.projectId === projectId && chat.agentName === agentName
+    );
+    
+    let newOpenChats = [...state.openChats];
+    
+    if (existingIndex === -1) {
+      // Add new chat tab
+      newOpenChats.push({ projectId, agentName });
+    }
+    
+    return {
+      openChats: newOpenChats,
+      activeChatKey: chatKey,
+      activeView: 'chat' as View,
+    };
+  }),
+  closeChatTab: (key) => set(state => {
+    const [projectId, agentName] = key.split(':');
+    const actualAgentName = agentName === 'default' ? null : agentName;
+    
+    const newOpenChats = state.openChats.filter(
+      chat => !(chat.projectId === projectId && chat.agentName === actualAgentName)
+    );
+    
+    let newActiveChatKey = state.activeChatKey;
+    
+    // If we're closing the active tab, switch to another tab
+    if (state.activeChatKey === key) {
+      if (newOpenChats.length > 0) {
+        const nextChat = newOpenChats[newOpenChats.length - 1];
+        newActiveChatKey = `${nextChat.projectId}:${nextChat.agentName || 'default'}`;
+      } else {
+        newActiveChatKey = null;
+      }
+    }
+    
+    // Clean up streaming state for closed tab
+    const newStreamingChats = { ...state.streamingChats };
+    delete newStreamingChats[key];
+    
+    return {
+      openChats: newOpenChats,
+      activeChatKey: newActiveChatKey,
+      streamingChats: newStreamingChats,
+    };
   }),
   unfocusProject: () => set({
     focusedProjectId: null,
     selectedProjectId: null,
-    isChatOpen: false,
-    selectedAgent: null,
-    isStreaming: false,
-    currentSessionId: null
   }),
-  setSelectedAgent: (agent) => set({ selectedAgent: agent }),
   addChatMessage: (chatKey, message) => set(state => {
     const existing = state.chatMessages[chatKey] || [];
     const idx = existing.findIndex(m => m.id === message.id);
@@ -224,7 +278,9 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   setChatMessages: (chatKey, messages) => set(state => ({
     chatMessages: { ...state.chatMessages, [chatKey]: messages }
   })),
-  setStreaming: (streaming) => set({ isStreaming: streaming }),
+  setStreamingForChat: (chatKey, streaming) => set(state => ({
+    streamingChats: { ...state.streamingChats, [chatKey]: streaming }
+  })),
   setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
 }), {
   name: 'alice-mission-control',

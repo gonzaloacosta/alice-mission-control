@@ -14,10 +14,8 @@ const API_BASE = import.meta.env.VITE_API_URL || '';
 export function ProjectDetail() {
   const projects = useStore(s => s.projects);
   const focusedId = useStore(s => s.focusedProjectId);
-  const isChatOpen = useStore(s => s.isChatOpen);
   const unfocusProject = useStore(s => s.unfocusProject);
-  const openChat = useStore(s => s.openChat);
-  const setSelectedAgent = useStore(s => s.setSelectedAgent);
+  const openChatTab = useStore(s => s.openChatTab);
   const [height, setHeight] = useState(85);
   const [apiAgents, setApiAgents] = useState<string[]>([]);
   const dragRef = useRef<{ startY: number; startH: number } | null>(null);
@@ -54,11 +52,12 @@ export function ProjectDetail() {
   }, [height]);
 
   const handleAgentClick = (agentName: string | null) => {
-    setSelectedAgent(agentName);
-    openChat();
+    if (project) {
+      openChatTab(project.id, agentName);
+    }
   };
 
-  if (!project || isChatOpen) return null;
+  if (!project) return null;
 
   const phase = getPhase(project.progress);
 

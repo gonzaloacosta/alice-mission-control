@@ -2,12 +2,9 @@ import { useStore } from '../../store';
 
 export function TopBar() {
   const projects = useStore(s => s.projects);
-  const isChatOpen = useStore(s => s.isChatOpen);
   const building = projects.filter(p => p.status === 'building').length;
   const totalAgents = projects.reduce((s, p) => s + p.agents.length, 0);
   const totalTasks = projects.reduce((s, p) => s + p.tasks.total, 0);
-
-  if (isChatOpen) return null;
 
   return (
     <div className="hud-top">
