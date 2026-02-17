@@ -7,9 +7,10 @@ import { LogsView } from './components/hud/LogsView';
 import { InsightsView } from './components/hud/InsightsView';
 import { SettingsView } from './components/hud/SettingsView';
 import { ChatPanel } from './components/hud/ChatPanel';
+import { TerminalView } from './components/hud/TerminalView';
 import { useStore } from './store';
 
-type View = 'projects' | 'insights' | 'logs' | 'settings';
+type View = 'projects' | 'insights' | 'logs' | 'settings' | 'terminal';
 
 function App() {
   const init = useStore(s => s.init);
@@ -32,6 +33,7 @@ function App() {
       {activeView === 'insights' && <InsightsView />}
       {activeView === 'logs' && <LogsView />}
       {activeView === 'settings' && <SettingsView />}
+      {activeView === 'terminal' && <TerminalView />}
 
       {/* Project detail (only in projects view) */}
       {activeView === 'projects' && <ProjectDetail />}

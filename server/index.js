@@ -15,6 +15,9 @@ const PORT = 4446;
 const activeSessions = new Map();
 const sessionHistory = new Map();
 
+// Terminal sessions (separate from claude sessions)
+const terminalSessions = new Map();
+
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
@@ -153,7 +156,75 @@ app.post('/api/v1/sessions/:sessionId/stop', (req, res) => {
   }
 });
 
+// --- Terminal API ---
+app.post('/api/v1/terminal', (req, res) => {
+  const sessionId = uuidv4();
+  const shell = pty.spawn('bash', [], {
+    name: 'xterm-256color',
+    cols: 80,
+    rows: 24,
+    cwd: process.env.HOME || '/home/alice',
+    env: { ...process.env, TERM: 'xterm-256color' }
+  });
+  terminalSessions.set(sessionId, { id: sessionId, pty: shell, createdAt: Date.now(), ws: null });
+  console.log(`[terminal] Created session ${sessionId.slice(0,8)}`);
+  res.json({ sessionId });
+});
+
+app.get('/api/v1/terminal/sessions', (req, res) => {
+  const sessions = [];
+  for (const [id, s] of terminalSessions) {
+    sessions.push({ id, createdAt: s.createdAt });
+  }
+  res.json({ sessions });
+});
+
+app.delete('/api/v1/terminal/:sessionId', (req, res) => {
+  const { sessionId } = req.params;
+  const session = terminalSessions.get(sessionId);
+  if (!session) return res.status(404).json({ error: 'Not found' });
+  try { session.pty.kill(); } catch {}
+  terminalSessions.delete(sessionId);
+  console.log(`[terminal] Killed session ${sessionId.slice(0,8)}`);
+  res.json({ success: true });
+});
+
 wss.on('connection', (ws, req) => {
+  // Handle terminal WebSocket connections
+  const termMatch = req.url?.match(/\/ws\/terminal\/(.+)/);
+  if (termMatch) {
+    const sessionId = termMatch[1];
+    const session = terminalSessions.get(sessionId);
+    if (!session) { ws.close(1000, 'Invalid terminal session'); return; }
+    session.ws = ws;
+    console.log(`[terminal] WS connected ${sessionId.slice(0,8)}`);
+
+    session.pty.onData((data) => {
+      if (ws.readyState === 1) ws.send(data);
+    });
+
+    ws.on('message', (msg) => {
+      const str = msg.toString();
+      try {
+        const parsed = JSON.parse(str);
+        if (parsed.type === 'resize' && parsed.cols && parsed.rows) {
+          session.pty.resize(parsed.cols, parsed.rows);
+          return;
+        }
+      } catch {}
+      session.pty.write(str);
+    });
+
+    ws.on('close', () => {
+      console.log(`[terminal] WS disconnected ${sessionId.slice(0,8)}`);
+      session.ws = null;
+      // Kill PTY on disconnect
+      try { session.pty.kill(); } catch {}
+      terminalSessions.delete(sessionId);
+    });
+    return;
+  }
+  // Handle claude session WebSocket connections
   const sessionId = req.url?.split('/').pop();
   if (!sessionId || !activeSessions.has(sessionId)) {
     ws.close(1000, 'Invalid session ID');
