@@ -1,36 +1,96 @@
 import { useStore } from '../../store';
 
-const SEV = { info: '#5a6a7a', warning: '#ffcc00', error: '#ff3355', critical: '#ff3355' };
+const SEV_STYLES: Record<string, { color: string; bg: string; label: string }> = {
+  info:     { color: 'var(--cyan)',   bg: 'rgba(0,240,255,0.06)',  label: 'INFO' },
+  warning:  { color: 'var(--yellow)', bg: 'rgba(255,204,0,0.06)',  label: 'WARN' },
+  error:    { color: 'var(--red)',    bg: 'rgba(255,51,85,0.06)',   label: 'ERR' },
+  critical: { color: 'var(--red)',    bg: 'rgba(255,51,85,0.10)',   label: 'CRIT' },
+};
 
 export function LogsView() {
   const events = useStore(s => s.events);
   const projects = useStore(s => s.projects);
-  const getColor = (pid: string) => projects.find(p => p.id === pid)?.color || '#5a6a7a';
+  const getColor = (pid: string) => projects.find(p => p.id === pid)?.color || '#6a7a8a';
 
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="px-4 py-3 border-b sticky top-0 z-10" style={{ borderColor: 'rgba(0,240,255,0.08)', background: 'rgba(8,12,28,0.98)' }}>
-        <span className="text-[10px] text-gray-600 tracking-[3px] font-orbitron">EVENT LOG</span>
-        <span className="text-[10px] text-gray-700 ml-3">{events.length} events</span>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      {/* Header */}
+      <div className="detail-header" style={{ flexShrink: 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
+            EVENT LOG
+          </h2>
+          <span style={{
+            fontSize: '11px', padding: '2px 8px', borderRadius: '4px',
+            background: 'rgba(0,240,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(0,240,255,0.15)',
+            fontFamily: 'Orbitron, sans-serif',
+          }}>
+            {events.length}
+          </span>
+        </div>
       </div>
-      <div className="px-4">
-        {events.map(evt => (
-          <div key={evt.id} className="flex items-start gap-3 py-2.5 border-b" style={{ borderColor: 'rgba(0,240,255,0.03)' }}>
-            <span className="w-2 h-2 rounded-full mt-1.5 flex-shrink-0"
-                  style={{ background: SEV[evt.severity], boxShadow: evt.severity !== 'info' ? `0 0 6px ${SEV[evt.severity]}` : 'none' }} />
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-orbitron tracking-wider" style={{ color: getColor(evt.projectId) }}>{evt.projectId.toUpperCase()}</span>
-                <span className="text-[9px] text-gray-600">{evt.agentName}</span>
-                <span className="text-[9px] text-gray-700 ml-auto">
-                  {new Date(evt.timestamp).toLocaleTimeString('en-US', { hour12: false })}
-                </span>
-              </div>
-              <div className="text-[11px] text-gray-400 mt-0.5">{evt.message}</div>
-            </div>
+
+      {/* Event list */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+        {events.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#4a5a6a' }}>
+            <div style={{ fontSize: '32px', marginBottom: '12px' }}>📋</div>
+            <div style={{ fontSize: '13px', fontFamily: 'Share Tech Mono, monospace' }}>No events recorded yet</div>
           </div>
-        ))}
-        {events.length === 0 && <div className="text-center text-gray-600 text-xs py-8">No events yet</div>}
+        )}
+
+        {events.map(evt => {
+          const sev = SEV_STYLES[evt.severity] || SEV_STYLES.info;
+          return (
+            <div key={evt.id} style={{
+              display: 'flex', alignItems: 'flex-start', gap: '14px',
+              padding: '12px 20px', borderBottom: '1px solid rgba(0,240,255,0.04)',
+              transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,240,255,0.02)')}
+            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              {/* Severity badge */}
+              <span style={{
+                fontSize: '9px', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+                padding: '3px 8px', borderRadius: '3px', flexShrink: 0, marginTop: '2px',
+                background: sev.bg, color: sev.color, border: `1px solid ${sev.color}30`,
+                fontWeight: 700,
+              }}>
+                {sev.label}
+              </span>
+
+              {/* Content */}
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                  <span style={{
+                    fontSize: '12px', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+                    color: getColor(evt.projectId), fontWeight: 700,
+                  }}>
+                    {evt.projectId.toUpperCase()}
+                  </span>
+                  <span style={{ fontSize: '11px', color: '#6a7a8a', fontFamily: 'Share Tech Mono, monospace' }}>
+                    {evt.agentName}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: '13px', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+                  lineHeight: '1.5',
+                }}>
+                  {evt.message}
+                </div>
+              </div>
+
+              {/* Timestamp */}
+              <span style={{
+                fontSize: '11px', color: '#4a5a6a', fontFamily: 'Orbitron, sans-serif',
+                flexShrink: 0, marginTop: '2px',
+              }}>
+                {new Date(evt.timestamp).toLocaleTimeString('en-US', { hour12: false })}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
