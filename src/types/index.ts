@@ -1,6 +1,37 @@
 export type AgentState = 'idle' | 'active' | 'warning' | 'error';
 export type ProjectPhase = 'forming' | 'growing' | 'maturing' | 'ready' | 'launched';
 
+// Legacy exports for compatibility (can be removed later)
+export const STATE_COLORS: Record<AgentState, string> = {
+  idle: '#5a6a7a',
+  active: '#00ff88',
+  warning: '#ffaa00',
+  error: '#ff4444'
+};
+
+export const STATE_EMISSIVE: Record<AgentState, string> = {
+  idle: '#5a6a7a',
+  active: '#00ff88',
+  warning: '#ffaa00',
+  error: '#ff4444'
+};
+
+// Legacy types for compatibility
+export interface Agent {
+  id: string;
+  name: string;
+  type: string;
+  state: AgentState;
+  cluster: string;
+}
+
+export interface Link {
+  id: string;
+  source: string;
+  target: string;
+  type: string;
+}
+
 export interface Project {
   id: string;
   name: string;

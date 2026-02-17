@@ -1,7 +1,8 @@
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Stars } from '@react-three/drei';
+import { Stars } from '@react-three/drei';
 import { SolarSystem } from './SolarSystem';
 import { Effects } from './Effects';
+import { CameraController } from './CameraController';
 import { useStore } from '../../store';
 
 export function Scene() {
@@ -31,16 +32,7 @@ export function Scene() {
 
       <SolarSystem />
       <Effects />
-
-      <OrbitControls
-        enableDamping
-        dampingFactor={0.05}
-        maxDistance={140}
-        minDistance={8}
-        maxPolarAngle={Math.PI / 2.1}
-        autoRotate
-        autoRotateSpeed={0.15}
-      />
+      <CameraController />
     </Canvas>
   );
 }

@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import type { Project, SystemEvent } from '../types';
 
+interface ChatMessage {
+  id: string;
+  type: 'user' | 'assistant' | 'error';
+  content: string;
+  timestamp: number;
+  sessionId?: string;
+}
+
 interface AppState {
   projects: Project[];
   events: SystemEvent[];
@@ -9,12 +17,29 @@ interface AppState {
   paused: boolean;
   coreName: string;
   creatorName: string;
+  
+  // Chat feature state
+  focusedProjectId: string | null;
+  isChatOpen: boolean;
+  selectedAgent: string | null;
+  chatMessages: Record<string, ChatMessage[]>;
+  isStreaming: boolean;
+  currentSessionId: string | null;
 
   init: () => void;
   tick: () => void;
   selectProject: (id: string | null) => void;
   setQuality: (q: 'low' | 'medium' | 'high') => void;
   togglePause: () => void;
+  
+  // Chat actions
+  focusProject: (id: string | null) => void;
+  openChat: () => void;
+  closeChat: () => void;
+  setSelectedAgent: (agent: string | null) => void;
+  addChatMessage: (projectId: string, message: ChatMessage) => void;
+  setStreaming: (streaming: boolean) => void;
+  setCurrentSession: (sessionId: string | null) => void;
 }
 
 const INITIAL_PROJECTS: Project[] = [
@@ -116,6 +141,14 @@ export const useStore = create<AppState>((set, get) => ({
   paused: false,
   coreName: import.meta.env.VITE_CORE_NAME || 'ALICE',
   creatorName: import.meta.env.VITE_CREATOR_NAME || 'Gonzalo',
+  
+  // Chat feature state
+  focusedProjectId: null,
+  isChatOpen: false,
+  selectedAgent: null,
+  chatMessages: {},
+  isStreaming: false,
+  currentSessionId: null,
 
   init: () => {
     set({ projects: INITIAL_PROJECTS.map(p => ({ ...p })) });
@@ -156,4 +189,25 @@ export const useStore = create<AppState>((set, get) => ({
   selectProject: (id) => set({ selectedProjectId: id }),
   setQuality: (q) => set({ quality: q }),
   togglePause: () => set(s => ({ paused: !s.paused })),
+  
+  // Chat actions
+  focusProject: (id) => set({ focusedProjectId: id, selectedProjectId: id }),
+  openChat: () => set({ isChatOpen: true }),
+  closeChat: () => set({ 
+    isChatOpen: false, 
+    focusedProjectId: null, 
+    selectedProjectId: null, 
+    selectedAgent: null,
+    isStreaming: false,
+    currentSessionId: null 
+  }),
+  setSelectedAgent: (agent) => set({ selectedAgent: agent }),
+  addChatMessage: (projectId, message) => set(state => ({
+    chatMessages: {
+      ...state.chatMessages,
+      [projectId]: [...(state.chatMessages[projectId] || []), message]
+    }
+  })),
+  setStreaming: (streaming) => set({ isStreaming: streaming }),
+  setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
 }));

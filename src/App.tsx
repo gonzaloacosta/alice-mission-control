@@ -6,6 +6,7 @@ import { BottomNav } from './components/hud/BottomNav';
 import { LogsView } from './components/hud/LogsView';
 import { InsightsView } from './components/hud/InsightsView';
 import { SettingsView } from './components/hud/SettingsView';
+import { ChatPanel } from './components/hud/ChatPanel';
 import { useStore } from './store';
 
 type View = 'projects' | 'insights' | 'logs' | 'settings';
@@ -34,6 +35,9 @@ function App() {
 
       {/* Project detail (only in projects view) */}
       {activeView === 'projects' && <ProjectDetail />}
+
+      {/* Chat panel (available in all views) */}
+      <ChatPanel />
 
       <BottomNav activeView={activeView} onChangeView={setActiveView} />
     </>

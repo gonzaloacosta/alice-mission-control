@@ -1,5 +1,5 @@
 import { useRef, useMemo } from 'react';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
 import { useStore } from '../../store';
@@ -176,11 +176,20 @@ function Planet({ project }: { project: Project }) {
   const ref = useRef<THREE.Group>(null!);
   const coreRef = useRef<THREE.Mesh>(null!);
   const ringRef = useRef<THREE.Mesh>(null!);
-  const selectProject = useStore(s => s.selectProject);
+  const focusProject = useStore(s => s.focusProject);
+  const openChat = useStore(s => s.openChat);
   const selectedId = useStore(s => s.selectedProjectId);
+  const focusedId = useStore(s => s.focusedProjectId);
   const isSelected = selectedId === project.id;
+  const isFocused = focusedId === project.id;
   const timeRef = useRef(0);
   const angleRef = useRef(project.startAngle);
+
+  const handlePlanetClick = (e: any) => {
+    e.stopPropagation();
+    focusProject(project.id);
+    openChat();
+  };
 
   const p = project.progress;
   const color = new THREE.Color(project.color);
@@ -219,7 +228,7 @@ function Planet({ project }: { project: Project }) {
   return (
     <group ref={ref}>
       {/* Planet core */}
-      <mesh ref={coreRef} onClick={(e) => { e.stopPropagation(); selectProject(project.id); }}>
+      <mesh ref={coreRef} onClick={handlePlanetClick}>
         <icosahedronGeometry args={[project.size, p < 0.2 ? 1 : 3]} />
         <meshStandardMaterial
           color={project.color}
@@ -278,12 +287,20 @@ function Planet({ project }: { project: Project }) {
         </mesh>
       )}
 
+      {/* Focus indicator */}
+      {isFocused && (
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[project.size * 1.6, 0.05, 8, 64]} />
+          <meshBasicMaterial color="#00f0ff" transparent opacity={0.6} />
+        </mesh>
+      )}
+
       {/* Satellites */}
       <SatelliteSystem project={project} />
 
       {/* Label */}
       <Html position={[0, project.size + 1.5, 0]} center style={{ pointerEvents: 'none' }}>
-        <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={() => selectProject(project.id)}>
+        <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={handlePlanetClick}>
           <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '11px', letterSpacing: '2px', color: project.color, textShadow: `0 0 10px ${project.color}50`, textTransform: 'uppercase' }}>
             {project.name}
           </div>

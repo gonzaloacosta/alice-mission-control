@@ -1,0 +1,29 @@
+http://app.gonzaloacosta.me {
+    handle /dashboard/* {
+        uri strip_prefix /dashboard
+        reverse_proxy localhost:3333
+    }
+
+    handle /api/v1/agents/* {
+        reverse_proxy localhost:3333
+    }
+
+    handle /api/v1/* {
+        reverse_proxy localhost:4446
+    }
+
+    handle /ws/* {
+        reverse_proxy localhost:4446
+    }
+
+    handle {
+        reverse_proxy localhost:4445
+    }
+
+    header {
+        X-Frame-Options DENY
+        X-Content-Type-Options nosniff
+        Referrer-Policy strict-origin-when-cross-origin
+        X-XSS-Protection "1; mode=block"
+    }
+}
