@@ -63,11 +63,12 @@ export function ProjectDetail() {
   const phase = getPhase(project.progress);
 
   return (
-    <div className="fixed left-0 right-0 z-20 rounded-t-2xl overflow-hidden flex flex-col"
-         style={{ bottom: '64px', maxHeight: `calc(100vh - 64px)`, height: `${height}vh`, background: 'rgba(8,12,28,0.94)', borderTop: `1px solid ${project.color}30`, backdropFilter: 'blur(20px)' }}>
+    <div className="fixed top-0 left-0 right-0 z-20 overflow-hidden flex flex-col"
+         style={{ bottom: '64px', background: 'rgba(8,12,28,0.96)', backdropFilter: 'blur(20px)' }}>
 
       {/* Header */}
-      <div className="px-5 py-2 flex justify-between items-center">
+      <div className="px-5 py-2 flex justify-between items-center"
+           style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full flex-shrink-0"
                style={{ background: `${project.color}20`, border: `2px solid ${project.color}40`, boxShadow: `0 0 12px ${project.color}20` }} />
@@ -77,8 +78,9 @@ export function ProjectDetail() {
           </div>
         </div>
         <button onClick={unfocusProject}
-          className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all"
-          style={{ borderColor: 'rgba(0,240,255,0.15)' }}>✕</button>
+          className="px-3 py-1.5 border rounded-lg flex items-center justify-center text-[#00f0ff] hover:text-white text-sm font-mono border-[#00f0ff]/30 hover:border-[#00f0ff]/60 bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 transition-all">
+          ✕ Close
+        </button>
       </div>
 
       {/* Body */}

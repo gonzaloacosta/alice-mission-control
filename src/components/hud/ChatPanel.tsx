@@ -159,12 +159,19 @@ export function ChatPanel() {
 
   return (
     <div
-      className="fixed left-0 right-0 z-50 flex flex-col bg-[#0a0a2e]/95 backdrop-blur-md border-t border-[#00f0ff]/30"
-      style={{ bottom: '64px', height: 'calc(100vh - 64px)' }}
+      className="fixed top-0 left-0 right-0 z-50 flex flex-col bg-[#0a0a2e] backdrop-blur-md"
+      style={{ bottom: '64px' }}
     >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-2 border-b border-[#00f0ff]/20 shrink-0">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[#00f0ff]/20 shrink-0 bg-[#0a0a2e]"
+             style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
           <div className="flex items-center gap-3">
+            <button
+              onClick={closeChat}
+              className="text-[#00f0ff] hover:text-white text-sm font-mono px-3 py-1.5 rounded-lg border border-[#00f0ff]/30 hover:border-[#00f0ff]/60 bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 transition-all"
+            >
+              ← Back
+            </button>
             <div
               className="w-3 h-3 rounded-full animate-pulse"
               style={{ backgroundColor: focusedProject.color, boxShadow: `0 0 8px ${focusedProject.color}` }}
@@ -179,21 +186,12 @@ export function ChatPanel() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {selectedAgent && (
-              <span className="text-[10px] px-2 py-0.5 rounded border font-mono"
-                    style={{ borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.08)' }}>
-                {selectedAgent}
-              </span>
-            )}
-            <button
-              onClick={closeChat}
-              className="text-[#e0e0ff]/60 hover:text-[#00f0ff] text-xs font-mono px-2 py-1 rounded border border-[#00f0ff]/15 hover:border-[#00f0ff]/40 transition-colors"
-              title="Back to project details"
-            >
-              ← Back
-            </button>
-          </div>
+          {selectedAgent && (
+            <span className="text-[10px] px-2 py-0.5 rounded border font-mono"
+                  style={{ borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.08)' }}>
+              {selectedAgent}
+            </span>
+          )}
         </div>
 
         {/* Messages */}
