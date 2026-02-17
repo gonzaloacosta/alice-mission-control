@@ -79,7 +79,7 @@ const INITIAL_PROJECTS: Project[] = [
       { id: 'cid-qa', name: 'QA', role: 'Testing', state: 'idle', task: 'Integration tests', contribution: 0.4 },
     ],
     repoUrl: 'https://github.com/gonzaloacosta/cid',
-    notionUrl: 'https://www.notion.so/CID-v2-Task-Board-cb6113fb15444eaf9c5759a66335a55f',
+    notionUrl: 'https://www.notion.so/3066ba83421981a6b656c2642befb009',
   },
   {
     id: 'vpn',
