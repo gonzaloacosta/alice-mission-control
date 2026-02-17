@@ -59,7 +59,6 @@ app.post('/api/v1/projects/:id/prompt', async (req, res) => {
     const claudeArgs = [
       '--dangerously-skip-permissions',
       '-p', prompt,
-      '--project-dir', projectConfig.dir,
       '--output-format', 'stream-json'
     ];
     
