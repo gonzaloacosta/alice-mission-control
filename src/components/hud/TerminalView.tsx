@@ -158,7 +158,23 @@ function TerminalPane({
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (initialized.current || !containerRef.current) return;
+    if (!containerRef.current) return;
+
+    // Check if we already have a session (re-mount after split)
+    const existing = sessions.current.get(pane.id);
+    if (existing) {
+      // Re-attach existing terminal to new DOM container
+      containerRef.current.innerHTML = '';
+      existing.terminal.open(containerRef.current);
+      const xtermScreen = containerRef.current.querySelector('.xterm-screen') as HTMLElement;
+      if (xtermScreen) xtermScreen.style.padding = '8px';
+      const xtermViewport = containerRef.current.querySelector('.xterm-viewport') as HTMLElement;
+      if (xtermViewport) xtermViewport.style.padding = '8px';
+      setTimeout(() => existing.fitAddon.fit(), 50);
+      return; // No cleanup — session persists
+    }
+
+    if (initialized.current) return;
     initialized.current = true;
 
     const term = new Terminal({
@@ -176,7 +192,6 @@ function TerminalPane({
     term.loadAddon(fitAddon);
     term.open(containerRef.current!);
 
-    // Add padding via xterm's internal element
     const xtermScreen = containerRef.current!.querySelector('.xterm-screen') as HTMLElement;
     if (xtermScreen) xtermScreen.style.padding = '8px';
     const xtermViewport = containerRef.current!.querySelector('.xterm-viewport') as HTMLElement;
@@ -197,7 +212,6 @@ function TerminalPane({
       if (ws.readyState === WebSocket.OPEN) ws.send(data);
     });
 
-    // Selection copy
     term.onSelectionChange(() => {
       const sel = term.getSelection();
       if (sel) navigator.clipboard.writeText(sel).catch(() => {});
@@ -206,12 +220,7 @@ function TerminalPane({
     const session: PaneSession = { terminal: term, fitAddon, ws, sessionId: pane.sessionId };
     onSessionReady(pane.id, session);
 
-    return () => {
-      ws.close();
-      term.dispose();
-      deleteSession(pane.sessionId);
-      sessions.current.delete(pane.id);
-    };
+    // No cleanup on unmount — sessions are managed by the parent (handleClosePane / closeTab)
   }, [pane.sessionId, pane.id]);
 
   // Fit on visibility/resize
