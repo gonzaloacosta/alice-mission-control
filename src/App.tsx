@@ -59,9 +59,9 @@ function App() {
         {activeView === 'openclaw' && (
           <div className="overlay-view">
             <iframe
-              src="/dashboard/"
+              src="/openclaw-ui/"
               style={{ width: '100%', height: '100%', border: 'none', background: '#0a0a12' }}
-              title="OpenClaw Dashboard"
+              title="OpenClaw Admin"
             />
           </div>
         )}
