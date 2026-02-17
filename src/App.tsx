@@ -70,7 +70,7 @@ function App() {
       {/* Right detail panel — slides in from right */}
       <RightPanel />
 
-      {/* Chat panel — full overlay when open */}
+      {/* Chat panel — overlay in content area (right of sidebar) */}
       <ChatPanel />
     </>
   );

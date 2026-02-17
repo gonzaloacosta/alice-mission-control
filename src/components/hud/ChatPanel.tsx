@@ -159,73 +159,85 @@ export function ChatPanel() {
 
   return (
     <div
-      className="fixed flex flex-col"
+      className="overlay-view"
       style={{
-        top: 0, left: 'var(--sidebar-w)', right: 0, bottom: 0,
-        zIndex: 50, background: 'rgba(8,12,28,0.96)', backdropFilter: 'blur(20px)',
+        background: 'var(--panel)',
+        backdropFilter: 'blur(20px)',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
       }}
     >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[#00f0ff]/20 shrink-0 bg-[#0a0a2e]"
-             style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={closeChat}
-              className="text-[#00f0ff] hover:text-white text-sm font-mono px-3 py-1.5 rounded-lg border border-[#00f0ff]/30 hover:border-[#00f0ff]/60 bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 transition-all"
-            >
-              ← Back
-            </button>
-            <div
-              className="w-3 h-3 rounded-full animate-pulse"
-              style={{ backgroundColor: focusedProject.color, boxShadow: `0 0 8px ${focusedProject.color}` }}
-            />
+        <div className="detail-header" style={{ flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <button className="detail-close" onClick={closeChat}>←</button>
+            <div style={{
+              width: '10px', height: '10px', borderRadius: '50%',
+              background: focusedProject.color,
+              boxShadow: `0 0 8px ${focusedProject.color}`,
+            }} />
             <div>
-              <h2 className="text-[#00f0ff] font-bold text-sm tracking-wider font-orbitron">
+              <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
                 {focusedProject.name}
               </h2>
-              <p className="text-[#e0e0ff]/60 text-xs">
+              <div style={{ fontSize: '10px', color: '#4a5a6a', marginTop: '2px' }}>
                 {focusedProject.description}
-              </p>
+              </div>
             </div>
           </div>
 
           {selectedAgent && (
-            <span className="text-[10px] px-2 py-0.5 rounded border font-mono"
-                  style={{ borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.08)' }}>
+            <span className="badge badge-active" style={{ fontSize: '10px' }}>
               {selectedAgent}
             </span>
           )}
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
           {currentMessages.length === 0 && (
-            <div className="text-[#e0e0ff]/40 text-center py-6">
-              <p className="text-2xl mb-2">⚡</p>
-              <p className="text-sm">Ask Claude Code about <span className="text-[#00f0ff]">{focusedProject.name}</span></p>
+            <div style={{ textAlign: 'center', padding: '40px 0', color: '#4a5a6a' }}>
+              <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚡</div>
+              <div style={{ fontSize: '12px', fontFamily: 'Share Tech Mono, monospace' }}>
+                Ask Claude Code about <span style={{ color: 'var(--cyan)' }}>{focusedProject.name}</span>
+              </div>
             </div>
           )}
 
           {currentMessages.map(message => (
             <div
               key={message.id}
-              className={`p-3 rounded-lg ${
-                message.type === 'user'
-                  ? 'bg-[#00f0ff]/10 border-l-4 border-[#00f0ff] ml-8'
+              style={{
+                padding: '12px 14px',
+                borderRadius: '6px',
+                marginBottom: '10px',
+                borderLeft: `3px solid ${
+                  message.type === 'user' ? 'var(--cyan)' :
+                  message.type === 'error' ? 'var(--red)' : 'var(--green)'
+                }`,
+                background: message.type === 'user'
+                  ? 'rgba(0,240,255,0.04)'
                   : message.type === 'error'
-                  ? 'bg-red-500/10 border-l-4 border-red-500'
-                  : 'bg-[#1a1a3e]/50 border-l-4 border-[#00ff88] mr-8'
-              }`}
+                  ? 'rgba(255,51,85,0.04)'
+                  : 'rgba(0,255,136,0.04)',
+                marginLeft: message.type === 'user' ? '40px' : '0',
+                marginRight: message.type === 'assistant' ? '40px' : '0',
+              }}
             >
-              <div className="text-xs text-[#e0e0ff]/40 mb-1">
+              <div style={{ fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>
                 {message.type === 'user' ? 'You' : message.type === 'error' ? 'Error' : 'Claude Code'}
                 {selectedAgent && message.type === 'user' && (
-                  <span className="ml-1 text-[#00f0ff]">→ {selectedAgent}</span>
+                  <span style={{ color: 'var(--cyan)', marginLeft: '4px' }}>→ {selectedAgent}</span>
                 )}
               </div>
-              <div className={`text-sm font-mono ${
-                message.type === 'error' ? 'text-red-400' : 'text-[#e0e0ff]'
-              } ${message.type !== 'user' ? 'markdown-body' : 'whitespace-pre-wrap'}`}>
+              <div className={message.type !== 'user' ? 'markdown-body' : ''} style={{
+                fontSize: '13px',
+                fontFamily: 'Share Tech Mono, monospace',
+                color: message.type === 'error' ? 'var(--red)' : '#c8d8e8',
+                whiteSpace: message.type === 'user' ? 'pre-wrap' : undefined,
+                lineHeight: '1.5',
+              }}>
                 {message.type === 'user' || message.type === 'error'
                   ? message.content
                   : <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -235,10 +247,13 @@ export function ChatPanel() {
           ))}
 
           {isStreaming && currentMessages[currentMessages.length - 1]?.type !== 'assistant' && (
-            <div className="bg-[#1a1a3e]/50 border-l-4 border-[#00ff88] mr-8 p-3 rounded-lg">
-              <div className="text-xs text-[#e0e0ff]/40 mb-1">Claude Code</div>
-              <div className="text-sm text-[#00ff88] font-mono flex items-center gap-2">
-                <div className="animate-pulse">●</div>
+            <div style={{
+              padding: '12px 14px', borderRadius: '6px', marginRight: '40px',
+              borderLeft: '3px solid var(--green)', background: 'rgba(0,255,136,0.04)',
+            }}>
+              <div style={{ fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '6px' }}>Claude Code</div>
+              <div style={{ fontSize: '13px', color: 'var(--green)', fontFamily: 'Share Tech Mono, monospace', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span className="live-dot" />
                 <span>Thinking...</span>
               </div>
             </div>
@@ -248,8 +263,11 @@ export function ChatPanel() {
         </div>
 
         {/* Input */}
-        <div className="px-4 py-3 border-t border-[#00f0ff]/15 shrink-0">
-          <div className="flex gap-2">
+        <div style={{
+          flexShrink: 0, padding: '12px 20px', borderTop: '1px solid var(--border)',
+          background: 'rgba(8,12,28,0.98)',
+        }}>
+          <div style={{ display: 'flex', gap: '8px' }}>
             <textarea
               ref={inputRef}
               value={inputValue}
@@ -257,27 +275,42 @@ export function ChatPanel() {
               onKeyPress={handleKeyPress}
               placeholder={`Ask about ${focusedProject.name}...`}
               disabled={isStreaming}
-              className="flex-1 bg-[#1a1a3e] border border-[#00f0ff]/20 text-[#e0e0ff] px-3 py-2 rounded-lg focus:outline-none focus:border-[#00f0ff]/60 font-mono text-sm resize-none placeholder-[#e0e0ff]/30"
               rows={2}
+              style={{
+                flex: 1, background: 'rgba(0,240,255,0.03)', border: '1px solid var(--border)',
+                color: '#c8d8e8', padding: '10px 12px', borderRadius: '6px', resize: 'none',
+                fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', outline: 'none',
+              }}
             />
             {isStreaming ? (
               <button
                 onClick={handleStopStreaming}
-                className="px-4 bg-red-600/20 text-red-400 border border-red-400/30 rounded-lg hover:bg-red-600/30 font-mono text-sm transition-colors"
+                style={{
+                  padding: '0 16px', background: 'rgba(255,51,85,0.1)', color: 'var(--red)',
+                  border: '1px solid rgba(255,51,85,0.3)', borderRadius: '6px', cursor: 'pointer',
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', letterSpacing: '1px',
+                }}
               >
-                Stop
+                STOP
               </button>
             ) : (
               <button
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim()}
-                className="px-4 bg-[#00f0ff]/15 text-[#00f0ff] border border-[#00f0ff]/25 rounded-lg hover:bg-[#00f0ff]/25 disabled:opacity-30 disabled:cursor-not-allowed font-mono text-sm transition-colors"
+                style={{
+                  padding: '0 16px', background: 'rgba(0,240,255,0.1)', color: 'var(--cyan)',
+                  border: '1px solid rgba(0,240,255,0.3)', borderRadius: '6px', cursor: 'pointer',
+                  fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', letterSpacing: '1px',
+                  opacity: inputValue.trim() ? 1 : 0.3,
+                }}
               >
-                Send
+                SEND
               </button>
             )}
           </div>
-          <p className="text-[10px] text-[#e0e0ff]/30 mt-1">Enter to send</p>
+          <div style={{ fontSize: '9px', color: '#3a4a5a', marginTop: '6px', letterSpacing: '1px' }}>
+            ENTER TO SEND · SHIFT+ENTER FOR NEW LINE
+          </div>
         </div>
     </div>
   );
