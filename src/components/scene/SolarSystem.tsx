@@ -1,4 +1,4 @@
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Html, Line } from '@react-three/drei';
 import * as THREE from 'three';
@@ -223,6 +223,13 @@ function Planet({ project }: { project: Project }) {
     // Ring rotation
     if (ringRef.current) ringRef.current.rotation.z += 0.002;
   });
+
+  // Expose projectId for CameraController to find us
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.userData.projectId = project.id;
+    }
+  }, [project.id]);
 
   return (
     <group ref={ref}>

@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { useStore } from '../../store';
 
 export function CameraController() {
-  const { camera } = useThree();
+  const { camera, scene } = useThree();
   const controlsRef = useRef<any>(null);
   const focusedProjectId = useStore(s => s.focusedProjectId);
   const projects = useStore(s => s.projects);
@@ -14,6 +14,7 @@ export function CameraController() {
   const targetLookAt = useRef(new THREE.Vector3(0, 0, 0));
   const animating = useRef(false);
   const animationProgress = useRef(0);
+  const tracking = useRef(false); // track planet continuously while focused
 
   const focusedProject = projects.find(p => p.id === focusedProjectId);
 
@@ -22,47 +23,58 @@ export function CameraController() {
       targetPosition.current.set(0, 35, 55);
       targetLookAt.current.set(0, 0, 0);
       animating.current = true;
+      tracking.current = false;
       animationProgress.current = 0;
     } else {
-      const project = focusedProject;
-      const angle = project.startAngle + (Date.now() * 0.001) * project.orbitSpeed * 0.008;
-      const planetPos = new THREE.Vector3(
-        Math.cos(angle) * project.orbitRadius,
-        Math.sin(angle * 0.3 + project.startAngle) * 1.2,
-        Math.sin(angle) * project.orbitRadius
-      );
-
-      // Camera offset: closer + shifted down so planet appears in upper third
-      // Looking slightly above the planet to push it up on screen
-      const offset = new THREE.Vector3(8, 4, 8);
-      targetPosition.current.copy(planetPos).add(offset);
-      // Look at a point slightly below the planet — this pushes planet UP on screen
-      targetLookAt.current.copy(planetPos).add(new THREE.Vector3(0, -2, 0));
-      
       animating.current = true;
+      tracking.current = true;
       animationProgress.current = 0;
     }
-  }, [focusedProjectId, focusedProject]);
+  }, [focusedProjectId]);
+
+  // Find the planet group in the scene by searching for userData.projectId
+  const findPlanetPosition = (projectId: string): THREE.Vector3 | null => {
+    let found: THREE.Vector3 | null = null;
+    scene.traverse((obj) => {
+      if ((obj as any).userData?.projectId === projectId) {
+        found = new THREE.Vector3();
+        obj.getWorldPosition(found);
+      }
+    });
+    return found;
+  };
 
   useFrame(() => {
-    if (animating.current && controlsRef.current) {
-      const duration = 2.0;
-      const deltaTime = 1/60;
-      
-      animationProgress.current += deltaTime / duration;
-      
-      if (animationProgress.current >= 1) {
-        animationProgress.current = 1;
-        animating.current = false;
+    if (!controlsRef.current) return;
+
+    // If tracking a focused planet, update target continuously
+    if (tracking.current && focusedProjectId) {
+      const planetPos = findPlanetPosition(focusedProjectId);
+      if (planetPos) {
+        const offset = new THREE.Vector3(8, 4, 8);
+        targetPosition.current.copy(planetPos).add(offset);
+        targetLookAt.current.copy(planetPos).add(new THREE.Vector3(0, -1, 0));
+      }
+    }
+
+    if (animating.current || tracking.current) {
+      if (animating.current) {
+        const duration = 2.0;
+        const deltaTime = 1/60;
+        animationProgress.current += deltaTime / duration;
+        
+        if (animationProgress.current >= 1) {
+          animationProgress.current = 1;
+          animating.current = false;
+        }
       }
 
-      const t = animationProgress.current;
-      const easedT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      const lerpFactor = animating.current ? 0.06 : 0.03;
 
-      camera.position.lerp(targetPosition.current, easedT * 0.1);
+      camera.position.lerp(targetPosition.current, lerpFactor);
 
       const controls = controlsRef.current;
-      controls.target.lerp(targetLookAt.current, easedT * 0.1);
+      controls.target.lerp(targetLookAt.current, lerpFactor);
       controls.update();
     }
   });

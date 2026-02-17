@@ -6,27 +6,27 @@ import 'xterm/css/xterm.css';
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 const THEME = {
-  background: '#0a0f1a',
-  foreground: '#d4d4d8',
+  background: '#0a0a12',
+  foreground: '#c8d8e8',
   cursor: '#00f0ff',
-  cursorAccent: '#0a0f1a',
+  cursorAccent: '#0a0a12',
   selectionBackground: 'rgba(0, 240, 255, 0.2)',
   selectionForeground: '#ffffff',
-  black: '#1a1b26',
-  red: '#f7768e',
-  green: '#9ece6a',
-  yellow: '#e0af68',
-  blue: '#7aa2f7',
-  magenta: '#bb9af7',
-  cyan: '#7dcfff',
-  white: '#c0caf5',
-  brightBlack: '#565f89',
-  brightRed: '#f7768e',
-  brightGreen: '#9ece6a',
-  brightYellow: '#e0af68',
-  brightBlue: '#7aa2f7',
-  brightMagenta: '#bb9af7',
-  brightCyan: '#7dcfff',
+  black: '#0a0a12',
+  red: '#ff3355',
+  green: '#00ff88',
+  yellow: '#ffcc00',
+  blue: '#4488ff',
+  magenta: '#aa44ff',
+  cyan: '#00f0ff',
+  white: '#c8d8e8',
+  brightBlack: '#4a5a6a',
+  brightRed: '#ff3355',
+  brightGreen: '#00ff88',
+  brightYellow: '#ffcc00',
+  brightBlue: '#4488ff',
+  brightMagenta: '#aa44ff',
+  brightCyan: '#00f0ff',
   brightWhite: '#ffffff',
 };
 
@@ -244,8 +244,8 @@ function TerminalPane({
         flexDirection: 'column',
         width: '100%',
         height: '100%',
-        background: THEME.background,
-        border: isActive ? '1px solid rgba(0,240,255,0.3)' : '1px solid rgba(255,255,255,0.06)',
+        background: '#0a0a12',
+        border: isActive ? '1px solid rgba(0,240,255,0.3)' : '1px solid rgba(0,240,255,0.08)',
         borderRadius: '4px',
         overflow: 'hidden',
       }}
@@ -258,13 +258,13 @@ function TerminalPane({
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: '2px 8px',
-          background: 'rgba(255,255,255,0.03)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          background: 'rgba(0,240,255,0.03)',
+          borderBottom: '1px solid rgba(0,240,255,0.08)',
           minHeight: '28px',
           flexShrink: 0,
         }}
       >
-        <span style={{ fontSize: '11px', color: '#565f89', fontFamily: '"JetBrains Mono", monospace' }}>
+        <span style={{ fontSize: '11px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace' }}>
           ● {pane.sessionId.slice(0, 8)}
         </span>
         <div style={{ display: 'flex', gap: '2px' }}>
@@ -295,9 +295,9 @@ function ToolbarBtn({ label, title, onClick, danger }: { label: string; title: s
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        background: hover ? (danger ? 'rgba(247,118,142,0.15)' : 'rgba(255,255,255,0.08)') : 'transparent',
+        background: hover ? (danger ? 'rgba(255,51,85,0.15)' : 'rgba(0,240,255,0.08)') : 'transparent',
         border: 'none',
-        color: hover ? (danger ? '#f7768e' : '#c0caf5') : '#565f89',
+        color: hover ? (danger ? '#ff3355' : '#00f0ff') : '#4a5a6a',
         cursor: 'pointer',
         fontSize: '12px',
         padding: '2px 6px',
@@ -351,13 +351,13 @@ function Divider({
       onMouseDown={onMouseDown}
       style={{
         flexShrink: 0,
-        background: 'rgba(255,255,255,0.06)',
+        background: 'rgba(0,240,255,0.08)',
         ...(direction === 'horizontal'
           ? { width: '4px', cursor: 'col-resize' }
           : { height: '4px', cursor: 'row-resize' }),
       }}
       onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(0,240,255,0.3)')}
-      onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+      onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(0,240,255,0.08)')}
     />
   );
 }
@@ -585,15 +585,15 @@ export function TerminalView() {
       flexDirection: 'column',
       width: '100%',
       height: '100%',
-      background: '#080c1c',
-      fontFamily: '"JetBrains Mono", monospace',
+      background: '#0a0a12',
+      fontFamily: 'Share Tech Mono, monospace',
     }}>
       {/* Tab bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        background: '#080c1c',
-        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        background: 'rgba(8,12,28,0.98)',
+        borderBottom: '1px solid rgba(0,240,255,0.15)',
         minHeight: '36px',
         flexShrink: 0,
         overflow: 'hidden',
@@ -616,14 +616,14 @@ export function TerminalView() {
           style={{
             background: 'transparent',
             border: 'none',
-            color: '#565f89',
+            color: '#4a5a6a',
             cursor: 'pointer',
             fontSize: '16px',
             padding: '4px 12px',
             lineHeight: 1,
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#c0caf5')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#565f89')}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#00f0ff')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#4a5a6a')}
         >
           +
         </button>
@@ -679,22 +679,22 @@ function TabButton({
         padding: '6px 14px',
         cursor: 'pointer',
         fontSize: '12px',
-        color: isActive ? '#c0caf5' : '#565f89',
-        background: isActive ? 'rgba(255,255,255,0.04)' : 'transparent',
-        borderBottom: isActive ? '2px solid #7aa2f7' : '2px solid transparent',
+        color: isActive ? '#00f0ff' : '#4a5a6a',
+        background: isActive ? 'rgba(0,240,255,0.08)' : 'transparent',
+        borderBottom: isActive ? '2px solid #00f0ff' : '2px solid transparent',
         transition: 'all 0.15s ease',
         whiteSpace: 'nowrap',
         fontFamily: '"JetBrains Mono", monospace',
       }}
     >
-      <span style={{ fontSize: '10px', color: isActive ? '#9ece6a' : '#565f89' }}>●</span>
+      <span style={{ fontSize: '10px', color: isActive ? '#00ff88' : '#4a5a6a' }}>●</span>
       <span>{tab.name}</span>
       {canClose && (
         <span
           onClick={(e) => { e.stopPropagation(); onClose(); }}
           style={{
             fontSize: '10px',
-            color: hover ? '#f7768e' : 'transparent',
+            color: hover ? '#ff3355' : 'transparent',
             marginLeft: '4px',
             lineHeight: 1,
           }}
