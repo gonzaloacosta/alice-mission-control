@@ -10,7 +10,7 @@ export function RightPanel() {
   const setSelectedAgent = useStore(s => s.setSelectedAgent);
 
   const project = projects.find(p => p.id === focusedId);
-  const isOpen = !!project && !isChatOpen;
+  const isOpen = !!project;
 
   const handleAgentClick = (agentName: string | null) => {
     setSelectedAgent(agentName);
