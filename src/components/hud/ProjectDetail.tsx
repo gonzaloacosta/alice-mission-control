@@ -18,7 +18,8 @@ export function ProjectDetail() {
   const unfocusProject = useStore(s => s.unfocusProject);
   const openChat = useStore(s => s.openChat);
   const setSelectedAgent = useStore(s => s.setSelectedAgent);
-  const [height, setHeight] = useState(42);
+  const [height, setHeight] = useState(50);
+  const [isMaximized, setIsMaximized] = useState(false);
   const [apiAgents, setApiAgents] = useState<string[]>([]);
   const dragRef = useRef<{ startY: number; startH: number } | null>(null);
 
@@ -81,9 +82,17 @@ export function ProjectDetail() {
             <div className="text-[10px] text-gray-500 mt-0.5">{project.description}</div>
           </div>
         </div>
-        <button onClick={unfocusProject}
-          className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all"
-          style={{ borderColor: 'rgba(0,240,255,0.15)' }}>✕</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => { setIsMaximized(!isMaximized); setHeight(isMaximized ? 50 : 92); }}
+            className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all text-xs"
+            style={{ borderColor: 'rgba(0,240,255,0.15)' }}
+            title={isMaximized ? 'Restore' : 'Maximize'}>
+            {isMaximized ? '⊟' : '⊞'}
+          </button>
+          <button onClick={unfocusProject}
+            className="w-8 h-8 border rounded flex items-center justify-center text-gray-500 hover:text-cyan-400 transition-all"
+            style={{ borderColor: 'rgba(0,240,255,0.15)' }}>✕</button>
+        </div>
       </div>
 
       {/* Body */}

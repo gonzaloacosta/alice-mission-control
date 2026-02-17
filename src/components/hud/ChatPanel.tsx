@@ -32,6 +32,7 @@ export function ChatPanel() {
   const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
   const [panelHeight, setPanelHeight] = useState(() => Math.round(window.innerHeight * 0.5));
   const [isDragging, setIsDragging] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -241,6 +242,17 @@ export function ChatPanel() {
                 {selectedAgent}
               </span>
             )}
+            <button
+              onClick={() => {
+                const newMax = !isMaximized;
+                setIsMaximized(newMax);
+                setPanelHeight(newMax ? Math.round(window.innerHeight * 0.92) : Math.round(window.innerHeight * 0.5));
+              }}
+              className="text-[#e0e0ff]/50 hover:text-[#00f0ff] text-xs px-2 py-1 rounded border border-[#00f0ff]/15 hover:border-[#00f0ff]/40 transition-colors"
+              title={isMaximized ? 'Restore' : 'Maximize'}
+            >
+              {isMaximized ? '⊟' : '⊞'}
+            </button>
             <button
               onClick={closeChat}
               className="text-[#e0e0ff]/60 hover:text-[#00f0ff] text-xs font-mono px-2 py-1 rounded border border-[#00f0ff]/15 hover:border-[#00f0ff]/40 transition-colors"

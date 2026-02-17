@@ -15,18 +15,15 @@ export function CameraController() {
   const animating = useRef(false);
   const animationProgress = useRef(0);
 
-  // Get the focused project
   const focusedProject = projects.find(p => p.id === focusedProjectId);
 
   useEffect(() => {
     if (!focusedProject) {
-      // Return to overview
       targetPosition.current.set(0, 35, 55);
       targetLookAt.current.set(0, 0, 0);
       animating.current = true;
       animationProgress.current = 0;
     } else {
-      // Calculate planet position
       const project = focusedProject;
       const angle = project.startAngle + (Date.now() * 0.001) * project.orbitSpeed * 0.008;
       const planetPos = new THREE.Vector3(
@@ -35,10 +32,12 @@ export function CameraController() {
         Math.sin(angle) * project.orbitRadius
       );
 
-      // Position camera to focus on planet
-      const offset = new THREE.Vector3(15, 10, 15);
+      // Camera offset: closer + shifted down so planet appears in upper third
+      // Looking slightly above the planet to push it up on screen
+      const offset = new THREE.Vector3(8, 4, 8);
       targetPosition.current.copy(planetPos).add(offset);
-      targetLookAt.current.copy(planetPos);
+      // Look at a point slightly below the planet — this pushes planet UP on screen
+      targetLookAt.current.copy(planetPos).add(new THREE.Vector3(0, -2, 0));
       
       animating.current = true;
       animationProgress.current = 0;
@@ -47,9 +46,8 @@ export function CameraController() {
 
   useFrame(() => {
     if (animating.current && controlsRef.current) {
-      // Smooth animation using lerp
-      const duration = 2.0; // 2 seconds
-      const deltaTime = 1/60; // Assume 60fps for smooth animation
+      const duration = 2.0;
+      const deltaTime = 1/60;
       
       animationProgress.current += deltaTime / duration;
       
@@ -58,14 +56,11 @@ export function CameraController() {
         animating.current = false;
       }
 
-      // Easing function (ease-in-out)
       const t = animationProgress.current;
       const easedT = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
 
-      // Animate camera position
       camera.position.lerp(targetPosition.current, easedT * 0.1);
 
-      // Animate camera target (what it's looking at)
       const controls = controlsRef.current;
       controls.target.lerp(targetLookAt.current, easedT * 0.1);
       controls.update();
@@ -78,9 +73,9 @@ export function CameraController() {
       enableDamping
       dampingFactor={0.05}
       maxDistance={140}
-      minDistance={8}
+      minDistance={5}
       maxPolarAngle={Math.PI / 2.1}
-      autoRotate={!focusedProjectId} // Disable auto-rotate when focused
+      autoRotate={!focusedProjectId}
       autoRotateSpeed={0.15}
     />
   );
