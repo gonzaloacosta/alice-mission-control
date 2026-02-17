@@ -21,6 +21,11 @@ body {
 
 .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
+@keyframes slideIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
 @keyframes shimmer {
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }

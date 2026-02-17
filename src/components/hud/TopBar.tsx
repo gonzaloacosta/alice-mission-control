@@ -13,13 +13,13 @@ export function TopBar() {
   const orbiting = projects.filter(p => p.status === 'orbiting').length;
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-20 h-14 flex items-center justify-between px-6"
+    <div className="absolute top-0 left-0 right-0 z-20 h-14 flex items-center justify-between px-6"
          style={{ background: 'linear-gradient(180deg, rgba(0,12,24,0.95) 0%, rgba(0,12,24,0.6) 100%)', borderBottom: '1px solid rgba(0,240,255,0.15)', backdropFilter: 'blur(12px)' }}>
 
       <div className="flex items-center gap-3">
         <h1 className="font-orbitron font-black text-sm tracking-[4px]"
             style={{ background: 'linear-gradient(90deg, #00f0ff, #4488ff, #00f0ff)', backgroundSize: '200% 100%', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', animation: 'shimmer 3s linear infinite' }}>
-          ⬡ MISSION CONTROL
+          MISSION CONTROL
         </h1>
       </div>
 
