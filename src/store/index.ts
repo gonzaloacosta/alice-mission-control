@@ -202,12 +202,17 @@ export const useStore = create<AppState>((set, get) => ({
     currentSessionId: null 
   }),
   setSelectedAgent: (agent) => set({ selectedAgent: agent }),
-  addChatMessage: (projectId, message) => set(state => ({
-    chatMessages: {
-      ...state.chatMessages,
-      [projectId]: [...(state.chatMessages[projectId] || []), message]
+  addChatMessage: (projectId, message) => set(state => {
+    const existing = state.chatMessages[projectId] || [];
+    const idx = existing.findIndex(m => m.id === message.id);
+    if (idx >= 0) {
+      // Update existing message (streaming updates)
+      const updated = [...existing];
+      updated[idx] = message;
+      return { chatMessages: { ...state.chatMessages, [projectId]: updated } };
     }
-  })),
+    return { chatMessages: { ...state.chatMessages, [projectId]: [...existing, message] } };
+  }),
   setStreaming: (streaming) => set({ isStreaming: streaming }),
   setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
 }));

@@ -23,9 +23,17 @@ console.log('Available projects:', Object.keys(projects));
 
 // Strip ANSI escape codes
 function stripAnsi(str) {
-  return str.replace(/[\x1B\x9B][\[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><~]/g, '')
-    .replace(/\]9;[^]*?(?:\x07|\x1B\\)/g, '')
-    .replace(/\r/g, '');
+  return str
+    // Standard ANSI escapes
+    .replace(/\x1B\[[0-9;]*[A-Za-z]/g, '')
+    .replace(/\x1B\][^\x07\x1B]*(?:\x07|\x1B\\)/g, '')
+    .replace(/\x1B\[\?[0-9;]*[A-Za-z]/g, '')
+    .replace(/\x1B\[<[a-zA-Z]/g, '')
+    .replace(/\x1B[()][0-9A-Za-z]/g, '')
+    .replace(/\x1B[>=<]/g, '')
+    // Carriage returns and other control chars
+    .replace(/\r/g, '')
+    .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
 }
 
 app.get('/api/v1/projects', (req, res) => {
