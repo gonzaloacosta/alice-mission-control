@@ -222,7 +222,7 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   }),
   setStreaming: (streaming) => set({ isStreaming: streaming }),
   setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
-})), {
+}), {
   name: 'alice-mission-control',
   partialize: (state) => ({
     chatMessages: state.chatMessages,
