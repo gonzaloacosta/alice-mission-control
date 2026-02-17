@@ -33,6 +33,12 @@ export function ChatPanel() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const focusedProject = useStore(s => s.projects.find(p => p.id === focusedProjectId));
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', check);
+    return () => window.removeEventListener('resize', check);
+  }, []);
 
   // Chat key: projectId:agentName (unique per agent)
   const chatKey = focusedProjectId
@@ -184,8 +190,10 @@ export function ChatPanel() {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
-        right: focusedProjectId ? '400px' : '0',
+        left: isMobile ? '0' : 'var(--sidebar-w)',
+        right: !isMobile && focusedProjectId ? '400px' : '0',
         transition: 'right 0.4s cubic-bezier(0.4,0,0.2,1)',
+        zIndex: 35,
       }}
     >
       {/* Header with back button and project name */}

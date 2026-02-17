@@ -450,7 +450,7 @@ body {
   .hud-stat .value { font-size: 14px; }
   .hud-stat .label { font-size: 8px; }
   .detail-grid { grid-template-columns: 1fr; }
-  .overlay-view { left: 0; }
+  .overlay-view { left: 0; z-index: 35; }
   #mobile-nav { display: flex !important; }
 }
 
