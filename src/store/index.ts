@@ -40,6 +40,7 @@ interface AppState {
   unfocusProject: () => void;
   setSelectedAgent: (agent: string | null) => void;
   addChatMessage: (projectId: string, message: ChatMessage) => void;
+  setChatMessages: (chatKey: string, messages: ChatMessage[]) => void;
   setStreaming: (streaming: boolean) => void;
   setCurrentSession: (sessionId: string | null) => void;
 }
@@ -220,12 +221,14 @@ export const useStore = create<AppState>()(persist((set, get) => ({
     }
     return { chatMessages: { ...state.chatMessages, [chatKey]: [...existing, message] } };
   }),
+  setChatMessages: (chatKey, messages) => set(state => ({
+    chatMessages: { ...state.chatMessages, [chatKey]: messages }
+  })),
   setStreaming: (streaming) => set({ isStreaming: streaming }),
   setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
 }), {
   name: 'alice-mission-control',
   partialize: (state) => ({
-    chatMessages: state.chatMessages,
     quality: state.quality,
   }),
 }));

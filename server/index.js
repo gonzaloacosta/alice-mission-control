@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createServer } from 'http';
 import { validateProjects } from './config.js';
 import pty from 'node-pty';
+import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb } from './db.js';
 
 const app = express();
 const server = createServer(app);
@@ -189,6 +190,69 @@ app.delete('/api/v1/terminal/:sessionId', (req, res) => {
   res.json({ success: true });
 });
 
+// --- Chat Messages API ---
+app.get('/api/v1/chat/:projectId/:agentName', async (req, res) => {
+  const { projectId, agentName } = req.params;
+  const limit = parseInt(req.query.limit) || 100;
+  
+  if (!projects[projectId]) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  try {
+    const messages = await getMessages(projectId, agentName, limit);
+    res.json({ messages });
+  } catch (error) {
+    console.error(`[chat] Failed to get messages for ${projectId}:${agentName}:`, error.message);
+    res.status(500).json({ error: 'Failed to retrieve messages' });
+  }
+});
+
+app.post('/api/v1/chat/:projectId/:agentName', async (req, res) => {
+  const { projectId, agentName } = req.params;
+  const { role, content } = req.body;
+  
+  if (!projects[projectId]) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  if (!role || !content || typeof content !== 'string') {
+    return res.status(400).json({ error: 'Role and content are required' });
+  }
+  
+  if (!['user', 'assistant', 'error'].includes(role)) {
+    return res.status(400).json({ error: 'Role must be user, assistant, or error' });
+  }
+  
+  try {
+    const result = await saveMessage(projectId, agentName, role, content);
+    res.json({ 
+      id: `db-${result.id}`,
+      timestamp: new Date(result.created_at).getTime(),
+      success: true 
+    });
+  } catch (error) {
+    console.error(`[chat] Failed to save message for ${projectId}:${agentName}:`, error.message);
+    res.status(500).json({ error: 'Failed to save message' });
+  }
+});
+
+app.delete('/api/v1/chat/:projectId/:agentName', async (req, res) => {
+  const { projectId, agentName } = req.params;
+  
+  if (!projects[projectId]) {
+    return res.status(404).json({ error: 'Project not found' });
+  }
+  
+  try {
+    const deletedCount = await deleteMessages(projectId, agentName);
+    res.json({ success: true, deletedCount });
+  } catch (error) {
+    console.error(`[chat] Failed to delete messages for ${projectId}:${agentName}:`, error.message);
+    res.status(500).json({ error: 'Failed to delete messages' });
+  }
+});
+
 wss.on('connection', (ws, req) => {
   // Handle terminal WebSocket connections
   const termMatch = req.url?.match(/\/ws\/terminal\/(.+)/);
@@ -247,16 +311,31 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-process.on('SIGINT', () => {
+process.on('SIGINT', async () => {
   console.log('\nShutting down...');
   for (const [, session] of activeSessions) {
     if (session.process) session.process.kill();
   }
+  await closeDb();
   server.close(() => process.exit(0));
 });
 
-server.listen(PORT, () => {
-  console.log(`🚀 Mission Control API running on port ${PORT}`);
-  console.log(`📡 WebSocket: ws://localhost:${PORT}/ws/:sessionId`);
-  console.log('🌍 Projects:', Object.keys(projects).join(', '));
-});
+// Initialize database and start server
+async function startServer() {
+  try {
+    await testConnection();
+    await initDb();
+    
+    server.listen(PORT, () => {
+      console.log(`🚀 Mission Control API running on port ${PORT}`);
+      console.log(`📡 WebSocket: ws://localhost:${PORT}/ws/:sessionId`);
+      console.log('🌍 Projects:', Object.keys(projects).join(', '));
+      console.log('💾 PostgreSQL chat persistence enabled');
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    process.exit(1);
+  }
+}
+
+startServer();

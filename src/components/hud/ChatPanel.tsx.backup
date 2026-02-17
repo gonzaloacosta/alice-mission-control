@@ -22,7 +22,6 @@ export function ChatPanel() {
     currentSessionId,
     closeChat,
     addChatMessage,
-    setChatMessages,
     setStreaming,
     setCurrentSession,
     setSelectedAgent,
@@ -30,7 +29,6 @@ export function ChatPanel() {
 
   const [inputValue, setInputValue] = useState('');
   const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
-  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -52,49 +50,6 @@ export function ChatPanel() {
   const agents = focusedProject
     ? [{ id: 'default', name: 'Default Agent', role: '', state: 'idle' as const }, ...focusedProject.agents]
     : [];
-
-  // Load chat history from API
-  const loadChatHistory = async (projectId: string, agentName: string) => {
-    if (!projectId || !agentName) return;
-    
-    setIsLoadingHistory(true);
-    try {
-      const response = await fetch(`${API_BASE}/api/v1/chat/${projectId}/${agentName}`);
-      if (response.ok) {
-        const data = await response.json();
-        // Replace the messages in store with API data
-        const key = `${projectId}:${agentName}`;
-        setChatMessages(key, data.messages || []);
-      }
-    } catch (error) {
-      console.error('Failed to load chat history:', error);
-    } finally {
-      setIsLoadingHistory(false);
-    }
-  };
-
-  // Save message to API
-  const saveMessageToAPI = async (projectId: string, agentName: string, role: string, content: string) => {
-    try {
-      await fetch(`${API_BASE}/api/v1/chat/${projectId}/${agentName}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role, content })
-      });
-    } catch (error) {
-      console.error('Failed to save message:', error);
-    }
-  };
-
-  // Load history when chat opens or agent changes
-  useEffect(() => {
-    if (isChatOpen && focusedProjectId && selectedAgent) {
-      const agentName = selectedAgent === 'default' ? 'default' : selectedAgent;
-      if (agentName) {
-        loadChatHistory(focusedProjectId, agentName);
-      }
-    }
-  }, [isChatOpen, focusedProjectId, selectedAgent]);
 
   // Auto-scroll
   useEffect(() => {
@@ -119,11 +74,6 @@ export function ChatPanel() {
     };
 
     addChatMessage(chatKey, userMessage);
-    
-    // Save user message to API
-    const agentName = selectedAgent || 'default';
-    await saveMessageToAPI(focusedProjectId, agentName, 'user', userMessage.content);
-    
     setInputValue('');
     setStreaming(true);
 
@@ -152,7 +102,7 @@ export function ChatPanel() {
         sessionId
       };
 
-      ws.onmessage = async (event) => {
+      ws.onmessage = (event) => {
         const data = JSON.parse(event.data);
         switch (data.type) {
           case 'stream':
@@ -168,19 +118,12 @@ export function ChatPanel() {
             }
             break;
           case 'error':
-            const errorMessage = {
+            addChatMessage(chatKey, {
               id: `msg-${Date.now()}-error`, type: 'error',
               content: `Error: ${data.text}`, timestamp: Date.now(), sessionId
-            };
-            addChatMessage(chatKey, errorMessage);
-            // Save error to API
-            await saveMessageToAPI(focusedProjectId, agentName, 'error', errorMessage.content);
+            });
             break;
           case 'done':
-            // Save final assistant message to API when streaming is done
-            if (assistantMessage.content) {
-              await saveMessageToAPI(focusedProjectId, agentName, 'assistant', assistantMessage.content);
-            }
             setStreaming(false);
             setCurrentSession(null);
             ws.close();
@@ -317,15 +260,7 @@ export function ChatPanel() {
 
       {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
-        {isLoadingHistory && (
-          <div style={{ textAlign: 'center', padding: '20px 0', color: '#4a5a6a' }}>
-            <div style={{ fontSize: '12px', fontFamily: 'Share Tech Mono, monospace' }}>
-              Loading chat history...
-            </div>
-          </div>
-        )}
-        
-        {!isLoadingHistory && currentMessages.length === 0 && (
+        {currentMessages.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px 0', color: '#4a5a6a' }}>
             <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚡</div>
             <div style={{ fontSize: '12px', fontFamily: 'Share Tech Mono, monospace' }}>
