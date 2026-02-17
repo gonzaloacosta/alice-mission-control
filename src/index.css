@@ -86,7 +86,11 @@ body {
 }
 
 .sidebar-brand {
-  padding: 14px 16px;
+  padding: 0 16px;
+  height: 52px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   border-bottom: 1px solid var(--border);
   position: relative;
 }
@@ -326,7 +330,9 @@ body {
 .right-panel.open { right: 0; }
 
 .detail-header {
-  padding: 14px 20px;
+  padding: 0 20px;
+  height: 52px;
+  min-height: 52px;
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
