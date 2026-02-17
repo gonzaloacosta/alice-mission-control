@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useStore } from '../../store';
 
 interface ApiProject {
@@ -279,10 +280,13 @@ export function ChatPanel() {
                 <span className="ml-1 text-[#00f0ff]">→ {selectedAgent}</span>
               )}
             </div>
-            <div className={`text-sm whitespace-pre-wrap font-mono ${
+            <div className={`text-sm font-mono ${
               message.type === 'error' ? 'text-red-400' : 'text-[#e0e0ff]'
-            }`}>
-              {message.content}
+            } ${message.type !== 'user' ? 'markdown-body' : 'whitespace-pre-wrap'}`}>
+              {message.type === 'user' || message.type === 'error'
+                ? message.content
+                : <ReactMarkdown>{message.content}</ReactMarkdown>
+              }
             </div>
           </div>
         ))}
