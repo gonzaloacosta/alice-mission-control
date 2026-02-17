@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import type { Project, SystemEvent } from '../types';
 
 interface ChatMessage {
@@ -134,7 +135,7 @@ const MESSAGES = {
   critical: ['System unreachable', 'Data issue', 'Cascade failure'],
 };
 
-export const useStore = create<AppState>((set, get) => ({
+export const useStore = create<AppState>()(persist((set, get) => ({
   projects: [],
   events: [],
   selectedProjectId: null,
@@ -221,4 +222,10 @@ export const useStore = create<AppState>((set, get) => ({
   }),
   setStreaming: (streaming) => set({ isStreaming: streaming }),
   setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
+})), {
+  name: 'alice-mission-control',
+  partialize: (state) => ({
+    chatMessages: state.chatMessages,
+    quality: state.quality,
+  }),
 }));
