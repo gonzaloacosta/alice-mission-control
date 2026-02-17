@@ -63,8 +63,8 @@ export function ProjectDetail() {
   const phase = getPhase(project.progress);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-20 overflow-hidden flex flex-col"
-         style={{ bottom: '64px', background: 'rgba(8,12,28,0.96)', backdropFilter: 'blur(20px)' }}>
+    <div className="absolute top-0 left-0 right-0 bottom-0 z-20 overflow-hidden flex flex-col"
+         style={{ background: 'rgba(8,12,28,0.96)', backdropFilter: 'blur(20px)' }}>
 
       {/* Header */}
       <div className="px-5 py-2 flex justify-between items-center"

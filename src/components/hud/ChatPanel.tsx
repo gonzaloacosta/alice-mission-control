@@ -159,8 +159,7 @@ export function ChatPanel() {
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 z-50 flex flex-col bg-[#0a0a2e] backdrop-blur-md"
-      style={{ bottom: '64px' }}
+      className="absolute top-0 left-0 right-0 bottom-0 z-50 flex flex-col bg-[#0a0a2e] backdrop-blur-md"
     >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-[#00f0ff]/20 shrink-0 bg-[#0a0a2e]"
