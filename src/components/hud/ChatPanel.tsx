@@ -170,7 +170,7 @@ export function ChatPanel() {
         transition: 'right 0.4s cubic-bezier(0.4,0,0.2,1)',
       }}
     >
-        {/* Header */}
+        {/* Header — aligned with sidebar brand */}
         <div className="detail-header" style={{ flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button className="detail-close" onClick={closeChat}>←</button>
