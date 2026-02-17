@@ -36,6 +36,7 @@ interface AppState {
   focusProject: (id: string | null) => void;
   openChat: () => void;
   closeChat: () => void;
+  unfocusProject: () => void;
   setSelectedAgent: (agent: string | null) => void;
   addChatMessage: (projectId: string, message: ChatMessage) => void;
   setStreaming: (streaming: boolean) => void;
@@ -195,11 +196,17 @@ export const useStore = create<AppState>((set, get) => ({
   openChat: () => set({ isChatOpen: true }),
   closeChat: () => set({ 
     isChatOpen: false, 
-    focusedProjectId: null, 
-    selectedProjectId: null, 
     selectedAgent: null,
     isStreaming: false,
     currentSessionId: null 
+  }),
+  unfocusProject: () => set({
+    focusedProjectId: null,
+    selectedProjectId: null,
+    isChatOpen: false,
+    selectedAgent: null,
+    isStreaming: false,
+    currentSessionId: null
   }),
   setSelectedAgent: (agent) => set({ selectedAgent: agent }),
   addChatMessage: (projectId, message) => set(state => {

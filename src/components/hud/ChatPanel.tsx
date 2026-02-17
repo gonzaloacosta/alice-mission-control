@@ -2,13 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { useStore } from '../../store';
 
-interface ApiProject {
-  id: string;
-  name: string;
-  dir: string;
-  agents: string[];
-}
-
 interface ChatMessage {
   id: string;
   type: 'user' | 'assistant' | 'error';
@@ -30,14 +23,12 @@ export function ChatPanel() {
     isStreaming,
     currentSessionId,
     closeChat,
-    setSelectedAgent,
     addChatMessage,
     setStreaming,
     setCurrentSession
   } = useStore();
 
   const [inputValue, setInputValue] = useState('');
-  const [projectData, setProjectData] = useState<ApiProject | null>(null);
   const [wsConnection, setWsConnection] = useState<WebSocket | null>(null);
   const [panelHeight, setPanelHeight] = useState(() => Math.round(window.innerHeight * 0.5));
   const [isDragging, setIsDragging] = useState(false);
@@ -47,18 +38,6 @@ export function ChatPanel() {
 
   const focusedProject = useStore(s => s.projects.find(p => p.id === focusedProjectId));
   const currentMessages = focusedProjectId ? (chatMessages[focusedProjectId] || []) : [];
-
-  // Fetch project data
-  useEffect(() => {
-    if (!focusedProjectId) return;
-    fetch(`${API_BASE}/api/v1/projects`)
-      .then(res => res.json())
-      .then(data => {
-        const project = data.projects.find((p: ApiProject) => p.id === focusedProjectId);
-        setProjectData(project || null);
-      })
-      .catch(console.error);
-  }, [focusedProjectId]);
 
   // Auto-scroll
   useEffect(() => {
@@ -255,27 +234,19 @@ export function ChatPanel() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Agent selector inline */}
-            {projectData?.agents && projectData.agents.length > 0 && (
-              <select
-                value={selectedAgent || ''}
-                onChange={(e) => setSelectedAgent(e.target.value || null)}
-                className="bg-[#1a1a3e] border border-[#00f0ff]/20 text-[#e0e0ff] px-2 py-1 rounded text-xs font-mono focus:outline-none focus:border-[#00f0ff]"
-              >
-                <option value="">Default</option>
-                {projectData.agents.map(agent => (
-                  <option key={agent} value={agent}>{agent}</option>
-                ))}
-              </select>
+          <div className="flex items-center gap-3">
+            {selectedAgent && (
+              <span className="text-[10px] px-2 py-0.5 rounded border font-mono"
+                    style={{ borderColor: 'rgba(0,255,136,0.3)', color: '#00ff88', background: 'rgba(0,255,136,0.08)' }}>
+                {selectedAgent}
+              </span>
             )}
-
             <button
               onClick={closeChat}
-              className="text-[#e0e0ff]/50 hover:text-[#00f0ff] text-lg leading-none px-2 transition-colors"
-              title="Close chat (return to system view)"
+              className="text-[#e0e0ff]/60 hover:text-[#00f0ff] text-xs font-mono px-2 py-1 rounded border border-[#00f0ff]/15 hover:border-[#00f0ff]/40 transition-colors"
+              title="Back to project details"
             >
-              ✕
+              ← Back
             </button>
           </div>
         </div>

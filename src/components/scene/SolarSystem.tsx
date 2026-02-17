@@ -188,7 +188,6 @@ function Planet({ project }: { project: Project }) {
   const handlePlanetClick = (e: any) => {
     e.stopPropagation();
     focusProject(project.id);
-    openChat();
   };
 
   const p = project.progress;
