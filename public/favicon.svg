@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#4488ff"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <!-- Dark background circle -->
+  <circle cx="32" cy="32" r="30" fill="#0a0a12" stroke="url(#g)" stroke-width="2" opacity="0.95"/>
+  <!-- Hexagon outline -->
+  <polygon points="32,6 54,17 54,39 32,50 10,39 10,17" fill="none" stroke="url(#g)" stroke-width="2.5" filter="url(#glow)" opacity="0.9"/>
+  <!-- Inner hexagon -->
+  <polygon points="32,14 46,21 46,35 32,42 18,35 18,21" fill="none" stroke="#00f0ff" stroke-width="1.2" opacity="0.4"/>
+  <!-- A letter -->
+  <text x="32" y="38" text-anchor="middle" font-family="sans-serif" font-weight="900" font-size="22" fill="url(#g)" filter="url(#glow)">A</text>
+  <!-- Orbital ring -->
+  <ellipse cx="32" cy="46" rx="18" ry="5" fill="none" stroke="#00f0ff" stroke-width="0.8" opacity="0.3"/>
+  <!-- Small dot (planet) -->
+  <circle cx="48" cy="44" r="2.5" fill="#00f0ff" opacity="0.7"/>
+</svg>
