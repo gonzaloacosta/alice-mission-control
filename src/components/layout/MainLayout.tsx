@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
-import { Sidebar, View } from './Sidebar';
+import { Sidebar } from './Sidebar';
+import type { View } from './Sidebar';
 
 interface MainLayoutProps {
   activeView: View;
@@ -9,11 +10,9 @@ interface MainLayoutProps {
 
 export function MainLayout({ activeView, onChangeView, children }: MainLayoutProps) {
   return (
-    <div className="fixed inset-0 flex" style={{ zIndex: 10 }}>
+    <>
       <Sidebar activeView={activeView} onChangeView={onChangeView} />
-      <div className="flex-1 relative overflow-hidden">
-        {children}
-      </div>
-    </div>
+      {children}
+    </>
   );
 }

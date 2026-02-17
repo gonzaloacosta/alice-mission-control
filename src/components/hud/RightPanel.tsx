@@ -1,78 +1,144 @@
 import { useStore } from '../../store';
-import { STATE_COLORS } from '../../types';
+import { getPhase, PHASE_LABELS } from '../../types';
 
 export function RightPanel() {
-  const agents = useStore(s => s.agents);
-  const selectedAgentId = useStore(s => s.selectedAgentId);
-  const selectAgent = useStore(s => s.selectAgent);
+  const projects = useStore(s => s.projects);
+  const focusedId = useStore(s => s.focusedProjectId);
+  const isChatOpen = useStore(s => s.isChatOpen);
+  const unfocusProject = useStore(s => s.unfocusProject);
+  const openChat = useStore(s => s.openChat);
+  const setSelectedAgent = useStore(s => s.setSelectedAgent);
 
-  const agent = agents.find(a => a.id === selectedAgentId);
+  const project = projects.find(p => p.id === focusedId);
+  const isOpen = !!project && !isChatOpen;
 
-  if (!agent) return null;
+  const handleAgentClick = (agentName: string | null) => {
+    setSelectedAgent(agentName);
+    openChat();
+  };
 
   return (
-    <div className="fixed top-16 right-3 z-20 w-72 rounded-lg overflow-hidden"
-         style={{ background: 'rgba(8,12,28,0.92)', border: '1px solid rgba(0,240,255,0.12)', backdropFilter: 'blur(16px)' }}>
-
-      {/* Header */}
-      <div className="p-4 border-b border-cyan-900/20 flex justify-between items-center">
-        <div>
-          <div className="font-orbitron text-xs tracking-widest" style={{ color: STATE_COLORS[agent.state] }}>
-            {agent.name}
+    <div className={`right-panel ${isOpen ? 'open' : ''}`}>
+      {project && (
+        <>
+          <div className="detail-header">
+            <h2>{project.name}</h2>
+            <button className="detail-close" onClick={unfocusProject}>✕</button>
           </div>
-          <div className="text-[9px] text-gray-600 mt-0.5">{agent.id}</div>
-        </div>
-        <button
-          onClick={() => selectAgent(null)}
-          className="w-7 h-7 border border-cyan-900/30 rounded text-gray-500 hover:text-cyan-400 hover:border-cyan-500/50 transition-all flex items-center justify-center text-sm"
-        >✕</button>
-      </div>
+          <div className="detail-body">
+            <div className="detail-grid">
+              <div className="detail-item">
+                <label>Status</label>
+                <span className="detail-value">
+                  <span className={`badge badge-${project.status}`}>{project.status.toUpperCase()}</span>
+                </span>
+              </div>
+              <div className="detail-item">
+                <label>Version</label>
+                <span className="detail-value">{project.version}</span>
+              </div>
+              <div className="detail-item">
+                <label>Phase</label>
+                <span className="detail-value">{PHASE_LABELS[getPhase(project.progress)]}</span>
+              </div>
+              <div className="detail-item">
+                <label>Tasks</label>
+                <span className="detail-value" style={{ fontFamily: 'Orbitron, sans-serif', color: 'var(--cyan)' }}>
+                  {project.tasks.done}/{project.tasks.total}
+                </span>
+              </div>
 
-      {/* Stats */}
-      <div className="p-4 space-y-3">
-        <Row label="STATUS">
-          <span className="font-orbitron text-xs px-2 py-0.5 rounded"
-                style={{ background: `${STATE_COLORS[agent.state]}15`, color: STATE_COLORS[agent.state], border: `1px solid ${STATE_COLORS[agent.state]}30` }}>
-            {agent.state.toUpperCase()}
-          </span>
-        </Row>
-        <Row label="TYPE"><span className="text-gray-300 text-xs">{agent.type}</span></Row>
-        <Row label="CLUSTER"><span className="text-gray-300 text-xs">{agent.cluster}</span></Row>
+              {/* Progress bar */}
+              <div className="token-bar-container">
+                <div className="token-bar-label">Progress</div>
+                <div className="token-bar-row">
+                  <span className="token-bar-name">Done</span>
+                  <div className="token-bar-track">
+                    <div className="token-bar-fill" style={{ width: `${project.progress * 100}%`, background: project.color }} />
+                  </div>
+                  <span className="token-bar-value">{Math.round(project.progress * 100)}%</span>
+                </div>
+              </div>
 
-        {/* Load bar */}
-        <div>
-          <Row label="LOAD"><span className="font-orbitron text-xs" style={{ color: agent.load > 0.8 ? '#ff3355' : agent.load > 0.6 ? '#ffcc00' : '#00ff88' }}>{Math.round(agent.load * 100)}%</span></Row>
-          <div className="mt-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,240,255,0.06)' }}>
-            <div className="h-full rounded-full transition-all duration-500" style={{
-              width: `${agent.load * 100}%`,
-              background: agent.load > 0.8 ? '#ff3355' : agent.load > 0.6 ? '#ffcc00' : '#00ff88',
-            }} />
+              {/* Description */}
+              <div className="detail-item" style={{ gridColumn: '1 / -1' }}>
+                <label>Description</label>
+                <span className="detail-value">{project.description}</span>
+              </div>
+
+              {/* Links */}
+              {(project.notionUrl || project.repoUrl) && (
+                <div className="detail-item" style={{ gridColumn: '1 / -1' }}>
+                  <label>Links</label>
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                    {project.notionUrl && (
+                      <a href={project.notionUrl} target="_blank" rel="noopener noreferrer"
+                         style={{ fontSize: '11px', color: 'var(--cyan)', textDecoration: 'none', padding: '4px 10px', border: '1px solid var(--border)', borderRadius: '4px' }}>
+                        📋 Notion
+                      </a>
+                    )}
+                    {project.repoUrl && (
+                      <a href={project.repoUrl} target="_blank" rel="noopener noreferrer"
+                         style={{ fontSize: '11px', color: 'var(--cyan)', textDecoration: 'none', padding: '4px 10px', border: '1px solid var(--border)', borderRadius: '4px' }}>
+                        ⚙️ GitHub
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Agents */}
+              <div className="detail-item" style={{ gridColumn: '1 / -1' }}>
+                <label>Agents — Tap to Chat</label>
+                <div style={{ marginTop: '8px' }}>
+                  {/* Default agent */}
+                  <button
+                    onClick={() => handleAgentClick(null)}
+                    style={{
+                      width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '6px',
+                      background: 'rgba(0,240,255,0.04)', border: '1px solid var(--border)',
+                      borderRadius: '6px', cursor: 'pointer', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+                      fontSize: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    }}
+                  >
+                    <span>⚡ Default Agent</span>
+                    <span style={{ fontSize: '10px', color: 'var(--cyan)' }}>CHAT →</span>
+                  </button>
+
+                  {project.agents.map(agent => (
+                    <button
+                      key={agent.id}
+                      onClick={() => handleAgentClick(null)}
+                      style={{
+                        width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '6px',
+                        background: 'rgba(0,240,255,0.04)', border: '1px solid var(--border)',
+                        borderRadius: '6px', cursor: 'pointer', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+                        fontSize: '12px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{
+                            width: '6px', height: '6px', borderRadius: '50%',
+                            background: agent.state === 'active' ? 'var(--green)' : '#3a4a5a',
+                            boxShadow: agent.state === 'active' ? '0 0 6px var(--green)' : 'none',
+                          }} />
+                          <span>{agent.name}</span>
+                          <span style={{ fontSize: '9px', color: '#4a5a6a' }}>{agent.role}</span>
+                        </div>
+                        <span style={{ fontSize: '10px', color: 'var(--cyan)' }}>CHAT →</span>
+                      </div>
+                      <div style={{ marginTop: '4px', height: '3px', borderRadius: '2px', background: 'rgba(0,240,255,0.04)', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${agent.contribution * 100}%`, background: agent.state === 'active' ? project.color : '#3a4a5a', borderRadius: '2px' }} />
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <Row label="LATENCY">
-          <span className="font-orbitron text-xs" style={{ color: agent.latencyMs > 100 ? '#ffcc00' : '#00f0ff' }}>
-            {Math.round(agent.latencyMs)}ms
-          </span>
-        </Row>
-        <Row label="THROUGHPUT">
-          <span className="font-orbitron text-xs text-blue-400">{Math.round(agent.throughput)}/s</span>
-        </Row>
-        <Row label="POSITION">
-          <span className="text-[10px] text-gray-500">
-            [{agent.x.toFixed(1)}, {agent.y.toFixed(1)}, {agent.z.toFixed(1)}]
-          </span>
-        </Row>
-      </div>
-    </div>
-  );
-}
-
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex justify-between items-center">
-      <span className="text-[9px] text-gray-600 tracking-widest">{label}</span>
-      {children}
+        </>
+      )}
     </div>
   );
 }

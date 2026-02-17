@@ -8,8 +8,7 @@ export function LogsView() {
   const getColor = (pid: string) => projects.find(p => p.id === pid)?.color || '#5a6a7a';
 
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 z-25 overflow-y-auto"
-         style={{ background: 'rgba(8,12,28,0.96)', backdropFilter: 'blur(20px)' }}>
+    <div className="h-full overflow-y-auto">
       <div className="px-4 py-3 border-b sticky top-0 z-10" style={{ borderColor: 'rgba(0,240,255,0.08)', background: 'rgba(8,12,28,0.98)' }}>
         <span className="text-[10px] text-gray-600 tracking-[3px] font-orbitron">EVENT LOG</span>
         <span className="text-[10px] text-gray-700 ml-3">{events.length} events</span>

@@ -13,7 +13,7 @@ export function Scene() {
       camera={{ position: [0, 35, 55], fov: 50, near: 0.1, far: 500 }}
       gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
       onPointerMissed={() => selectProject(null)}
-      style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}
+      style={{ width: '100%', height: '100%' }}
     >
       <color attach="background" args={['#0a0a12']} />
       <fog attach="fog" args={['#0a0a12', 40, 150]} />
