@@ -488,9 +488,10 @@ body {
 }
 
 .mobile-nav-item.active { color: var(--cyan); }
-.mobile-nav-item .icon { font-size: 20px; }
+.mobile-nav-item .icon { font-size: 20px; display: flex; align-items: center; justify-content: center; height: 22px; }
+.mobile-nav-item .icon svg { width: 20px; height: 20px; }
 .mobile-nav-item .mobile-label { font-size: 8px; letter-spacing: 1px; font-family: 'Orbitron', sans-serif; }
-.mobile-nav-item { position: relative; }
+.mobile-nav-item { position: relative; padding: 8px 10px; }
 
 /* ─── MARKDOWN BODY ─── */
 .markdown-body { line-height: 1.5; }
