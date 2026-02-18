@@ -1,5 +1,36 @@
 import { useStore } from '../../store';
 
+// SVG icons matching BottomNav style
+const navIcons: Record<string, JSX.Element> = {
+  kanban: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="3" width="5" height="18" rx="1"/>
+      <rect x="10" y="3" width="5" height="12" rx="1"/>
+      <rect x="17" y="3" width="5" height="15" rx="1"/>
+    </svg>
+  ),
+  chat: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+    </svg>
+  ),
+  logs: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="3" width="18" height="18" rx="2"/>
+      <line x1="7" y1="8" x2="17" y2="8"/>
+      <line x1="7" y1="12" x2="17" y2="12"/>
+      <line x1="7" y1="16" x2="13" y2="16"/>
+    </svg>
+  ),
+  add: (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="16"/>
+      <line x1="8" y1="12" x2="16" y2="12"/>
+    </svg>
+  ),
+};
+
 interface ProjectsListViewProps {
   onNewProject: () => void;
 }
@@ -40,39 +71,40 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
           <button
             onClick={onNewProject}
             style={{
-              padding: '8px 16px', borderRadius: '8px',
-              background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.3)',
-              color: 'var(--cyan)', fontSize: '11px',
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '5px 10px', borderRadius: '6px',
+              background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.2)',
+              color: 'var(--cyan)', fontSize: '10px',
               fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
               cursor: 'pointer', transition: 'all 0.2s',
             }}
           >
-            + NEW PROJECT
+            {navIcons.add} NEW
           </button>
         </div>
 
         {/* Quick nav */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           {(['kanban', 'chat', 'logs'] as const).map(view => {
-            const labels: Record<string, { icon: string; label: string }> = {
-              kanban: { icon: '📊', label: 'Board' },
-              chat: { icon: '💬', label: 'Chat' },
-              logs: { icon: '📋', label: 'Logs' },
+            const labels: Record<string, string> = {
+              kanban: 'Board',
+              chat: 'Chat',
+              logs: 'Logs',
             };
-            const item = labels[view];
             return (
               <button
                 key={view}
                 onClick={() => setActiveView(view)}
                 style={{
-                  padding: '6px 14px', borderRadius: '6px',
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '6px 12px', borderRadius: '6px',
                   background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.12)',
                   color: '#6a7a8a', fontSize: '11px',
                   fontFamily: 'Share Tech Mono, monospace',
                   cursor: 'pointer', transition: 'all 0.15s',
                 }}
               >
-                {item.icon} {item.label}
+                {navIcons[view]} {labels[view]}
               </button>
             );
           })}
