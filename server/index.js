@@ -6,6 +6,7 @@ import { createServer } from 'http';
 import { validateProjects } from './config.js';
 import pty from 'node-pty';
 import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb } from './db.js';
+import { createProject } from './create-project.js';
 
 const app = express();
 const server = createServer(app);
@@ -154,6 +155,29 @@ app.post('/api/v1/sessions/:sessionId/stop', (req, res) => {
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: 'Failed to stop session' });
+  }
+});
+
+// --- Create Project API ---
+app.post('/api/v1/projects/create', async (req, res) => {
+  const { name, idea } = req.body;
+
+  if (!name || typeof name !== 'string' || name.trim().length < 2) {
+    return res.status(400).json({ error: 'Project name is required (min 2 chars)' });
+  }
+  if (!idea || typeof idea !== 'string' || idea.trim().length < 10) {
+    return res.status(400).json({ error: 'Project idea is required (min 10 chars)' });
+  }
+
+  console.log(`[create] Creating project: ${name}`);
+
+  try {
+    const result = await createProject({ name: name.trim(), idea: idea.trim() });
+    console.log(`[create] Project created: ${result.slug} (${result.steps.length} steps)`);
+    res.json(result);
+  } catch (error) {
+    console.error(`[create] Failed:`, error.message);
+    res.status(500).json({ error: error.message });
   }
 });
 

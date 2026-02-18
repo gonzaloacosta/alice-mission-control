@@ -5,12 +5,13 @@ import type { View } from './Sidebar';
 interface MainLayoutProps {
   activeView: View;
   children: ReactNode;
+  onNewProject?: () => void;
 }
 
-export function MainLayout({ activeView, children }: MainLayoutProps) {
+export function MainLayout({ activeView, children, onNewProject }: MainLayoutProps) {
   return (
     <>
-      <Sidebar activeView={activeView} />
+      <Sidebar activeView={activeView} onNewProject={onNewProject} />
       {children}
     </>
   );

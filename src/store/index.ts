@@ -38,6 +38,7 @@ interface AppState {
 
   init: () => void;
   tick: () => void;
+  addProject: (project: Project) => void;
   selectProject: (id: string | null) => void;
   setQuality: (q: 'low' | 'medium' | 'high') => void;
   togglePause: () => void;
@@ -170,6 +171,10 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   init: () => {
     set({ projects: INITIAL_PROJECTS.map(p => ({ ...p })) });
   },
+
+  addProject: (project) => set(state => ({
+    projects: [...state.projects, project],
+  })),
 
   tick: () => {
     const { projects, paused } = get();

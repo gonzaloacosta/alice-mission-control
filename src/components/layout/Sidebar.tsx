@@ -5,6 +5,7 @@ export type View = 'projects' | 'news' | 'logs' | 'terminal' | 'settings' | 'ope
 
 interface SidebarProps {
   activeView: View;
+  onNewProject?: () => void;
 }
 
 const navItems: { id: View; label: string; icon: string }[] = [
@@ -17,7 +18,7 @@ const navItems: { id: View; label: string; icon: string }[] = [
   { id: 'openclaw', label: 'OpenClaw', icon: '🤖' },
 ];
 
-export function Sidebar({ activeView }: SidebarProps) {
+export function Sidebar({ activeView, onNewProject }: SidebarProps) {
   const [clock, setClock] = useState('');
   const projects = useStore(s => s.projects);
   const selectedProjectId = useStore(s => s.selectedProjectId);
@@ -68,7 +69,25 @@ export function Sidebar({ activeView }: SidebarProps) {
       ))}
 
       {/* Sessions section */}
-      <div className="nav-section">Sessions</div>
+      <div className="nav-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>Sessions</span>
+        {onNewProject && (
+          <button
+            onClick={onNewProject}
+            style={{
+              background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.25)',
+              borderRadius: '4px', color: 'var(--cyan)', cursor: 'pointer',
+              fontSize: '14px', lineHeight: '1', padding: '2px 6px',
+              fontFamily: 'Share Tech Mono, monospace', transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.1)'; }}
+            title="Create new project"
+          >
+            +
+          </button>
+        )}
+      </div>
 
       <div className="sidebar-sessions">
         {projects.map(project => (

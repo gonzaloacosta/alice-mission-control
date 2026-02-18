@@ -59,4 +59,14 @@ function validateProjects() {
   return validProjects;
 }
 
-export { PROJECTS, validateProjects };
+function addProject(id, dir) {
+  PROJECTS[id] = { dir, agents: [] };
+  const availableAgents = getAvailableAgents(dir);
+  return {
+    id,
+    dir,
+    agents: availableAgents.length > 0 ? availableAgents : [],
+  };
+}
+
+export { PROJECTS, validateProjects, addProject };

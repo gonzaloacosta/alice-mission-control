@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Scene } from './components/scene/Scene';
 import { TopBar } from './components/hud/TopBar';
 import { RightPanel } from './components/hud/RightPanel';
@@ -7,6 +7,7 @@ import { SettingsView } from './components/hud/SettingsView';
 import { ChatPanel } from './components/hud/ChatPanel';
 import { TerminalView } from './components/hud/TerminalView';
 import { NewsView } from './components/hud/NewsView';
+import { NewProjectModal } from './components/hud/NewProjectModal';
 import { MainLayout } from './components/layout/MainLayout';
 import { useStore } from './store';
 
@@ -14,6 +15,8 @@ function App() {
   const init = useStore(s => s.init);
   const tick = useStore(s => s.tick);
   const activeView = useStore(s => s.activeView);
+  const addProject = useStore(s => s.addProject);
+  const [showNewProject, setShowNewProject] = useState(false);
 
   useEffect(() => {
     init();
@@ -39,7 +42,7 @@ function App() {
       {activeView === 'projects' && <TopBar />}
 
       {/* Sidebar + layout */}
-      <MainLayout activeView={activeView}>
+      <MainLayout activeView={activeView} onNewProject={() => setShowNewProject(true)}>
         {/* Overlay views — shown over 3D scene */}
         {activeView === 'news' && (
           <div className="overlay-view">
@@ -96,6 +99,14 @@ function App() {
 
       {/* Right detail panel — slides in from right */}
       <RightPanel />
+
+      {/* New project modal */}
+      {showNewProject && (
+        <NewProjectModal
+          onClose={() => setShowNewProject(false)}
+          onCreated={(project) => addProject(project)}
+        />
+      )}
     </>
   );
 }
