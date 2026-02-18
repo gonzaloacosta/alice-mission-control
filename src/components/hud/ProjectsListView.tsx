@@ -59,14 +59,6 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
             }}>
               PROJECTS
             </h2>
-            <span style={{
-              fontSize: '11px', padding: '2px 8px', borderRadius: '4px',
-              background: 'rgba(0,240,255,0.08)', color: 'var(--cyan)',
-              border: '1px solid rgba(0,240,255,0.15)',
-              fontFamily: 'Orbitron, sans-serif',
-            }}>
-              {projects.length}
-            </span>
           </div>
           <button
             onClick={onNewProject}
@@ -85,29 +77,19 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
 
         {/* Quick nav */}
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {(['kanban', 'chat', 'logs'] as const).map(view => {
-            const labels: Record<string, string> = {
-              kanban: 'Board',
-              chat: 'Chat',
-              logs: 'Logs',
-            };
-            return (
-              <button
-                key={view}
-                onClick={() => setActiveView(view)}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '6px',
-                  padding: '6px 12px', borderRadius: '6px',
-                  background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.12)',
-                  color: '#6a7a8a', fontSize: '11px',
-                  fontFamily: 'Share Tech Mono, monospace',
-                  cursor: 'pointer', transition: 'all 0.15s',
-                }}
-              >
-                {navIcons[view]} {labels[view]}
-              </button>
-            );
-          })}
+          <button
+            onClick={() => setActiveView('logs')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '6px 12px', borderRadius: '6px',
+              background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.12)',
+              color: '#6a7a8a', fontSize: '11px',
+              fontFamily: 'Share Tech Mono, monospace',
+              cursor: 'pointer', transition: 'all 0.15s',
+            }}
+          >
+            {navIcons.logs} Logs
+          </button>
         </div>
       </div>
 
