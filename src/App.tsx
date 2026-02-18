@@ -10,6 +10,7 @@ import { NewsView } from './components/hud/NewsView';
 import { KanbanView } from './components/hud/KanbanView';
 import { NewProjectModal } from './components/hud/NewProjectModal';
 import { BottomNav } from './components/hud/BottomNav';
+import { ProjectsListView } from './components/hud/ProjectsListView';
 import { MainLayout } from './components/layout/MainLayout';
 import { useStore } from './store';
 
@@ -74,6 +75,11 @@ function App() {
         {activeView === 'chat' && (
           <div className="overlay-view">
             <ChatPanel />
+          </div>
+        )}
+        {activeView === 'projects' && (
+          <div className="overlay-view mobile-only">
+            <ProjectsListView onNewProject={() => setShowNewProject(true)} />
           </div>
         )}
       </MainLayout>
