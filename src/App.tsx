@@ -7,6 +7,7 @@ import { SettingsView } from './components/hud/SettingsView';
 import { ChatPanel } from './components/hud/ChatPanel';
 import { TerminalView } from './components/hud/TerminalView';
 import { NewsView } from './components/hud/NewsView';
+import { KanbanView } from './components/hud/KanbanView';
 import { NewProjectModal } from './components/hud/NewProjectModal';
 import { MainLayout } from './components/layout/MainLayout';
 import { useStore } from './store';
@@ -47,6 +48,11 @@ function App() {
         {activeView === 'news' && (
           <div className="overlay-view">
             <NewsView />
+          </div>
+        )}
+        {activeView === 'kanban' && (
+          <div className="overlay-view">
+            <KanbanView />
           </div>
         )}
         {activeView === 'logs' && (
