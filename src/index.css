@@ -450,7 +450,7 @@ body {
   .hud-stat .value { font-size: 14px; }
   .hud-stat .label { font-size: 8px; }
   .detail-grid { grid-template-columns: 1fr; }
-  .overlay-view { left: 0; z-index: 35; }
+  .overlay-view { left: 0; z-index: 35; padding-bottom: 64px; }
   #mobile-nav { display: flex !important; }
 }
 
@@ -489,6 +489,8 @@ body {
 
 .mobile-nav-item.active { color: var(--cyan); }
 .mobile-nav-item .icon { font-size: 20px; }
+.mobile-nav-item .mobile-label { font-size: 8px; letter-spacing: 1px; font-family: 'Orbitron', sans-serif; }
+.mobile-nav-item { position: relative; }
 
 /* ─── MARKDOWN BODY ─── */
 .markdown-body { line-height: 1.5; }

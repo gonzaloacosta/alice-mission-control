@@ -9,6 +9,7 @@ import { TerminalView } from './components/hud/TerminalView';
 import { NewsView } from './components/hud/NewsView';
 import { KanbanView } from './components/hud/KanbanView';
 import { NewProjectModal } from './components/hud/NewProjectModal';
+import { BottomNav } from './components/hud/BottomNav';
 import { MainLayout } from './components/layout/MainLayout';
 import { useStore } from './store';
 
@@ -79,6 +80,9 @@ function App() {
 
       {/* Right detail panel — slides in from right */}
       <RightPanel />
+
+      {/* Mobile bottom navigation */}
+      <BottomNav />
 
       {/* New project modal */}
       {showNewProject && (
