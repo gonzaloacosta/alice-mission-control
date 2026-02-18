@@ -210,8 +210,10 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
           <div style={{ fontSize: '11px', color: '#5a6a7a', fontFamily: 'Share Tech Mono, monospace', lineHeight: '1.8' }}>
             1. Creates GitHub repo from <span style={{ color: '#6a8aaa' }}>project-template</span><br/>
             2. Fills CLAUDE.md with your idea<br/>
-            3. Sets up 5 Claude Code sub-agents (backend, frontend, devops, devsecops, qa)<br/>
-            4. Adds planet to the 3D solar system<br/>
+            3. Sets up 7 Claude Code agents (backend, frontend, devops, devsecops, qa, reviewer, planner)<br/>
+            4. Creates Notion project page with TODOs<br/>
+            5. Registers project in Mission Control API<br/>
+            6. Adds planet to the 3D solar system<br/>
           </div>
         </div>
       </div>

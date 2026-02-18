@@ -97,6 +97,142 @@ export async function testConnection() {
   }
 }
 
+// ─── Kanban ───
+
+const DEFAULT_COLUMNS = [
+  { name: 'Backlog', position: 0, color: '#6a7a8a' },
+  { name: 'Todo', position: 1, color: '#00f0ff' },
+  { name: 'In Progress', position: 2, color: '#ffcc00' },
+  { name: 'Review', position: 3, color: '#ff8800' },
+  { name: 'Done', position: 4, color: '#00ff88' },
+];
+
+export async function initKanban(projectId) {
+  // Create board if not exists, with default columns
+  const existing = await pool.query('SELECT id FROM kanban_boards WHERE project_id = $1', [projectId]);
+  if (existing.rows.length > 0) return existing.rows[0].id;
+
+  const board = await pool.query(
+    'INSERT INTO kanban_boards (project_id, name) VALUES ($1, $2) RETURNING id',
+    [projectId, projectId.toUpperCase() + ' Board']
+  );
+  const boardId = board.rows[0].id;
+
+  for (const col of DEFAULT_COLUMNS) {
+    await pool.query(
+      'INSERT INTO kanban_columns (board_id, name, position, color) VALUES ($1, $2, $3, $4)',
+      [boardId, col.name, col.position, col.color]
+    );
+  }
+  return boardId;
+}
+
+export async function getBoard(projectId) {
+  const boardId = await initKanban(projectId);
+  const cols = await pool.query(
+    'SELECT id, name, position, color FROM kanban_columns WHERE board_id = $1 ORDER BY position',
+    [boardId]
+  );
+  const cards = await pool.query(
+    `SELECT c.id, c.column_id, c.project_id, c.title, c.description, c.assignee, c.priority, c.notion_page_id, c.position, c.created_at, c.updated_at
+     FROM kanban_cards c
+     JOIN kanban_columns col ON c.column_id = col.id
+     WHERE col.board_id = $1
+     ORDER BY c.position`,
+    [boardId]
+  );
+  return {
+    boardId,
+    projectId,
+    columns: cols.rows.map(col => ({
+      ...col,
+      cards: cards.rows.filter(card => card.column_id === col.id)
+    }))
+  };
+}
+
+export async function getAllCards() {
+  // Get all boards, columns, cards across all projects
+  const boards = await pool.query('SELECT id, project_id FROM kanban_boards');
+  const allColumns = await pool.query('SELECT id, board_id, name, position, color FROM kanban_columns ORDER BY position');
+  const allCards = await pool.query('SELECT * FROM kanban_cards ORDER BY position');
+
+  // Build a unified column structure using the first board's column names as template
+  const columnNames = DEFAULT_COLUMNS.map(c => c.name);
+  const unified = columnNames.map((name, i) => {
+    const matchingCols = allColumns.rows.filter(c => c.name === name);
+    const colIds = matchingCols.map(c => c.id);
+    return {
+      id: matchingCols[0]?.id || i,
+      name,
+      position: i,
+      color: DEFAULT_COLUMNS[i].color,
+      cards: allCards.rows.filter(card => colIds.includes(card.column_id))
+    };
+  });
+  return { columns: unified, projects: boards.rows.map(b => b.project_id) };
+}
+
+export async function getCards(projectId) {
+  const board = await getBoard(projectId);
+  return board.columns.flatMap(col => col.cards);
+}
+
+export async function createCard(projectId, columnName, title, description = '', assignee = '', priority = 'low') {
+  const boardId = await initKanban(projectId);
+  const col = await pool.query(
+    'SELECT id FROM kanban_columns WHERE board_id = $1 AND name = $2',
+    [boardId, columnName || 'Backlog']
+  );
+  if (col.rows.length === 0) throw new Error('Column not found');
+  const columnId = col.rows[0].id;
+
+  const maxPos = await pool.query('SELECT COALESCE(MAX(position), -1) as max FROM kanban_cards WHERE column_id = $1', [columnId]);
+  const position = maxPos.rows[0].max + 1;
+
+  const result = await pool.query(
+    `INSERT INTO kanban_cards (column_id, project_id, title, description, assignee, priority, position)
+     VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+    [columnId, projectId, title, description, assignee, priority, position]
+  );
+  return result.rows[0];
+}
+
+export async function updateCard(cardId, updates) {
+  const fields = [];
+  const values = [];
+  let i = 1;
+  for (const [key, val] of Object.entries(updates)) {
+    if (['title', 'description', 'assignee', 'priority', 'column_id', 'position', 'notion_page_id'].includes(key)) {
+      fields.push(`${key} = $${i}`);
+      values.push(val);
+      i++;
+    }
+  }
+  if (fields.length === 0) throw new Error('No valid fields to update');
+  fields.push(`updated_at = now()`);
+  values.push(cardId);
+
+  const result = await pool.query(
+    `UPDATE kanban_cards SET ${fields.join(', ')} WHERE id = $${i} RETURNING *`,
+    values
+  );
+  return result.rows[0];
+}
+
+export async function moveCard(cardId, targetColumnId, position) {
+  const result = await pool.query(
+    'UPDATE kanban_cards SET column_id = $1, position = $2, updated_at = now() WHERE id = $3 RETURNING *',
+    [targetColumnId, position, cardId]
+  );
+  return result.rows[0];
+}
+
+export async function deleteCard(cardId) {
+  const result = await pool.query('DELETE FROM kanban_cards WHERE id = $1 RETURNING id', [cardId]);
+  return result.rowCount > 0;
+}
+
 // Graceful shutdown
 export async function closeDb() {
   await pool.end();

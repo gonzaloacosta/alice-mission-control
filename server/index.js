@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createServer } from 'http';
 import { validateProjects } from './config.js';
 import pty from 'node-pty';
-import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb } from './db.js';
+import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb, getBoard, getAllCards, createCard, updateCard, moveCard, deleteCard, initKanban } from './db.js';
 import { createProject } from './create-project.js';
 
 const app = express();
@@ -275,6 +275,69 @@ app.delete('/api/v1/chat/:projectId/:agentName', async (req, res) => {
     console.error(`[chat] Failed to delete messages for ${projectId}:${agentName}:`, error.message);
     res.status(500).json({ error: 'Failed to delete messages' });
   }
+});
+
+// ─── Kanban API ───
+
+app.get('/api/v1/kanban/all', async (req, res) => {
+  try {
+    // Init boards for all known projects
+    for (const pid of Object.keys(projects)) {
+      await initKanban(pid);
+    }
+    const data = await getAllCards();
+    res.json(data);
+  } catch (error) {
+    console.error('[kanban] Failed to get all cards:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/v1/kanban/:projectId', async (req, res) => {
+  try {
+    const board = await getBoard(req.params.projectId);
+    res.json(board);
+  } catch (error) {
+    console.error('[kanban] Failed to get board:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/v1/kanban/:projectId/cards', async (req, res) => {
+  const { column, title, description, assignee, priority } = req.body;
+  if (!title) return res.status(400).json({ error: 'Title is required' });
+  try {
+    const card = await createCard(req.params.projectId, column, title, description, assignee, priority);
+    res.json(card);
+  } catch (error) {
+    console.error('[kanban] Failed to create card:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/v1/kanban/cards/:cardId', async (req, res) => {
+  try {
+    const card = await updateCard(parseInt(req.params.cardId), req.body);
+    res.json(card);
+  } catch (error) {
+    console.error('[kanban] Failed to update card:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/v1/kanban/cards/:cardId', async (req, res) => {
+  try {
+    const ok = await deleteCard(parseInt(req.params.cardId));
+    res.json({ success: ok });
+  } catch (error) {
+    console.error('[kanban] Failed to delete card:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/v1/kanban/:projectId/sync-notion', async (req, res) => {
+  // Placeholder for Notion sync
+  res.json({ status: 'not_implemented', message: 'Notion sync coming soon' });
 });
 
 wss.on('connection', (ws, req) => {
