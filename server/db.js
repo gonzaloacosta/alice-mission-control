@@ -233,6 +233,32 @@ export async function deleteCard(cardId) {
   return result.rowCount > 0;
 }
 
+// ─── Events ───
+
+export async function createEvent(projectSlug, source, agentName, eventType, summary, metadata = {}) {
+  const result = await pool.query(
+    `INSERT INTO events (project_slug, source, agent_name, event_type, summary, metadata)
+     VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+    [projectSlug, source, agentName, eventType, summary, JSON.stringify(metadata)]
+  );
+  return result.rows[0];
+}
+
+export async function getEvents({ project, source, limit = 50, offset = 0 } = {}) {
+  const conditions = [];
+  const values = [];
+  let i = 1;
+  if (project) { conditions.push(`project_slug = $${i++}`); values.push(project); }
+  if (source) { conditions.push(`source = $${i++}`); values.push(source); }
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  values.push(parseInt(limit), parseInt(offset));
+  const result = await pool.query(
+    `SELECT * FROM events ${where} ORDER BY created_at DESC LIMIT $${i++} OFFSET $${i++}`,
+    values
+  );
+  return result.rows;
+}
+
 // Graceful shutdown
 export async function closeDb() {
   await pool.end();

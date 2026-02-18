@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { createServer } from 'http';
 import { validateProjects } from './config.js';
 import pty from 'node-pty';
-import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb, getBoard, getAllCards, createCard, updateCard, moveCard, deleteCard, initKanban } from './db.js';
+import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb, getBoard, getAllCards, createCard, updateCard, moveCard, deleteCard, initKanban, createEvent, getEvents } from './db.js';
 import { createProject } from './create-project.js';
+import { startGitHubPoller } from './github-poller.js';
 
 const app = express();
 const server = createServer(app);
@@ -277,6 +278,49 @@ app.delete('/api/v1/chat/:projectId/:agentName', async (req, res) => {
   }
 });
 
+// ─── Events API ───
+
+// Helper to broadcast to all connected WebSocket clients
+function broadcastEvent(event) {
+  const msg = JSON.stringify({ type: 'new_event', event });
+  eventClients.forEach(client => {
+    if (client.readyState === 1) {
+      try { client.send(msg); } catch {}
+    }
+  });
+}
+
+app.post('/api/v1/events', async (req, res) => {
+  const { project_slug, source, agent_name, event_type, summary, metadata } = req.body;
+  if (!project_slug || !source || !event_type || !summary) {
+    return res.status(400).json({ error: 'project_slug, source, event_type, and summary are required' });
+  }
+  try {
+    const event = await createEvent(project_slug, source, agent_name || null, event_type, summary, metadata || {});
+    broadcastEvent(event);
+    console.log(`[event] ${source}/${event_type}: ${summary.slice(0, 60)}`);
+    res.json(event);
+  } catch (error) {
+    console.error('[event] Failed to create:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/v1/events', async (req, res) => {
+  try {
+    const events = await getEvents({
+      project: req.query.project,
+      source: req.query.source,
+      limit: req.query.limit || 50,
+      offset: req.query.offset || 0,
+    });
+    res.json({ events });
+  } catch (error) {
+    console.error('[event] Failed to list:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // ─── Kanban API ───
 
 app.get('/api/v1/kanban/all', async (req, res) => {
@@ -340,7 +384,17 @@ app.post('/api/v1/kanban/:projectId/sync-notion', async (req, res) => {
   res.json({ status: 'not_implemented', message: 'Notion sync coming soon' });
 });
 
+// Track event-stream WS clients
+const eventClients = new Set();
+
 wss.on('connection', (ws, req) => {
+  // Handle event log WebSocket connections
+  if (req.url === '/ws/events') {
+    eventClients.add(ws);
+    ws.on('close', () => eventClients.delete(ws));
+    return;
+  }
+
   // Handle terminal WebSocket connections
   const termMatch = req.url?.match(/\/ws\/terminal\/(.+)/);
   if (termMatch) {
@@ -418,6 +472,7 @@ async function startServer() {
       console.log(`📡 WebSocket: ws://localhost:${PORT}/ws/:sessionId`);
       console.log('🌍 Projects:', Object.keys(projects).join(', '));
       console.log('💾 PostgreSQL chat persistence enabled');
+      startGitHubPoller();
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error.message);
