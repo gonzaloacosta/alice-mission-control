@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
 
-export type View = 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat';
+export type View = 'overview' | 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat';
 
 interface SidebarProps {
   activeView: View;

@@ -158,7 +158,7 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   creatorName: import.meta.env.VITE_CREATOR_NAME || 'Gonzalo',
   
   // UI state
-  activeView: 'projects' as View,
+  activeView: 'overview' as View,
   
   // Chat feature state
   focusedProjectId: null,

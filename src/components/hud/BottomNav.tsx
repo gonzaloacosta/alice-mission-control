@@ -3,10 +3,18 @@ import type { View } from '../layout/Sidebar';
 
 // Simple SVG icons for consistent rendering across platforms
 const icons: Record<string, JSX.Element> = {
-  projects: (
+  overview: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="12" cy="12" r="3"/>
       <circle cx="12" cy="12" r="8" strokeDasharray="4 3"/>
+    </svg>
+  ),
+  projects: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <rect x="3" y="3" width="7" height="7" rx="1"/>
+      <rect x="14" y="3" width="7" height="7" rx="1"/>
+      <rect x="3" y="14" width="7" height="7" rx="1"/>
+      <rect x="14" y="14" width="7" height="7" rx="1"/>
     </svg>
   ),
   kanban: (
@@ -43,12 +51,12 @@ const icons: Record<string, JSX.Element> = {
 };
 
 const mobileItems: { id: View; label: string }[] = [
+  { id: 'overview', label: 'ORBIT' },
   { id: 'projects', label: 'PROJECTS' },
   { id: 'kanban', label: 'BOARD' },
   { id: 'chat', label: 'CHAT' },
   { id: 'news', label: 'NEWS' },
   { id: 'terminal', label: 'TERMINAL' },
-  { id: 'settings', label: 'MORE' },
 ];
 
 export function BottomNav() {

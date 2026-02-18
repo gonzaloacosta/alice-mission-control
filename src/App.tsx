@@ -41,8 +41,8 @@ function App() {
         <Scene />
       </div>
 
-      {/* HUD stats floating over 3D — only on Projects view */}
-      {activeView === 'projects' && <TopBar />}
+      {/* HUD stats floating over 3D — on Overview and Projects views */}
+      {(activeView === 'overview' || activeView === 'projects') && <TopBar />}
 
       {/* Sidebar + layout */}
       <MainLayout activeView={activeView} onNewProject={() => setShowNewProject(true)}>
