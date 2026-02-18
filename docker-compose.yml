@@ -3,6 +3,8 @@ services:
     build: .
     ports:
       - "4445:80"
+    volumes:
+      - /home/alice/alice-mission-control/data/news.json:/usr/share/nginx/html/news.json:ro
     restart: unless-stopped
 
   postgres:

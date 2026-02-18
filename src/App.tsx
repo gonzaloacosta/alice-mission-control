@@ -6,6 +6,7 @@ import { LogsView } from './components/hud/LogsView';
 import { SettingsView } from './components/hud/SettingsView';
 import { ChatPanel } from './components/hud/ChatPanel';
 import { TerminalView } from './components/hud/TerminalView';
+import { NewsView } from './components/hud/NewsView';
 import { MainLayout } from './components/layout/MainLayout';
 import { useStore } from './store';
 
@@ -40,6 +41,11 @@ function App() {
       {/* Sidebar + layout */}
       <MainLayout activeView={activeView}>
         {/* Overlay views — shown over 3D scene */}
+        {activeView === 'news' && (
+          <div className="overlay-view">
+            <NewsView />
+          </div>
+        )}
         {activeView === 'logs' && (
           <div className="overlay-view">
             <LogsView />

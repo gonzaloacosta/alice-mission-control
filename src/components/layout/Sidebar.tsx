@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
 
-export type View = 'projects' | 'logs' | 'terminal' | 'settings' | 'openclaw' | 'chat';
+export type View = 'projects' | 'news' | 'logs' | 'terminal' | 'settings' | 'openclaw' | 'chat';
 
 interface SidebarProps {
   activeView: View;
@@ -9,6 +9,7 @@ interface SidebarProps {
 
 const navItems: { id: View; label: string; icon: string }[] = [
   { id: 'projects', label: 'Projects', icon: '🪐' },
+  { id: 'news', label: 'News Feed', icon: '📡' },
   { id: 'chat', label: 'Chat', icon: '💬' },
   { id: 'logs', label: 'Activity Log', icon: '📋' },
   { id: 'terminal', label: 'Terminal', icon: '🖥️' },
