@@ -9,7 +9,7 @@ const PROJECTS = {
     agents: [] 
   },
   mctl: { 
-    dir: '/home/alice/alice-mission-control', 
+    dir: '/home/alice/github/alice-mission-control', 
     agents: [] 
   },
   books: { 
