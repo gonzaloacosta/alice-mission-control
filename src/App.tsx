@@ -75,32 +75,6 @@ function App() {
             <ChatPanel />
           </div>
         )}
-        {activeView === 'openclaw' && (
-          <div className="overlay-view" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>🤖</div>
-              <h2 style={{ fontFamily: 'Orbitron, sans-serif', color: 'var(--cyan)', letterSpacing: '2px', marginBottom: '12px' }}>
-                OPENCLAW ADMIN
-              </h2>
-              <p style={{ color: '#4a5a6a', fontSize: '12px', marginBottom: '24px' }}>
-                Gateway control panel runs in a separate window
-              </p>
-              <a
-                href="/openclaw-ui/"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'inline-block', padding: '10px 24px',
-                  background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.3)',
-                  borderRadius: '6px', color: 'var(--cyan)', textDecoration: 'none',
-                  fontFamily: 'Share Tech Mono, monospace', fontSize: '13px', letterSpacing: '1px',
-                }}
-              >
-                OPEN ADMIN PANEL →
-              </a>
-            </div>
-          </div>
-        )}
       </MainLayout>
 
       {/* Right detail panel — slides in from right */}

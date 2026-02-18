@@ -1,32 +1,43 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
 
-export type View = 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'openclaw' | 'chat';
+export type View = 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat';
 
 interface SidebarProps {
   activeView: View;
   onNewProject?: () => void;
 }
 
-const navItems: { id: View; label: string; icon: string }[] = [
-  { id: 'projects', label: 'Projects', icon: '🪐' },
-  { id: 'news', label: 'News Feed', icon: '📡' },
+// Sub-items under the collapsible "Projects" section
+const projectSubItems: { id: View; label: string; icon: string }[] = [
+  { id: 'kanban', label: 'Board', icon: '📊' },
   { id: 'chat', label: 'Chat', icon: '💬' },
-  { id: 'kanban', label: 'Kanban Board', icon: '📊' },
   { id: 'logs', label: 'Activity Log', icon: '📋' },
+];
+
+// Top-level nav items
+const topLevelItems: { id: View; label: string; icon: string }[] = [
+  { id: 'news', label: 'News Feed', icon: '📡' },
   { id: 'terminal', label: 'Terminal', icon: '🖥️' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
-  { id: 'openclaw', label: 'OpenClaw', icon: '🤖' },
 ];
 
 export function Sidebar({ activeView, onNewProject }: SidebarProps) {
   const [clock, setClock] = useState('');
+  const [projectsExpanded, setProjectsExpanded] = useState(true);
   const projects = useStore(s => s.projects);
   const selectedProjectId = useStore(s => s.selectedProjectId);
   const selectProject = useStore(s => s.selectProject);
   const focusProject = useStore(s => s.focusProject);
   const openChats = useStore(s => s.openChats);
   const setActiveView = useStore(s => s.setActiveView);
+
+  // Auto-expand when a sub-item is active
+  const isProjectSubView = projectSubItems.some(i => i.id === activeView) || activeView === 'projects';
+
+  useEffect(() => {
+    if (isProjectSubView) setProjectsExpanded(true);
+  }, [isProjectSubView]);
 
   useEffect(() => {
     const update = () => setClock(new Date().toLocaleTimeString('en-US', { hour12: false }));
@@ -49,10 +60,57 @@ export function Sidebar({ activeView, onNewProject }: SidebarProps) {
         <div className="subtitle">Mission Control</div>
       </div>
 
-      {/* Nav section */}
-      <div className="nav-section">Applications</div>
+      {/* ── Projects (collapsible section) ── */}
+      <div className="nav-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>Projects</span>
+        <span style={{ fontSize: '10px', color: '#4a5a6a' }}>{projects.length}</span>
+      </div>
 
-      {navItems.map(item => (
+      {/* Projects header — click to go to 3D view + toggle */}
+      <button
+        className={`nav-item ${activeView === 'projects' ? 'active' : ''}`}
+        onClick={() => {
+          setActiveView('projects');
+          setProjectsExpanded(!projectsExpanded);
+        }}
+      >
+        <span className="icon">🪐</span>
+        <span className="label">Overview</span>
+        <span style={{
+          fontSize: '10px', color: '#4a5a6a', marginLeft: 'auto',
+          transition: 'transform 0.2s',
+          transform: projectsExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+        }}>
+          ▶
+        </span>
+      </button>
+
+      {/* Collapsible sub-items */}
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: projectsExpanded ? '200px' : '0',
+        transition: 'max-height 0.25s ease',
+      }}>
+        {projectSubItems.map(item => (
+          <button
+            key={item.id}
+            className={`nav-item ${activeView === item.id ? 'active' : ''}`}
+            onClick={() => setActiveView(item.id)}
+            style={{ paddingLeft: '28px' }}
+          >
+            <span className="icon" style={{ fontSize: '13px' }}>{item.icon}</span>
+            <span className="label">{item.label}</span>
+            {item.id === 'chat' && openChats.length > 0 && (
+              <span className="badge-count">{openChats.length}</span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Top-level items ── */}
+      <div className="nav-section" style={{ marginTop: '8px' }}>Tools</div>
+
+      {topLevelItems.map(item => (
         <button
           key={item.id}
           className={`nav-item ${activeView === item.id ? 'active' : ''}`}
@@ -60,17 +118,11 @@ export function Sidebar({ activeView, onNewProject }: SidebarProps) {
         >
           <span className="icon">{item.icon}</span>
           <span className="label">{item.label}</span>
-          {item.id === 'projects' && (
-            <span className="badge-count">{projects.length}</span>
-          )}
-          {item.id === 'chat' && openChats.length > 0 && (
-            <span className="badge-count">{openChats.length}</span>
-          )}
         </button>
       ))}
 
-      {/* Sessions section */}
-      <div className="nav-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      {/* ── Sessions ── */}
+      <div className="nav-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
         <span>Sessions</span>
         {onNewProject && (
           <button
