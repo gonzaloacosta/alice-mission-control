@@ -139,6 +139,31 @@ const INITIAL_PROJECTS: Project[] = [
     ],
     notionUrl: 'https://www.notion.so/Lecturas-y-m-s-9bc028199f164135b4f2029c4c36ad07',
   },
+  {
+    id: 'pki-ca-admin',
+    name: 'PKI-CA-ADMIN',
+    description: 'Certificate Authority Administration — Multi-tier PKI & mTLS',
+    color: '#00f5d4',
+    emissiveColor: '#00f5d4',
+    progress: 0.0,
+    version: 'v0.0.1',
+    status: 'building',
+    orbitRadius: 54,
+    orbitSpeed: 0.018,
+    size: 2.2,
+    startAngle: 1.7,
+    tasks: { done: 0, total: 5 },
+    agents: [
+      { id: 'pki-backend', name: 'Backend', role: 'Backend API', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+      { id: 'pki-frontend', name: 'Frontend', role: 'Frontend App', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+      { id: 'pki-devops', name: 'DevOps', role: 'Infra & CI/CD', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+      { id: 'pki-devsecops', name: 'DevSecOps', role: 'Security', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+      { id: 'pki-qa', name: 'QA', role: 'Testing', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+      { id: 'pki-reviewer', name: 'Reviewer', role: 'Code Review', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+      { id: 'pki-planner', name: 'Planner', role: 'Architecture', state: 'idle', task: 'Awaiting tasks', contribution: 0 },
+    ],
+    repoUrl: 'https://github.com/gonzaloacosta/pki-ca-admin',
+  },
 ];
 
 const MESSAGES = {
