@@ -47,7 +47,7 @@ export function LogsView() {
       const slugs = [...new Set((data.events || []).map((e: EventRow) => e.project_slug))];
       setProjects(prev => {
         const merged = [...new Set([...prev, ...slugs])].sort();
-        return merged.length !== prev.length ? merged : prev;
+        return merged.length !== prev.length ? merged : prev as string[];
       });
     } catch {}
   }, [projectFilter]);
