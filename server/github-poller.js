@@ -15,14 +15,34 @@ const REPOS = {
 const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
 const seenRunIds = new Set();
 
+// Track repos that don't have Actions enabled to avoid repeated 404s
+const disabledRepos = new Set();
+const RETRY_DISABLED_INTERVAL = 24 * 60 * 60 * 1000; // Retry disabled repos once per day
+let lastRetryTime = 0;
+
 async function pollRuns() {
+  const now = Date.now();
+  const shouldRetryDisabled = now - lastRetryTime > RETRY_DISABLED_INTERVAL;
+  
   for (const [slug, repo] of Object.entries(REPOS)) {
+    // Skip repos that we know don't have Actions (unless it's retry time)
+    if (disabledRepos.has(repo) && !shouldRetryDisabled) {
+      continue;
+    }
+
     try {
       const raw = execSync(
         `gh run list --repo ${repo} --json databaseId,conclusion,name,headBranch,createdAt --limit 5`,
         { encoding: 'utf8', timeout: 15000 }
       );
       const runs = JSON.parse(raw);
+      
+      // If we successfully got runs, remove from disabled list (repo might have enabled Actions)
+      if (disabledRepos.has(repo)) {
+        disabledRepos.delete(repo);
+        console.log(`[gh-poller] ${slug}: GitHub Actions now available`);
+      }
+      
       for (const run of runs) {
         const runId = String(run.databaseId);
         if (seenRunIds.has(runId) || !run.conclusion) continue;
@@ -36,11 +56,21 @@ async function pollRuns() {
         console.log(`[gh-poller] ${slug}: ${summary}`);
       }
     } catch (err) {
-      // gh CLI not available or repo not accessible — skip silently
-      if (!err.message?.includes('TIMEOUT')) {
-        console.log(`[gh-poller] Skip ${slug}: ${err.message?.slice(0, 80)}`);
+      // Check if this is a 404 (no workflows) or permission error
+      if (err.message?.includes('HTTP 404') || err.message?.includes('Not Found')) {
+        if (!disabledRepos.has(repo)) {
+          disabledRepos.add(repo);
+          console.log(`[gh-poller] ${slug}: No GitHub Actions workflows found, will retry in 24h`);
+        }
+      } else if (!err.message?.includes('TIMEOUT')) {
+        // Log other errors (auth, network, etc.)
+        console.log(`[gh-poller] ${slug}: ${err.message?.slice(0, 80)}`);
       }
     }
+  }
+  
+  if (shouldRetryDisabled) {
+    lastRetryTime = now;
   }
 }
 
