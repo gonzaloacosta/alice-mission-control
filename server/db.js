@@ -259,6 +259,33 @@ export async function getEvents({ project, source, limit = 50, offset = 0 } = {}
   return result.rows;
 }
 
+// ─── Routes ───
+
+export async function saveRoute(name, gpxData, distanceKm, elevationGain) {
+  const result = await pool.query(
+    'INSERT INTO routes (name, gpx_data, distance_km, elevation_gain) VALUES ($1, $2, $3, $4) RETURNING id, created_at',
+    [name, gpxData, distanceKm, elevationGain]
+  );
+  return result.rows[0];
+}
+
+export async function getRoutes() {
+  const result = await pool.query(
+    'SELECT id, name, distance_km, elevation_gain, created_at FROM routes ORDER BY created_at DESC'
+  );
+  return result.rows;
+}
+
+export async function getRoute(id) {
+  const result = await pool.query('SELECT * FROM routes WHERE id = $1', [id]);
+  return result.rows[0] || null;
+}
+
+export async function deleteRoute(id) {
+  const result = await pool.query('DELETE FROM routes WHERE id = $1 RETURNING id', [id]);
+  return result.rowCount > 0;
+}
+
 // Graceful shutdown
 export async function closeDb() {
   await pool.end();

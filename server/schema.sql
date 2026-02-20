@@ -56,3 +56,13 @@ CREATE TABLE IF NOT EXISTS events (
 );
 CREATE INDEX IF NOT EXISTS idx_events_project ON events(project_slug);
 CREATE INDEX IF NOT EXISTS idx_events_created ON events(created_at DESC);
+
+-- Routes table
+CREATE TABLE IF NOT EXISTS routes (
+  id             SERIAL PRIMARY KEY,
+  name           VARCHAR(255) NOT NULL,
+  gpx_data       TEXT NOT NULL,
+  distance_km    FLOAT,
+  elevation_gain FLOAT,
+  created_at     TIMESTAMPTZ DEFAULT NOW()
+);

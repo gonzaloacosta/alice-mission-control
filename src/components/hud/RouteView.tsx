@@ -3,6 +3,8 @@ import { MapContainer, TileLayer, Polyline, Marker, Popup, useMap } from 'react-
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
+const API = import.meta.env.VITE_API_URL || '';
+
 // ── Types ──
 
 interface GpxPoint {
@@ -30,6 +32,14 @@ interface RouteStats {
   elevationLoss: number;
   minEle: number;
   maxEle: number;
+}
+
+interface SavedRoute {
+  id: number;
+  name: string;
+  distance_km: number | null;
+  elevation_gain: number | null;
+  created_at: string;
 }
 
 // ── Helpers ──
@@ -96,6 +106,24 @@ function samplePoints(points: GpxPoint[], n: number): { point: GpxPoint; distanc
     samples.push({ point: points[idx], distanceKm: cumulDist[idx], index: i });
   }
   return samples;
+}
+
+/** Returns GPX point indices for N evenly-spaced sample points along route */
+function sampleGpxIndices(points: GpxPoint[], n: number): number[] {
+  if (points.length === 0) return [];
+  const cumulDist: number[] = [0];
+  for (let i = 1; i < points.length; i++) {
+    cumulDist.push(cumulDist[i - 1] + haversineDistance(points[i - 1], points[i]));
+  }
+  const totalDist = cumulDist[cumulDist.length - 1];
+  const indices: number[] = [];
+  for (let i = 0; i < n; i++) {
+    const targetDist = (i / (n - 1)) * totalDist;
+    let idx = cumulDist.findIndex(d => d >= targetDist);
+    if (idx < 0) idx = points.length - 1;
+    indices.push(idx);
+  }
+  return indices;
 }
 
 function bearingBetween(a: GpxPoint, b: GpxPoint): number {
@@ -202,6 +230,7 @@ const btnStyle: React.CSSProperties = {
 export function RouteView() {
   const [points, setPoints] = useState<GpxPoint[]>([]);
   const [routeName, setRouteName] = useState<string>('');
+  const [rawGpx, setRawGpx] = useState<string>('');
   const [weather, setWeather] = useState<WeatherPoint[]>([]);
   const [departureTime, setDepartureTime] = useState<string>(() => {
     const now = new Date();
@@ -213,20 +242,53 @@ export function RouteView() {
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Routes CRUD state
+  const [savedRoutes, setSavedRoutes] = useState<SavedRoute[]>([]);
+  const [showSavedRoutes, setShowSavedRoutes] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loadingRoutes, setLoadingRoutes] = useState(false);
+
   const stats = useMemo(() => points.length > 0 ? computeStats(points) : null, [points]);
   const routeBearing = useMemo(() => {
     if (points.length < 2) return 0;
     return bearingBetween(points[0], points[points.length - 1]);
   }, [points]);
 
+  // ── Colored polyline segments ──
+  const coloredSegments = useMemo(() => {
+    if (points.length === 0) return [];
+    const loadedWeather = weather.filter(w => !w.loading && w.windDirection !== undefined);
+    if (loadedWeather.length === 0) return [];
+
+    const indices = sampleGpxIndices(points, 10);
+    const segments: { positions: [number, number][]; color: string }[] = [];
+
+    for (let i = 0; i < indices.length - 1; i++) {
+      const startIdx = indices[i];
+      const endIdx = indices[i + 1];
+      const segPoints = points.slice(startIdx, endIdx + 1).map(p => [p.lat, p.lon] as [number, number]);
+
+      const wp = weather[i];
+      let color = '#00f0ff';
+      if (wp && !wp.loading && wp.windDirection !== undefined) {
+        const relAngle = windRelativeAngle(routeBearing, wp.windDirection);
+        color = windLabel(relAngle).color;
+      }
+
+      segments.push({ positions: segPoints, color });
+    }
+
+    return segments;
+  }, [points, weather, routeBearing]);
+
   const loadGpxText = useCallback((text: string) => {
     const parsed = parseGpx(text);
     if (parsed.length === 0) return;
-    // Try to get route name from GPX
     const parser = new DOMParser();
     const doc = parser.parseFromString(text, 'text/xml');
     const name = doc.querySelector('trk > name')?.textContent || 'Unnamed Route';
     setRouteName(name);
+    setRawGpx(text);
     setPoints(parsed);
     setWeather([]);
   }, []);
@@ -276,7 +338,6 @@ export function RouteView() {
         const url = `https://api.open-meteo.com/v1/forecast?latitude=${s.point.lat.toFixed(4)}&longitude=${s.point.lon.toFixed(4)}&hourly=temperature_2m,wind_speed_10m,wind_direction_10m,precipitation_probability&forecast_days=2`;
         const res = await fetch(url);
         const data = await res.json();
-        // Find closest hour
         const hours: string[] = data.hourly?.time || [];
         let bestIdx = 0;
         let bestDiff = Infinity;
@@ -327,6 +388,68 @@ export function RouteView() {
 
   const polyline = useMemo(() => points.map(p => [p.lat, p.lon] as [number, number]), [points]);
 
+  // ── Routes CRUD ──
+
+  const fetchSavedRoutes = useCallback(async () => {
+    setLoadingRoutes(true);
+    try {
+      const res = await fetch(`${API}/api/v1/routes`);
+      const data = await res.json();
+      setSavedRoutes(data.routes || []);
+    } catch (err) {
+      console.error('Failed to fetch routes:', err);
+    }
+    setLoadingRoutes(false);
+  }, []);
+
+  const saveCurrentRoute = useCallback(async () => {
+    if (!rawGpx || !routeName) return;
+    setSaving(true);
+    try {
+      await fetch(`${API}/api/v1/routes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: routeName,
+          gpxData: rawGpx,
+          distanceKm: stats?.totalDistanceKm ?? null,
+          elevationGain: stats?.elevationGain ?? null,
+        }),
+      });
+      await fetchSavedRoutes();
+    } catch (err) {
+      console.error('Failed to save route:', err);
+    }
+    setSaving(false);
+  }, [rawGpx, routeName, stats, fetchSavedRoutes]);
+
+  const loadSavedRoute = useCallback(async (id: number) => {
+    try {
+      const res = await fetch(`${API}/api/v1/routes/${id}`);
+      const route = await res.json();
+      if (route.gpx_data) {
+        loadGpxText(route.gpx_data);
+        setShowSavedRoutes(false);
+      }
+    } catch (err) {
+      console.error('Failed to load route:', err);
+    }
+  }, [loadGpxText]);
+
+  const deleteSavedRoute = useCallback(async (id: number) => {
+    try {
+      await fetch(`${API}/api/v1/routes/${id}`, { method: 'DELETE' });
+      setSavedRoutes(prev => prev.filter(r => r.id !== id));
+    } catch (err) {
+      console.error('Failed to delete route:', err);
+    }
+  }, []);
+
+  // Fetch saved routes on mount and when panel is opened
+  useEffect(() => {
+    if (showSavedRoutes) fetchSavedRoutes();
+  }, [showSavedRoutes, fetchSavedRoutes]);
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
@@ -343,6 +466,28 @@ export function RouteView() {
             }}>{routeName}</span>
           )}
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button onClick={() => setShowSavedRoutes(!showSavedRoutes)} style={{
+              ...btnStyle,
+              background: showSavedRoutes ? 'rgba(0,240,255,0.15)' : 'rgba(0,240,255,0.08)',
+              borderColor: showSavedRoutes ? 'rgba(0,240,255,0.4)' : 'rgba(0,240,255,0.25)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.15)'; }}
+              onMouseLeave={e => { if (!showSavedRoutes) e.currentTarget.style.background = 'rgba(0,240,255,0.08)'; }}>
+              SAVED ROUTES
+            </button>
+            {points.length > 0 && rawGpx && (
+              <button onClick={saveCurrentRoute} disabled={saving} style={{
+                ...btnStyle,
+                background: 'rgba(0,255,136,0.08)',
+                borderColor: 'rgba(0,255,136,0.25)',
+                color: '#00ff88',
+                opacity: saving ? 0.5 : 1,
+              }}
+                onMouseEnter={e => { if (!saving) e.currentTarget.style.background = 'rgba(0,255,136,0.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,255,136,0.08)'; }}>
+                {saving ? 'SAVING...' : 'SAVE ROUTE'}
+              </button>
+            )}
             <button onClick={loadSample} style={btnStyle}
               onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.15)'; }}
               onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.08)'; }}>
@@ -361,6 +506,76 @@ export function RouteView() {
 
       {/* Content */}
       <div style={{ flex: 1, overflow: 'auto', padding: '16px' }}>
+        {/* Saved Routes Panel */}
+        {showSavedRoutes && (
+          <div style={{ ...cardStyle, marginBottom: '16px' }}>
+            <div style={{ ...labelStyle, marginBottom: '12px', fontSize: '10px' }}>SAVED ROUTES</div>
+            {loadingRoutes ? (
+              <div style={{ color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', padding: '12px 0' }}>
+                Loading...
+              </div>
+            ) : savedRoutes.length === 0 ? (
+              <div style={{ color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', padding: '12px 0' }}>
+                No saved routes yet. Upload a GPX file and click SAVE ROUTE.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {savedRoutes.map(route => (
+                  <div key={route.id} style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '10px 12px', borderRadius: '6px',
+                    background: 'rgba(0,240,255,0.03)',
+                    border: '1px solid rgba(0,240,255,0.08)',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                  }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = 'rgba(0,240,255,0.07)';
+                      e.currentTarget.style.borderColor = 'rgba(0,240,255,0.2)';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = 'rgba(0,240,255,0.03)';
+                      e.currentTarget.style.borderColor = 'rgba(0,240,255,0.08)';
+                    }}
+                    onClick={() => loadSavedRoute(route.id)}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '13px', color: 'var(--cyan)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {route.name}
+                      </div>
+                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', color: '#4a5a6a', marginTop: '2px', display: 'flex', gap: '12px' }}>
+                        {route.distance_km != null && <span>{route.distance_km.toFixed(1)} km</span>}
+                        {route.elevation_gain != null && <span>+{route.elevation_gain.toFixed(0)} m</span>}
+                        <span>{new Date(route.created_at).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); deleteSavedRoute(route.id); }}
+                      style={{
+                        background: 'rgba(255,51,85,0.06)',
+                        border: '1px solid rgba(255,51,85,0.2)',
+                        borderRadius: '4px',
+                        color: '#ff3355',
+                        cursor: 'pointer',
+                        fontFamily: 'Orbitron, sans-serif',
+                        fontSize: '9px',
+                        letterSpacing: '0.5px',
+                        padding: '4px 10px',
+                        transition: 'all 0.2s',
+                        flexShrink: 0,
+                      }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.15)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.06)'; }}
+                    >
+                      DELETE
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {points.length === 0 ? (
           /* Upload zone */
           <div
@@ -437,7 +652,13 @@ export function RouteView() {
                     url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
                   />
                   <FitBounds points={points} />
-                  <Polyline positions={polyline} pathOptions={{ color: '#00f0ff', weight: 3, opacity: 0.8 }} />
+                  {coloredSegments.length > 0 ? (
+                    coloredSegments.map((seg, i) => (
+                      <Polyline key={i} positions={seg.positions} pathOptions={{ color: seg.color, weight: 4, opacity: 0.8 }} />
+                    ))
+                  ) : (
+                    <Polyline positions={polyline} pathOptions={{ color: '#00f0ff', weight: 4, opacity: 0.8 }} />
+                  )}
                   <Marker position={[points[0].lat, points[0].lon]} icon={startIcon}>
                     <Popup><span style={{ color: '#000' }}>Start</span></Popup>
                   </Marker>
@@ -627,7 +848,7 @@ export function RouteView() {
 
             {/* Clear route button */}
             <div style={{ textAlign: 'center', paddingBottom: '20px' }}>
-              <button onClick={() => { setPoints([]); setWeather([]); setRouteName(''); }}
+              <button onClick={() => { setPoints([]); setWeather([]); setRouteName(''); setRawGpx(''); }}
                 style={{ ...btnStyle, color: '#ff3355', borderColor: 'rgba(255,51,85,0.25)', background: 'rgba(255,51,85,0.06)' }}
                 onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.12)'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.06)'; }}>

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createServer } from 'http';
 import { validateProjects } from './config.js';
 import pty from 'node-pty';
-import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb, getBoard, getAllCards, createCard, updateCard, moveCard, deleteCard, initKanban, createEvent, getEvents } from './db.js';
+import { initDb, saveMessage, getMessages, deleteMessages, testConnection, closeDb, getBoard, getAllCards, createCard, updateCard, moveCard, deleteCard, initKanban, createEvent, getEvents, saveRoute, getRoutes, getRoute, deleteRoute } from './db.js';
 import { createProject } from './create-project.js';
 import { startGitHubPoller } from './github-poller.js';
 
@@ -317,6 +317,53 @@ app.get('/api/v1/events', async (req, res) => {
     res.json({ events });
   } catch (error) {
     console.error('[event] Failed to list:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ─── Routes API ───
+
+app.post('/api/v1/routes', async (req, res) => {
+  const { name, gpxData, distanceKm, elevationGain } = req.body;
+  if (!name || !gpxData) return res.status(400).json({ error: 'Name and gpxData are required' });
+  try {
+    const route = await saveRoute(name, gpxData, distanceKm || null, elevationGain || null);
+    console.log(`[routes] Saved route: ${name}`);
+    res.json(route);
+  } catch (error) {
+    console.error('[routes] Failed to save:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/v1/routes', async (req, res) => {
+  try {
+    const routes = await getRoutes();
+    res.json({ routes });
+  } catch (error) {
+    console.error('[routes] Failed to list:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/v1/routes/:id', async (req, res) => {
+  try {
+    const route = await getRoute(parseInt(req.params.id));
+    if (!route) return res.status(404).json({ error: 'Route not found' });
+    res.json(route);
+  } catch (error) {
+    console.error('[routes] Failed to get:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/v1/routes/:id', async (req, res) => {
+  try {
+    const ok = await deleteRoute(parseInt(req.params.id));
+    if (!ok) return res.status(404).json({ error: 'Route not found' });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[routes] Failed to delete:', error.message);
     res.status(500).json({ error: error.message });
   }
 });
