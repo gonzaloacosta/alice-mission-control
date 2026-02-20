@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4446';
-const WS_BASE = API_BASE.replace(/^http/, 'ws');
+const API_BASE = import.meta.env.VITE_API_URL || '';
+const WS_BASE = API_BASE ? API_BASE.replace(/^http/, 'ws') : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}`;
 
 interface EventRow {
   id: number;

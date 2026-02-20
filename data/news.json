@@ -1,13 +1,155 @@
 {
-  "updatedAt": "2026-02-18T07:00:00+01:00",
+  "updatedAt": "2026-02-20T07:00:00+01:00",
   "items": [
     {
-      "id": "sample-1",
+      "id": "weather-bcn-20260220",
+      "category": "weather",
+      "headline": "Barcelona: 10°C Overcast, High 16°C",
+      "summary": "Overcast skies, 53% humidity, 7 km/h wind. High of 16°C, low 10°C. 0% chance of rain — perfect day for outdoor activities.",
+      "source": "Open-Meteo",
+      "sourceTag": "🟢 Center",
+      "url": "https://open-meteo.com",
+      "timestamp": "2026-02-20"
+    },
+    {
+      "id": "ai-gemini31pro-20260220",
       "category": "ai",
-      "headline": "News feed connected — waiting for daily briefing",
-      "summary": "The news panel is live! Articles will populate automatically from the daily morning briefing cron job at 7:00 AM.",
-      "source": "System",
+      "headline": "Google Launches Gemini 3.1 Pro",
+      "summary": "Step forward in core reasoning capabilities. Rolling out in Gemini app and NotebookLM today.",
+      "source": "Google Blog",
+      "sourceTag": "🟢 Center",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-3-1-pro/",
+      "timestamp": "2026-02-20"
+    },
+    {
+      "id": "ai-chatgpt-ads-20260220",
+      "category": "ai",
+      "headline": "ChatGPT Now Showing Ads",
+      "summary": "Ads from Expedia, Best Buy, Qualcomm appearing in ChatGPT responses. Can trigger after first prompt.",
+      "source": "The Verge",
+      "sourceTag": "🟡 Center-right",
+      "url": "https://www.theverge.com/ai-artificial-intelligence",
+      "timestamp": "2026-02-19"
+    },
+    {
+      "id": "ai-nvidia-openai-20260220",
+      "category": "ai",
+      "headline": "Nvidia & OpenAI Near Major Investment Deal",
+      "summary": "The two giants reportedly close to a significant new investment partnership.",
+      "source": "The Verge",
+      "sourceTag": "🟡 Center-right",
+      "url": "https://www.theverge.com/ai-artificial-intelligence",
+      "timestamp": "2026-02-19"
+    },
+    {
+      "id": "ai-cline-hack-20260220",
+      "category": "ai",
+      "headline": "Hacker Tricks Cline's Claude Workflow",
+      "summary": "A hacker manipulated Cline's Claude-powered coding agent into installing software on computers.",
+      "source": "The Verge",
+      "sourceTag": "🟡 Center-right",
+      "url": "https://www.theverge.com/ai-artificial-intelligence",
+      "timestamp": "2026-02-19"
+    },
+    {
+      "id": "cyber-google-espionage-20260220",
+      "category": "cybersec",
+      "headline": "3 Ex-Google Engineers Indicted for Trade Secret Theft to Iran",
+      "summary": "Iranian nationals accused of stealing trade secrets from Google and transferring them to unauthorized locations including Iran. Arrested in San Jose.",
+      "source": "The Hacker News",
+      "sourceTag": "🟢 Center",
+      "url": "https://thehackernews.com/2026/02/three-former-google-engineers-indicted.html",
+      "timestamp": "2026-02-20"
+    },
+    {
+      "id": "cyber-promptspy-20260220",
+      "category": "cybersec",
+      "headline": "PromptSpy: First Android Malware Abusing Gemini AI",
+      "summary": "New malware uses Google's Gemini to automate persistence on Android devices — adapts to any device/OS via AI-generated UI instructions.",
+      "source": "The Hacker News",
+      "sourceTag": "🟢 Center",
+      "url": "https://thehackernews.com/2026/02/promptspy-android-malware-abuses-gemini.html",
+      "timestamp": "2026-02-19"
+    },
+    {
+      "id": "cyber-wef-threats-20260220",
+      "category": "cybersec",
+      "headline": "WEF: Cyber Threats to Watch in 2026",
+      "summary": "Collaboration critical to tackle rising cyber risks. US pressures telecoms to boost ransomware defences.",
+      "source": "World Economic Forum",
+      "sourceTag": "🟢 Center",
+      "url": "https://www.weforum.org/stories/2026/02/2026-cyberthreats-to-watch-and-other-cybersecurity-news/",
       "timestamp": "2026-02-18"
+    },
+    {
+      "id": "ar-labor-reform-20260220",
+      "category": "argentina",
+      "headline": "Labor Reform Debate Continues in Congress",
+      "summary": "Deputies continue debating Milei's labor reform. Several modifications expected, likely sending bill back to Senate.",
+      "source": "Buenos Aires Herald",
+      "sourceTag": "🟢 Center",
+      "url": "https://buenosairesherald.com/",
+      "timestamp": "2026-02-20"
+    },
+    {
+      "id": "ar-strike-20260220",
+      "category": "argentina",
+      "headline": "Nationwide Protest Against Labor Reform",
+      "summary": "Union leaders held press conference assessing the nationwide strike against Milei's controversial reform package.",
+      "source": "Buenos Aires Herald",
+      "sourceTag": "🟢 Center",
+      "url": "https://buenosairesherald.com/",
+      "timestamp": "2026-02-20"
+    },
+    {
+      "id": "ar-fate-closures-20260220",
+      "category": "argentina",
+      "headline": "Major Company Closures Continue — Fate Shuts Down",
+      "summary": "Fate is latest in a series of closures affecting major Argentine companies amid economic restructuring.",
+      "source": "Buenos Aires Herald",
+      "sourceTag": "🟢 Center",
+      "url": "https://buenosairesherald.com/",
+      "timestamp": "2026-02-20"
+    },
+    {
+      "id": "es-transplants-20260220",
+      "category": "spain",
+      "headline": "4 Heart Transplants in 3 Days at Madrid Hospital",
+      "summary": "Record-breaking weekend at 12 de Octubre Hospital — simultaneous surgeries and helicopter organ transfers saved four lives.",
+      "source": "El País",
+      "sourceTag": "🟠 Center-left",
+      "url": "https://english.elpais.com/science-tech/2026-02-16/four-heart-transplants-in-three-days-a-race-against-time-at-madrids-12-de-octubre-hospital.html",
+      "timestamp": "2026-02-16"
+    },
+    {
+      "id": "es-wealth-gap-20260220",
+      "category": "spain",
+      "headline": "Wealth Gap Widening in Spain",
+      "summary": "Recent economic growth comes with growing inequality — the rich have greater clout than ever.",
+      "source": "El País",
+      "sourceTag": "🟠 Center-left",
+      "url": "https://english.elpais.com/economy-and-business/2026-02-10/how-wealth-is-becoming-concentrated-in-spain.html",
+      "timestamp": "2026-02-10"
+    },
+    {
+      "id": "es-borbon-drugs-20260220",
+      "category": "spain",
+      "headline": "Aristocrat Accused of Laundering Drug Money",
+      "summary": "Francisco de Borbón linked to criminal gang behind Spain's largest cocaine seizure ever.",
+      "source": "El País",
+      "sourceTag": "🟠 Center-left",
+      "url": "https://english.elpais.com/international/2026-02-12/the-many-faces-of-francisco-de-borbon-the-aristocrat-accused-of-laundering-drug-money.html",
+      "timestamp": "2026-02-12"
+    },
+    {
+      "id": "es-iupac-malaga-20260220",
+      "category": "spain",
+      "headline": "IUPAC Moves HQ from US to Málaga",
+      "summary": "International chemistry body relocating from North Carolina to Spain — a win for Spanish science.",
+      "source": "El País",
+      "sourceTag": "🟠 Center-left",
+      "url": "https://english.elpais.com/international/2026-02-06/from-the-us-to-malaga-the-world-of-chemistry-chooses-spain.html",
+      "timestamp": "2026-02-06"
     }
   ]
 }

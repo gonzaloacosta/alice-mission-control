@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useStore } from '../../store';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:4446';
+const API = import.meta.env.VITE_API_URL || '';
 
 interface KanbanCard {
   id: number;
