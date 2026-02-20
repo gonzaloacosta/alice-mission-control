@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
 
-export type View = 'overview' | 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat';
+export type View = 'overview' | 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat' | 'route';
 
 interface SidebarProps {
   activeView: View;
@@ -18,6 +18,7 @@ const projectSubItems: { id: View; label: string; icon: string }[] = [
 // Top-level nav items
 const topLevelItems: { id: View; label: string; icon: string }[] = [
   { id: 'news', label: 'News Feed', icon: '📡' },
+  { id: 'route', label: 'Route Planner', icon: '🧭' },
   { id: 'terminal', label: 'Terminal', icon: '🖥️' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
 ];

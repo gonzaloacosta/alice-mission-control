@@ -43,6 +43,14 @@ const icons: Record<string, JSX.Element> = {
       <line x1="12" y1="19" x2="20" y2="19"/>
     </svg>
   ),
+  route: (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+      <circle cx="12" cy="5" r="2"/>
+      <path d="M12 7v4"/>
+      <path d="M7 17l5-6 5 6"/>
+      <line x1="5" y1="21" x2="19" y2="21"/>
+    </svg>
+  ),
   settings: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="12" cy="12" r="3"/>
@@ -57,6 +65,7 @@ const mobileItems: { id: View; label: string }[] = [
   { id: 'kanban', label: 'BOARD' },
   { id: 'chat', label: 'CHAT' },
   { id: 'news', label: 'NEWS' },
+  { id: 'route', label: 'ROUTE' },
   { id: 'terminal', label: 'TERMINAL' },
 ];
 

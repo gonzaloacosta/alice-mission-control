@@ -8,6 +8,7 @@ import { ChatPanel } from './components/hud/ChatPanel';
 import { TerminalView } from './components/hud/TerminalView';
 import { NewsView } from './components/hud/NewsView';
 import { KanbanView } from './components/hud/KanbanView';
+import { RouteView } from './components/hud/RouteView';
 import { NewProjectModal } from './components/hud/NewProjectModal';
 import { BottomNav } from './components/hud/BottomNav';
 import { ProjectsListView } from './components/hud/ProjectsListView';
@@ -19,6 +20,7 @@ function App() {
   const tick = useStore(s => s.tick);
   const activeView = useStore(s => s.activeView);
   const addProject = useStore(s => s.addProject);
+  const focusedProjectId = useStore(s => s.focusedProjectId);
   const [showNewProject, setShowNewProject] = useState(false);
 
   useEffect(() => {
@@ -27,6 +29,11 @@ function App() {
     return () => clearInterval(interval);
   }, [init, tick]);
 
+  // Set CSS variable for detail panel width so overlay views shrink
+  useEffect(() => {
+    document.documentElement.style.setProperty('--detail-w', focusedProjectId ? '400px' : '0px');
+  }, [focusedProjectId]);
+
   return (
     <>
       {/* 3D scene — always visible behind everything, right of sidebar */}
@@ -34,9 +41,10 @@ function App() {
         position: 'fixed',
         top: 0,
         left: 'var(--sidebar-w)',
-        right: 0,
+        right: 'var(--detail-w, 0px)',
         bottom: 0,
         zIndex: 0,
+        transition: 'right 0.4s cubic-bezier(0.4,0,0.2,1)',
       }}>
         <Scene />
       </div>
@@ -65,6 +73,11 @@ function App() {
         {activeView === 'terminal' && (
           <div className="overlay-view">
             <TerminalView />
+          </div>
+        )}
+        {activeView === 'route' && (
+          <div className="overlay-view">
+            <RouteView />
           </div>
         )}
         {activeView === 'settings' && (
