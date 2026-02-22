@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
 
-export type View = 'overview' | 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat' | 'route';
+export type View = 'overview' | 'projects' | 'news' | 'logs' | 'kanban' | 'terminal' | 'settings' | 'chat' | 'route' | 'observatory' | 'pki' | 'office' | 'team' | 'memory' | 'calendar' | 'tasks';
 
 interface SidebarProps {
   activeView: View;
@@ -10,9 +10,14 @@ interface SidebarProps {
 
 // Sub-items under the collapsible "Projects" section
 const projectSubItems: { id: View; label: string; icon: string }[] = [
+  { id: 'office', label: 'Office', icon: '🏢' },
+  { id: 'team', label: 'Team', icon: '👥' },
+  { id: 'memory', label: 'Memory', icon: '🧠' },
+  { id: 'calendar', label: 'Calendar', icon: '📅' },
+  { id: 'tasks', label: 'Task Board', icon: '📋' },
   { id: 'kanban', label: 'Board', icon: '📊' },
   { id: 'chat', label: 'Chat', icon: '💬' },
-  { id: 'logs', label: 'Activity Log', icon: '📋' },
+  { id: 'logs', label: 'Activity Log', icon: '📝' },
 ];
 
 // Top-level nav items
@@ -20,6 +25,8 @@ const topLevelItems: { id: View; label: string; icon: string }[] = [
   { id: 'news', label: 'News Feed', icon: '📡' },
   { id: 'route', label: 'Route Planner', icon: '🧭' },
   { id: 'terminal', label: 'Terminal', icon: '🖥️' },
+  { id: 'observatory', label: 'K8s Observatory', icon: '🔭' },
+  { id: 'pki', label: 'PKI Admin', icon: '🔐' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
 ];
 
@@ -89,7 +96,7 @@ export function Sidebar({ activeView, onNewProject }: SidebarProps) {
       {/* Collapsible sub-items */}
       <div style={{
         overflow: 'hidden',
-        maxHeight: projectsExpanded ? '200px' : '0',
+        maxHeight: projectsExpanded ? '420px' : '0',
         transition: 'max-height 0.25s ease',
       }}>
         {projectSubItems.map(item => (

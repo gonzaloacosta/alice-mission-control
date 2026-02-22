@@ -9,6 +9,12 @@ import { TerminalView } from './components/hud/TerminalView';
 import { NewsView } from './components/hud/NewsView';
 import { KanbanView } from './components/hud/KanbanView';
 import { RouteView } from './components/hud/RouteView';
+import { IframeView } from './components/hud/IframeView';
+import { OfficeView } from './components/hud/OfficeView';
+import { TeamView } from './components/hud/TeamView';
+import { MemoryView } from './components/hud/MemoryView';
+import { CalendarView } from './components/hud/CalendarView';
+import { TaskBoardView } from './components/hud/TaskBoardView';
 import { NewProjectModal } from './components/hud/NewProjectModal';
 import { BottomNav } from './components/hud/BottomNav';
 import { ProjectsListView } from './components/hud/ProjectsListView';
@@ -83,6 +89,41 @@ function App() {
         {activeView === 'settings' && (
           <div className="overlay-view">
             <SettingsView />
+          </div>
+        )}
+        {activeView === 'observatory' && (
+          <div className="view-container full">
+            <IframeView src="/observatory/" title="K8s Observatory" />
+          </div>
+        )}
+        {activeView === 'pki' && (
+          <div className="view-container full">
+            <IframeView src="/pki/" title="PKI Admin" />
+          </div>
+        )}
+        {activeView === 'office' && (
+          <div className="overlay-view">
+            <OfficeView />
+          </div>
+        )}
+        {activeView === 'team' && (
+          <div className="overlay-view">
+            <TeamView />
+          </div>
+        )}
+        {activeView === 'memory' && (
+          <div className="overlay-view">
+            <MemoryView />
+          </div>
+        )}
+        {activeView === 'calendar' && (
+          <div className="overlay-view">
+            <CalendarView />
+          </div>
+        )}
+        {activeView === 'tasks' && (
+          <div className="overlay-view">
+            <TaskBoardView />
           </div>
         )}
         {activeView === 'chat' && (
