@@ -12,49 +12,70 @@ const STATE_LABELS: Record<AgentState, string> = {
 const ROLE_AVATARS: Record<string, string> = {
   'Go Proxy & Lambda': '⚙️',
   'Infra & CI/CD': '🔧',
-  'Security': '🛡️',
+  Security: '🛡️',
   'React UI': '🎨',
-  'Testing': '🧪',
+  Testing: '🧪',
   'WireGuard & Caddy': '🔒',
   'React & Three.js': '🌐',
-  'Research': '📚',
+  Research: '📚',
   'Backend API': '⚙️',
   'Frontend App': '🎨',
   'Code Review': '👁️',
-  'Architecture': '📐',
+  Architecture: '📐',
 };
 
 function getAvatar(role: string): string {
   return ROLE_AVATARS[role] || '🤖';
 }
 
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  if (!result) return '255,255,255';
+  return `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`;
+}
+
 function TerminalLines({ active }: { active: boolean }) {
   if (!active) {
     return (
-      <div style={{
-        position: 'absolute', inset: 4,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        color: '#1a2a3a', fontSize: '10px',
-        fontFamily: 'Share Tech Mono, monospace',
-      }}>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 4,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: '#30435c',
+          fontSize: '10px',
+          fontFamily: 'Share Tech Mono, monospace',
+        }}
+      >
         STANDBY
       </div>
     );
   }
 
   return (
-    <div style={{
-      position: 'absolute', inset: 4,
-      overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: 2,
-    }}>
+    <div
+      style={{
+        position: 'absolute',
+        inset: 4,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+      }}
+    >
       {[0.85, 0.7, 0.55, 0.4, 0.3].map((opacity, i) => (
-        <div key={i} style={{
-          height: 3,
-          background: `rgba(0, 255, 136, ${opacity * 0.6})`,
-          borderRadius: 1,
-          width: `${40 + Math.sin(i * 1.7) * 35}%`,
-          animation: active ? `termLine ${1.5 + i * 0.3}s ease-in-out infinite alternate` : 'none',
-        }} />
+        <div
+          key={i}
+          style={{
+            height: 3,
+            background: `rgba(0, 255, 136, ${opacity * 0.6})`,
+            borderRadius: 1,
+            width: `${40 + Math.sin(i * 1.7) * 35}%`,
+            animation: active ? `termLine ${1.5 + i * 0.3}s ease-in-out infinite alternate` : 'none',
+          }}
+        />
       ))}
     </div>
   );
@@ -66,194 +87,221 @@ function Workstation({ agent, projectColor }: { agent: ProjectAgent; projectColo
   const glowColor = isActive ? projectColor : 'transparent';
 
   return (
-    <div style={{
-      background: 'rgba(8, 12, 28, 0.85)',
-      border: '1px solid rgba(255,255,255,0.06)',
-      borderRadius: 8,
-      padding: 16,
-      backdropFilter: 'blur(12px)',
-      position: 'relative',
-      overflow: 'hidden',
-      transition: 'border-color 0.3s, box-shadow 0.3s',
-      boxShadow: isActive
-        ? `0 0 20px ${projectColor}15, inset 0 1px 0 rgba(255,255,255,0.05)`
-        : 'inset 0 1px 0 rgba(255,255,255,0.03)',
-      borderColor: isActive ? `${projectColor}30` : 'rgba(255,255,255,0.06)',
-    }}>
-      {/* Desk surface */}
-      <div style={{
-        background: 'rgba(15, 20, 40, 0.9)',
-        border: '1px solid rgba(255,255,255,0.04)',
-        borderRadius: 6,
-        padding: 12,
-        marginBottom: 12,
+    <article
+      style={{
+        background: 'rgba(8, 12, 28, 0.82)',
+        border: `1px solid ${isActive ? `${projectColor}35` : 'rgba(255,255,255,0.08)'}`,
+        borderRadius: 12,
+        padding: 14,
+        backdropFilter: 'blur(12px)',
         position: 'relative',
-      }}>
-        {/* Monitor */}
-        <div style={{
-          width: '100%', height: 56,
-          background: isActive ? 'rgba(0, 15, 8, 0.95)' : 'rgba(10, 12, 20, 0.95)',
-          border: `1.5px solid ${isActive ? glowColor + '60' : 'rgba(255,255,255,0.06)'}`,
-          borderRadius: 4,
+        overflow: 'hidden',
+        transition: 'border-color 0.3s, box-shadow 0.3s, transform 0.25s',
+        boxShadow: isActive
+          ? `0 8px 24px ${projectColor}18, inset 0 1px 0 rgba(255,255,255,0.05)`
+          : '0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.03)',
+      }}
+    >
+      <div
+        style={{
+          background: 'rgba(15, 20, 40, 0.85)',
+          border: '1px solid rgba(255,255,255,0.05)',
+          borderRadius: 8,
+          padding: 10,
+          marginBottom: 10,
           position: 'relative',
-          overflow: 'hidden',
-          boxShadow: isActive ? `0 0 12px ${glowColor}20` : 'none',
-          transition: 'all 0.4s',
-        }}>
+        }}
+      >
+        <div
+          style={{
+            width: '100%',
+            height: 56,
+            background: isActive ? 'rgba(0, 15, 8, 0.95)' : 'rgba(10, 12, 20, 0.95)',
+            border: `1.5px solid ${isActive ? `${glowColor}60` : 'rgba(255,255,255,0.08)'}`,
+            borderRadius: 5,
+            position: 'relative',
+            overflow: 'hidden',
+            boxShadow: isActive ? `0 0 12px ${glowColor}20` : 'none',
+            transition: 'all 0.4s',
+          }}
+        >
           <TerminalLines active={isActive} />
-          {/* Screen flicker overlay */}
           {isActive && (
-            <div style={{
-              position: 'absolute', inset: 0,
-              background: `linear-gradient(transparent 50%, rgba(0,0,0,0.03) 50%)`,
-              backgroundSize: '100% 4px',
-              pointerEvents: 'none',
-              animation: 'scanline 8s linear infinite',
-            }} />
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(transparent 50%, rgba(0,0,0,0.03) 50%)',
+                backgroundSize: '100% 4px',
+                pointerEvents: 'none',
+                animation: 'scanline 8s linear infinite',
+              }}
+            />
           )}
         </div>
 
-        {/* Monitor stand */}
-        <div style={{
-          width: 16, height: 6,
-          background: 'rgba(255,255,255,0.06)',
-          margin: '0 auto',
-          borderRadius: '0 0 3px 3px',
-        }} />
-        <div style={{
-          width: 30, height: 3,
-          background: 'rgba(255,255,255,0.04)',
-          margin: '0 auto',
-          borderRadius: 2,
-        }} />
+        <div
+          style={{
+            width: 16,
+            height: 6,
+            background: 'rgba(255,255,255,0.07)',
+            margin: '0 auto',
+            borderRadius: '0 0 3px 3px',
+          }}
+        />
+        <div
+          style={{
+            width: 30,
+            height: 3,
+            background: 'rgba(255,255,255,0.04)',
+            margin: '0 auto',
+            borderRadius: 2,
+          }}
+        />
 
-        {/* Keyboard */}
-        <div style={{
-          display: 'flex', gap: 2,
-          justifyContent: 'center',
-          marginTop: 6,
-        }}>
+        <div style={{ display: 'flex', gap: 2, justifyContent: 'center', marginTop: 6 }}>
           {[18, 14, 22, 14, 18].map((w, i) => (
-            <div key={i} style={{
-              width: w, height: 4,
-              background: isActive
-                ? `rgba(${hexToRgb(projectColor)}, ${0.15 + i * 0.03})`
-                : 'rgba(255,255,255,0.04)',
-              borderRadius: 1,
-              transition: 'background 0.3s',
-            }} />
+            <div
+              key={i}
+              style={{
+                width: w,
+                height: 4,
+                background: isActive
+                  ? `rgba(${hexToRgb(projectColor)}, ${0.15 + i * 0.03})`
+                  : 'rgba(255,255,255,0.05)',
+                borderRadius: 1,
+                transition: 'background 0.3s',
+              }}
+            />
           ))}
         </div>
 
-        {/* Avatar at desk */}
-        <div style={{
-          position: 'absolute',
-          bottom: 6,
-          right: 8,
-          fontSize: 20,
-          filter: isActive ? 'none' : 'grayscale(0.6) opacity(0.5)',
-          transition: 'filter 0.3s',
-          transform: isActive ? 'translateY(0)' : 'translateY(-2px) rotate(-8deg)',
-        }}>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 6,
+            right: 8,
+            fontSize: 20,
+            filter: isActive ? 'none' : 'grayscale(0.6) opacity(0.5)',
+            transition: 'filter 0.3s',
+            transform: isActive ? 'translateY(0)' : 'translateY(-2px) rotate(-8deg)',
+          }}
+        >
           {getAvatar(agent.role)}
         </div>
       </div>
 
-      {/* Agent info */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-        {/* Status dot */}
-        <div style={{
-          width: 8, height: 8,
-          borderRadius: '50%',
-          background: stateColor,
-          boxShadow: isActive ? `0 0 6px ${stateColor}` : 'none',
-          flexShrink: 0,
-          animation: isActive ? 'pulse 2s ease-in-out infinite' : 'none',
-        }} />
-        <span style={{
-          fontFamily: 'Orbitron, sans-serif',
-          fontSize: 11,
-          fontWeight: 600,
-          color: '#e0e8f0',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-        }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 5 }}>
+        <div
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            background: stateColor,
+            boxShadow: isActive ? `0 0 8px ${stateColor}` : 'none',
+            flexShrink: 0,
+            animation: isActive ? 'pulse 2s ease-in-out infinite' : 'none',
+          }}
+        />
+        <span
+          style={{
+            fontFamily: 'Orbitron, sans-serif',
+            fontSize: 11,
+            fontWeight: 600,
+            color: '#e0e8f0',
+            letterSpacing: '0.05em',
+            textTransform: 'uppercase',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {agent.name}
         </span>
-        <span style={{
-          marginLeft: 'auto',
-          fontFamily: 'Share Tech Mono, monospace',
-          fontSize: 9,
-          color: stateColor,
-          letterSpacing: '0.08em',
-          opacity: 0.9,
-        }}>
+        <span
+          style={{
+            marginLeft: 'auto',
+            fontFamily: 'Share Tech Mono, monospace',
+            fontSize: 9,
+            color: stateColor,
+            letterSpacing: '0.08em',
+            opacity: 0.9,
+            textTransform: 'uppercase',
+            whiteSpace: 'nowrap',
+          }}
+        >
           {STATE_LABELS[agent.state]}
         </span>
       </div>
 
-      {/* Role */}
-      <div style={{
-        fontFamily: 'Share Tech Mono, monospace',
-        fontSize: 10,
-        color: '#4a5a6a',
-        marginBottom: 4,
-      }}>
+      <div
+        style={{
+          fontFamily: 'Share Tech Mono, monospace',
+          fontSize: 10,
+          color: '#607496',
+          marginBottom: 5,
+          whiteSpace: 'nowrap',
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+        }}
+      >
         {agent.role}
       </div>
 
-      {/* Current task */}
-      <div style={{
-        fontFamily: 'Share Tech Mono, monospace',
-        fontSize: 10,
-        color: isActive ? projectColor : '#3a4a5a',
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        opacity: 0.85,
-      }}>
+      <div
+        style={{
+          fontFamily: 'Share Tech Mono, monospace',
+          fontSize: 10,
+          color: isActive ? projectColor : '#466081',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          opacity: 0.9,
+        }}
+      >
         {isActive && <span style={{ animation: 'blink 1s step-end infinite' }}>{'> '}</span>}
         {agent.task}
       </div>
 
-      {/* Contribution bar */}
-      <div style={{
-        marginTop: 8,
-        height: 2,
-        background: 'rgba(255,255,255,0.04)',
-        borderRadius: 1,
-        overflow: 'hidden',
-      }}>
-        <div style={{
-          height: '100%',
-          width: `${agent.contribution * 100}%`,
-          background: isActive
-            ? `linear-gradient(90deg, ${projectColor}80, ${projectColor})`
-            : 'rgba(255,255,255,0.08)',
-          borderRadius: 1,
-          transition: 'width 0.6s ease, background 0.3s',
-        }} />
+      <div
+        style={{
+          marginTop: 10,
+          height: 3,
+          background: 'rgba(255,255,255,0.05)',
+          borderRadius: 2,
+          overflow: 'hidden',
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${Math.max(0, Math.min(agent.contribution * 100, 100))}%`,
+            background: isActive
+              ? `linear-gradient(90deg, ${projectColor}80, ${projectColor})`
+              : 'rgba(255,255,255,0.1)',
+            borderRadius: 2,
+            transition: 'width 0.6s ease, background 0.3s',
+          }}
+        />
       </div>
-    </div>
+    </article>
   );
-}
-
-function hexToRgb(hex: string): string {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-  if (!result) return '255,255,255';
-  return `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}`;
 }
 
 export function OfficeView() {
   const projects = useStore(s => s.projects);
+  const totalAgents = projects.reduce((sum, p) => sum + p.agents.length, 0);
+  const totalActive = projects.reduce((sum, p) => sum + p.agents.filter(a => a.state === 'active').length, 0);
 
   return (
-    <div style={{
-      padding: '20px 24px',
-      height: '100%',
-      overflowY: 'auto',
-      background: 'linear-gradient(180deg, rgba(8,12,28,0.97) 0%, rgba(4,6,16,0.99) 100%)',
-    }}>
+    <div
+      style={{
+        padding: 'clamp(16px, 2.2vw, 24px)',
+        height: '100%',
+        overflowY: 'auto',
+        background: 'linear-gradient(180deg, rgba(8,12,28,0.96) 0%, rgba(4,6,16,0.99) 100%)',
+      }}
+    >
       <style>{`
         @keyframes pulse {
           0%, 100% { opacity: 1; }
@@ -273,91 +321,134 @@ export function OfficeView() {
         }
       `}</style>
 
-      {/* Header */}
-      <div style={{
-        display: 'flex', alignItems: 'center', gap: 12,
-        marginBottom: 24,
-        paddingBottom: 16,
-        borderBottom: '1px solid rgba(255,255,255,0.04)',
-      }}>
-        <span style={{ fontSize: 22 }}>🏢</span>
-        <div>
-          <h2 style={{
-            fontFamily: 'Orbitron, sans-serif',
-            fontSize: 16,
-            fontWeight: 700,
-            color: '#e0e8f0',
-            margin: 0,
-            letterSpacing: '0.1em',
-          }}>
-            DIGITAL OFFICE
-          </h2>
-          <span style={{
-            fontFamily: 'Share Tech Mono, monospace',
-            fontSize: 11,
-            color: '#4a5a6a',
-          }}>
-            {projects.reduce((sum, p) => sum + p.agents.length, 0)} agents across {projects.length} projects
-          </span>
-        </div>
-      </div>
-
-      {/* Projects with agent workstations */}
-      {projects.map(project => (
-        <div key={project.id} style={{ marginBottom: 28 }}>
-          {/* Project header */}
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: 10,
-            marginBottom: 12,
-          }}>
-            <div style={{
-              width: 10, height: 10,
-              borderRadius: '50%',
-              background: project.color,
-              boxShadow: `0 0 8px ${project.color}40`,
-            }} />
-            <span style={{
-              fontFamily: 'Orbitron, sans-serif',
-              fontSize: 12,
-              fontWeight: 600,
-              color: project.color,
-              letterSpacing: '0.12em',
-            }}>
-              {project.name}
-            </span>
-            <span style={{
-              fontFamily: 'Share Tech Mono, monospace',
-              fontSize: 10,
-              color: '#3a4a5a',
-            }}>
-              — {project.description}
-            </span>
-            <span style={{
-              marginLeft: 'auto',
-              fontFamily: 'Share Tech Mono, monospace',
-              fontSize: 10,
-              color: '#3a4a5a',
-            }}>
-              {project.agents.filter(a => a.state === 'active').length}/{project.agents.length} active
+      <header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 16,
+          marginBottom: 20,
+          paddingBottom: 14,
+          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          flexWrap: 'wrap',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 22 }}>🏢</span>
+          <div>
+            <h2
+              style={{
+                fontFamily: 'Orbitron, sans-serif',
+                fontSize: 16,
+                fontWeight: 700,
+                color: '#e0e8f0',
+                margin: 0,
+                letterSpacing: '0.1em',
+              }}
+            >
+              DIGITAL OFFICE
+            </h2>
+            <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 11, color: '#607496' }}>
+              Live workspace for all project agents
             </span>
           </div>
+        </div>
 
-          {/* Workstation grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-            gap: 12,
-          }}>
-            {project.agents.map(agent => (
-              <Workstation
-                key={agent.id}
-                agent={agent}
-                projectColor={project.color}
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div style={{ border: '1px solid rgba(0,240,255,0.25)', color: '#8bdcff', background: 'rgba(0,240,255,0.08)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
+            {projects.length} PROJECTS
+          </div>
+          <div style={{ border: '1px solid rgba(255,255,255,0.16)', color: '#adc0dd', background: 'rgba(255,255,255,0.06)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
+            {totalAgents} AGENTS
+          </div>
+          <div style={{ border: '1px solid rgba(0,255,136,0.25)', color: '#87f8bf', background: 'rgba(0,255,136,0.08)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
+            {totalActive} ACTIVE
+          </div>
+        </div>
+      </header>
+
+      {projects.length === 0 && (
+        <div
+          style={{
+            border: '1px dashed rgba(0,240,255,0.22)',
+            borderRadius: 12,
+            padding: 20,
+            color: '#7f93b4',
+            textAlign: 'center',
+            background: 'rgba(8,12,28,0.6)',
+          }}
+        >
+          No projects yet. Create one from the sidebar to populate the office.
+        </div>
+      )}
+
+      {projects.map(project => {
+        const activeInProject = project.agents.filter(a => a.state === 'active').length;
+
+        return (
+          <section key={project.id} style={{ marginBottom: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10, flexWrap: 'wrap' }}>
+              <div
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  background: project.color,
+                  boxShadow: `0 0 10px ${project.color}55`,
+                }}
               />
-            ))}
-          </div>
-        </div>
-      ))}
+              <span
+                style={{
+                  fontFamily: 'Orbitron, sans-serif',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: project.color,
+                  letterSpacing: '0.11em',
+                }}
+              >
+                {project.name}
+              </span>
+              <span
+                style={{
+                  fontFamily: 'Share Tech Mono, monospace',
+                  fontSize: 10,
+                  color: '#607496',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  maxWidth: 'min(480px, 100%)',
+                }}
+              >
+                — {project.description}
+              </span>
+              <span
+                style={{
+                  marginLeft: 'auto',
+                  fontFamily: 'Share Tech Mono, monospace',
+                  fontSize: 10,
+                  color: '#88a2c8',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {activeInProject}/{project.agents.length} active
+              </span>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+                gap: 12,
+                alignItems: 'stretch',
+              }}
+            >
+              {project.agents.map(agent => (
+                <Workstation key={agent.id} agent={agent} projectColor={project.color} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
     </div>
   );
 }
