@@ -162,8 +162,8 @@ const INITIAL_PROJECTS: Project[] = [
     repoUrl: 'https://github.com/gonzaloacosta/pki-ca-admin',
   },
   {
-    id: 'mialice',
-    name: 'MiALICE',
+    id: 'ialice',
+    name: 'iALICE',
     description: 'Personal AI for Everyone — WhatsApp',
     color: '#ff6b9d',
     emissiveColor: '#ff6b9d',
@@ -176,9 +176,9 @@ const INITIAL_PROJECTS: Project[] = [
     startAngle: 3.3,
     tasks: { done: 1, total: 20 },
     agents: [
-      { id: 'mia-arch', name: 'Architect', role: 'System Design', state: 'active', task: 'Discovery & privacy model', contribution: 0.5 },
-      { id: 'mia-backend', name: 'Backend', role: 'Go/Node API', state: 'idle', task: 'Awaiting MVP start', contribution: 0 },
-      { id: 'mia-product', name: 'Product', role: 'UX & Research', state: 'active', task: 'User persona research', contribution: 0.4 },
+      { id: 'ia-arch', name: 'Architect', role: 'System Design', state: 'active', task: 'Discovery & privacy model', contribution: 0.5 },
+      { id: 'ia-backend', name: 'Backend', role: 'Go/Node API', state: 'idle', task: 'Awaiting MVP start', contribution: 0 },
+      { id: 'ia-product', name: 'Product', role: 'UX & Research', state: 'active', task: 'User persona research', contribution: 0.4 },
     ],
     notionUrl: 'https://www.notion.so/30f6ba83421981d5b43fc26c83f301a5',
   },
