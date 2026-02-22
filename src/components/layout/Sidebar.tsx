@@ -8,17 +8,33 @@ interface SidebarProps {
   onNewProject?: () => void;
 }
 
-// Sub-items under the collapsible "Projects" section
-const projectSubItems: { id: View; label: string; icon: string }[] = [
-  { id: 'office', label: 'Office', icon: '🏢' },
-  { id: 'team', label: 'Team', icon: '👥' },
-  { id: 'memory', label: 'Memory', icon: '🧠' },
-  { id: 'calendar', label: 'Calendar', icon: '📅' },
-  { id: 'tasks', label: 'Task Board', icon: '📋' },
-  { id: 'kanban', label: 'Board', icon: '📊' },
-  { id: 'chat', label: 'Chat', icon: '💬' },
-  { id: 'logs', label: 'Activity Log', icon: '📝' },
+type ProjectNavGroup = {
+  title: string;
+  items: { id: View; label: string; icon: string }[];
+};
+
+const projectGroups: ProjectNavGroup[] = [
+  {
+    title: 'Workspace',
+    items: [
+      { id: 'office', label: 'Office', icon: '🏢' },
+      { id: 'team', label: 'Team', icon: '👥' },
+      { id: 'memory', label: 'Memory', icon: '🧠' },
+    ],
+  },
+  {
+    title: 'Planning',
+    items: [
+      { id: 'calendar', label: 'Calendar', icon: '📅' },
+      { id: 'tasks', label: 'Task Board', icon: '📋' },
+      { id: 'kanban', label: 'Kanban', icon: '📊' },
+      { id: 'logs', label: 'Activity Log', icon: '📝' },
+      { id: 'chat', label: 'Chat', icon: '💬' },
+    ],
+  },
 ];
+
+const projectSubItems = projectGroups.flatMap((g) => g.items);
 
 // Top-level nav items
 const topLevelItems: { id: View; label: string; icon: string }[] = [
@@ -96,22 +112,36 @@ export function Sidebar({ activeView, onNewProject }: SidebarProps) {
       {/* Collapsible sub-items */}
       <div style={{
         overflow: 'hidden',
-        maxHeight: projectsExpanded ? '420px' : '0',
+        maxHeight: projectsExpanded ? '520px' : '0',
         transition: 'max-height 0.25s ease',
       }}>
-        {projectSubItems.map(item => (
-          <button
-            key={item.id}
-            className={`nav-item ${activeView === item.id ? 'active' : ''}`}
-            onClick={() => setActiveView(item.id)}
-            style={{ paddingLeft: '28px' }}
-          >
-            <span className="icon" style={{ fontSize: '13px' }}>{item.icon}</span>
-            <span className="label">{item.label}</span>
-            {item.id === 'chat' && openChats.length > 0 && (
-              <span className="badge-count">{openChats.length}</span>
-            )}
-          </button>
+        {projectGroups.map((group) => (
+          <div key={group.title}>
+            <div style={{
+              padding: '6px 12px 4px 28px',
+              color: '#5d7192',
+              fontSize: '10px',
+              fontFamily: 'Share Tech Mono, monospace',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+            }}>
+              {group.title}
+            </div>
+            {group.items.map(item => (
+              <button
+                key={item.id}
+                className={`nav-item ${activeView === item.id ? 'active' : ''}`}
+                onClick={() => setActiveView(item.id)}
+                style={{ paddingLeft: '28px' }}
+              >
+                <span className="icon" style={{ fontSize: '13px' }}>{item.icon}</span>
+                <span className="label">{item.label}</span>
+                {item.id === 'chat' && openChats.length > 0 && (
+                  <span className="badge-count">{openChats.length}</span>
+                )}
+              </button>
+            ))}
+          </div>
         ))}
       </div>
 

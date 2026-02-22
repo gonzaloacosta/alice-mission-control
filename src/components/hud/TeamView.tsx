@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { STATE_COLORS } from '../../types';
 
 type AgentCard = {
@@ -29,6 +30,20 @@ const TEAM: AgentCard[] = [
 ];
 
 export function TeamView() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const id = setTimeout(() => setLoading(false), 500);
+    return () => clearTimeout(id);
+  }, []);
+
+  const stats = useMemo(() => {
+    const active = TEAM.filter((a) => a.status === 'active').length;
+    const idle = TEAM.filter((a) => a.status === 'idle').length;
+    const warning = TEAM.filter((a) => a.status === 'warning').length;
+    return { active, idle, warning, total: TEAM.length + 1 };
+  }, []);
+
   return (
     <div style={{ padding: '20px 24px', height: '100%', overflowY: 'auto' }}>
       <h2 style={{ margin: 0, color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', letterSpacing: '0.08em' }}>👥 TEAM STRUCTURE</h2>
@@ -36,12 +51,26 @@ export function TeamView() {
         Alice + sub-agents organized by responsibilities
       </p>
 
-      <div style={{ display: 'flex', justifyContent: 'center', marginTop: 16, marginBottom: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginTop: 12, marginBottom: 14 }}>
+        {[
+          { label: 'Total', value: stats.total, color: '#dfe8ff' },
+          { label: 'Active', value: stats.active + 1, color: '#57c58f' },
+          { label: 'Idle', value: stats.idle, color: '#8ea3c8' },
+          { label: 'Alerts', value: stats.warning, color: '#ffb366' },
+        ].map((s) => (
+          <div key={s.label} style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
+            <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>{s.label}</div>
+            <div style={{ color: s.color, fontFamily: 'Orbitron, sans-serif', fontSize: 16, marginTop: 2 }}>{s.value}</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
         <div style={{
-          minWidth: 280,
-          background: 'rgba(8,12,28,0.92)',
+          minWidth: 300,
+          background: 'rgba(8,12,28,0.94)',
           border: '1px solid rgba(0,240,255,0.25)',
-          borderRadius: 10,
+          borderRadius: 12,
           padding: 14,
           textAlign: 'center',
           boxShadow: '0 0 20px rgba(0,240,255,0.12)',
@@ -54,27 +83,43 @@ export function TeamView() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
-        {TEAM.map((a) => (
-          <div key={a.name} style={{ background: 'rgba(8,12,28,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: 22 }}>{a.avatar}</span>
-              <div>
-                <div style={{ color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', fontSize: 12 }}>{a.name}</div>
-                <div style={{ color: '#7f93b4', fontFamily: 'Share Tech Mono, monospace', fontSize: 10 }}>{a.role}</div>
+      {loading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+          {[1, 2, 3].map((s) => (
+            <div key={s} style={{ background: 'rgba(8,12,28,0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
+              <div style={{ height: 12, width: '45%', background: 'rgba(127,147,180,0.35)', borderRadius: 4 }} />
+              <div style={{ height: 10, width: '65%', background: 'rgba(127,147,180,0.2)', borderRadius: 4, marginTop: 8 }} />
+              <div style={{ height: 10, width: '90%', background: 'rgba(127,147,180,0.15)', borderRadius: 4, marginTop: 10 }} />
+            </div>
+          ))}
+        </div>
+      ) : TEAM.length === 0 ? (
+        <div style={{ marginTop: 16, border: '1px dashed rgba(0,240,255,0.35)', borderRadius: 10, padding: 18, color: '#8ea3c8', textAlign: 'center' }}>
+          No team members configured yet.
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 12 }}>
+          {TEAM.map((a) => (
+            <div key={a.name} style={{ background: 'rgba(8,12,28,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontSize: 22 }}>{a.avatar}</span>
+                <div>
+                  <div style={{ color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', fontSize: 12 }}>{a.name}</div>
+                  <div style={{ color: '#7f93b4', fontFamily: 'Share Tech Mono, monospace', fontSize: 10 }}>{a.role}</div>
+                </div>
+                <span style={{ marginLeft: 'auto', color: STATE_COLORS[a.status], fontSize: 10 }}>● {a.status.toUpperCase()}</span>
               </div>
-              <span style={{ marginLeft: 'auto', color: STATE_COLORS[a.status], fontSize: 10 }}>● {a.status.toUpperCase()}</span>
+              <div style={{ color: '#5f7396', fontSize: 11, marginTop: 8 }}>{a.description}</div>
+              <div style={{ color: '#8ea3c8', fontSize: 10, marginTop: 4, fontFamily: 'Share Tech Mono, monospace' }}>{a.model}</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                {a.skills.map((s) => (
+                  <span key={s} style={{ fontSize: 10, color: '#a8b8d3', border: '1px solid rgba(0,240,255,0.22)', borderRadius: 999, padding: '2px 7px' }}>{s}</span>
+                ))}
+              </div>
             </div>
-            <div style={{ color: '#5f7396', fontSize: 11, marginTop: 8 }}>{a.description}</div>
-            <div style={{ color: '#8ea3c8', fontSize: 10, marginTop: 4, fontFamily: 'Share Tech Mono, monospace' }}>{a.model}</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-              {a.skills.map((s) => (
-                <span key={s} style={{ fontSize: 10, color: '#a8b8d3', border: '1px solid rgba(0,240,255,0.22)', borderRadius: 999, padding: '2px 7px' }}>{s}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

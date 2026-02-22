@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type MemoryDoc = { id: string; title: string; path: string; summary: string; updatedAt: string; tags: string[] };
 
@@ -12,6 +12,13 @@ const DOCS: MemoryDoc[] = [
 
 export function MemoryView() {
   const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const id = setTimeout(() => setLoading(false), 450);
+    return () => clearTimeout(id);
+  }, []);
+
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
     if (!k) return DOCS;
@@ -27,31 +34,59 @@ export function MemoryView() {
         Searchable memory documents (mock version)
       </p>
 
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginTop: 12 }}>
+        <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
+          <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>Documents</div>
+          <div style={{ color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', fontSize: 16 }}>{DOCS.length}</div>
+        </div>
+        <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
+          <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>Matches</div>
+          <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 16 }}>{filtered.length}</div>
+        </div>
+      </div>
+
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search memory files..."
+        placeholder="Search memory files, tags, paths..."
         style={{
-          width: '100%', marginTop: 10, marginBottom: 14,
+          width: '100%', marginTop: 12, marginBottom: 14,
           background: 'rgba(8,12,28,0.92)', color: '#dfe8ff',
           border: '1px solid rgba(0,240,255,0.25)', borderRadius: 8, padding: '10px 12px',
           fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
         }}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-        {filtered.map((d) => (
-          <div key={d.id} style={{ background: 'rgba(8,12,28,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
-            <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 12 }}>{d.title}</div>
-            <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10, marginTop: 2 }}>{d.path}</div>
-            <div style={{ color: '#c0cde3', fontSize: 11, marginTop: 8 }}>{d.summary}</div>
-            <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-              {d.tags.map((t) => <span key={t} style={{ fontSize: 10, color: '#93a7ca', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 999, padding: '2px 7px' }}>{t}</span>)}
+      {loading ? (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+          {[1, 2, 3].map((s) => (
+            <div key={s} style={{ background: 'rgba(8,12,28,0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
+              <div style={{ height: 12, width: '45%', background: 'rgba(127,147,180,0.35)', borderRadius: 4 }} />
+              <div style={{ height: 10, width: '80%', background: 'rgba(127,147,180,0.2)', borderRadius: 4, marginTop: 8 }} />
+              <div style={{ height: 10, width: '90%', background: 'rgba(127,147,180,0.15)', borderRadius: 4, marginTop: 10 }} />
             </div>
-            <div style={{ marginTop: 8, color: '#5d7192', fontSize: 10 }}>Updated: {d.updatedAt}</div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div style={{ marginTop: 10, border: '1px dashed rgba(0,240,255,0.35)', borderRadius: 10, padding: 18, textAlign: 'center' }}>
+          <div style={{ color: '#c0cde3', fontFamily: 'Orbitron, sans-serif', fontSize: 13 }}>No memory files found</div>
+          <div style={{ color: '#6b7c96', fontSize: 11, marginTop: 6 }}>Try another keyword, tag, or path.</div>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
+          {filtered.map((d) => (
+            <div key={d.id} style={{ background: 'rgba(8,12,28,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
+              <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 12 }}>{d.title}</div>
+              <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10, marginTop: 2 }}>{d.path}</div>
+              <div style={{ color: '#c0cde3', fontSize: 11, marginTop: 8 }}>{d.summary}</div>
+              <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {d.tags.map((t) => <span key={t} style={{ fontSize: 10, color: '#93a7ca', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 999, padding: '2px 7px' }}>{t}</span>)}
+              </div>
+              <div style={{ marginTop: 8, color: '#5d7192', fontSize: 10 }}>Updated: {d.updatedAt}</div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
