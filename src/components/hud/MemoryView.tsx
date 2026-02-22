@@ -1,92 +1,235 @@
 import { useEffect, useMemo, useState } from 'react';
 
-type MemoryDoc = { id: string; title: string; path: string; summary: string; updatedAt: string; tags: string[] };
+type MemoryDoc = {
+  id: string;
+  title: string;
+  path: string;
+  summary: string;
+  updatedAt: string;
+  tags: string[];
+  content: string;
+};
 
-const DOCS: MemoryDoc[] = [
-  { id: '1', title: 'MEMORY.md', path: 'workspace/MEMORY.md', summary: 'Long-term memory: user profile, projects, preferences.', updatedAt: '2026-02-22', tags: ['core', 'profile'] },
-  { id: '2', title: '2026-02-22.md', path: 'memory/2026-02-22.md', summary: 'Daily log with decisions and pending work.', updatedAt: '2026-02-22', tags: ['daily', 'journal'] },
-  { id: '3', title: 'clara/2026-02-22.md', path: 'memory/clara/2026-02-22.md', summary: 'Clara conversations and reminders.', updatedAt: '2026-02-22', tags: ['contact', 'clara'] },
-  { id: '4', title: 'onespan-research.md', path: 'memory/onespan-research.md', summary: 'Research notes and role recommendations.', updatedAt: '2026-02-19', tags: ['research', 'career'] },
-  { id: '5', title: 'gonzalo-profile.md', path: 'memory/gonzalo-profile.md', summary: 'Detailed profile and professional history.', updatedAt: '2026-02-18', tags: ['profile'] },
+const INITIAL_DOCS: MemoryDoc[] = [
+  {
+    id: '1',
+    title: 'MEMORY.md',
+    path: 'workspace/MEMORY.md',
+    summary: 'Long-term memory: user profile, projects, preferences.',
+    updatedAt: '2026-02-22',
+    tags: ['core', 'profile'],
+    content: '# MEMORY.md\n\nLong-term memory and key user preferences.\n\n- Keep communication in English for practice\n- Prioritize practical delivery over theory\n',
+  },
+  {
+    id: '2',
+    title: '2026-02-22.md',
+    path: 'memory/2026-02-22.md',
+    summary: 'Daily log with decisions and pending work.',
+    updatedAt: '2026-02-22',
+    tags: ['daily', 'journal'],
+    content: '# 2026-02-22\n\n- Mission Control mock views refined\n- Model routing switched to GPT-5.3 Codex\n- Pending: connect mock views to real APIs\n',
+  },
+  {
+    id: '3',
+    title: 'clara/2026-02-22.md',
+    path: 'memory/clara/2026-02-22.md',
+    summary: 'Clara conversations and reminders.',
+    updatedAt: '2026-02-22',
+    tags: ['contact', 'clara'],
+    content: '# Clara notes\n\n- Interested in Sculptra research\n- Asked for Kindle books in Spanish\n',
+  },
+  {
+    id: '4',
+    title: 'onespan-research.md',
+    path: 'memory/onespan-research.md',
+    summary: 'Research notes and role recommendations.',
+    updatedAt: '2026-02-19',
+    tags: ['research', 'career'],
+    content: '# OneSpan research\n\nCloud Architect remains strongest fit due to experience and no on-call preference.\n',
+  },
+  {
+    id: '5',
+    title: 'gonzalo-profile.md',
+    path: 'memory/gonzalo-profile.md',
+    summary: 'Detailed profile and professional history.',
+    updatedAt: '2026-02-18',
+    tags: ['profile'],
+    content: '# Gonzalo profile\n\n15 years in infra/cloud/k8s/mlops. Based in Barcelona.\n',
+  },
 ];
 
 export function MemoryView() {
   const [q, setQ] = useState('');
   const [loading, setLoading] = useState(true);
+  const [docs, setDocs] = useState<MemoryDoc[]>(INITIAL_DOCS);
+  const [selectedId, setSelectedId] = useState<string>(INITIAL_DOCS[0].id);
+  const [draft, setDraft] = useState(INITIAL_DOCS[0].content);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
-    const id = setTimeout(() => setLoading(false), 450);
+    const id = setTimeout(() => setLoading(false), 350);
     return () => clearTimeout(id);
   }, []);
 
   const filtered = useMemo(() => {
     const k = q.trim().toLowerCase();
-    if (!k) return DOCS;
-    return DOCS.filter((d) =>
-      [d.title, d.path, d.summary, d.tags.join(' ')].join(' ').toLowerCase().includes(k)
+    if (!k) return docs;
+    return docs.filter((d) =>
+      [d.title, d.path, d.summary, d.tags.join(' '), d.content].join(' ').toLowerCase().includes(k)
     );
-  }, [q]);
+  }, [q, docs]);
+
+  const selectedDoc = docs.find((d) => d.id === selectedId) ?? null;
+
+  const openDoc = (id: string) => {
+    const doc = docs.find((d) => d.id === id);
+    if (!doc) return;
+    setSelectedId(id);
+    setDraft(doc.content);
+    setSavedAt(null);
+  };
+
+  const saveDoc = () => {
+    if (!selectedDoc) return;
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10);
+    setDocs((prev) =>
+      prev.map((d) =>
+        d.id === selectedDoc.id
+          ? {
+              ...d,
+              content: draft,
+              updatedAt: date,
+              summary: draft.slice(0, 110).replace(/\n/g, ' ') || d.summary,
+            }
+          : d
+      )
+    );
+    setSavedAt(now.toLocaleTimeString('en-GB', { hour12: false }));
+  };
 
   return (
-    <div style={{ padding: '20px 24px', height: '100%', overflowY: 'auto' }}>
+    <div style={{ padding: '20px 24px', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
       <h2 style={{ margin: 0, color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', letterSpacing: '0.08em' }}>🧠 MEMORY BROWSER</h2>
       <p style={{ marginTop: 6, color: '#6b7c96', fontFamily: 'Share Tech Mono, monospace', fontSize: 12 }}>
-        Searchable memory documents (mock version)
+        Click a memory file to view/edit content (mock editor)
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginTop: 12 }}>
-        <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
-          <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>Documents</div>
-          <div style={{ color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', fontSize: 16 }}>{DOCS.length}</div>
-        </div>
-        <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
-          <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>Matches</div>
-          <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 16 }}>{filtered.length}</div>
-        </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginTop: 10 }}>
+        <Stat label="Documents" value={String(docs.length)} color="#dfe8ff" />
+        <Stat label="Matches" value={String(filtered.length)} color="#00f0ff" />
       </div>
 
       <input
         value={q}
         onChange={(e) => setQ(e.target.value)}
-        placeholder="Search memory files, tags, paths..."
+        placeholder="Search memory files, tags, paths, content..."
         style={{
-          width: '100%', marginTop: 12, marginBottom: 14,
-          background: 'rgba(8,12,28,0.92)', color: '#dfe8ff',
-          border: '1px solid rgba(0,240,255,0.25)', borderRadius: 8, padding: '10px 12px',
-          fontFamily: 'Share Tech Mono, monospace', fontSize: 12,
+          width: '100%',
+          marginTop: 10,
+          marginBottom: 10,
+          background: 'rgba(8,12,28,0.92)',
+          color: '#dfe8ff',
+          border: '1px solid rgba(0,240,255,0.25)',
+          borderRadius: 8,
+          padding: '10px 12px',
+          fontFamily: 'Share Tech Mono, monospace',
+          fontSize: 12,
         }}
       />
 
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-          {[1, 2, 3].map((s) => (
-            <div key={s} style={{ background: 'rgba(8,12,28,0.7)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
-              <div style={{ height: 12, width: '45%', background: 'rgba(127,147,180,0.35)', borderRadius: 4 }} />
-              <div style={{ height: 10, width: '80%', background: 'rgba(127,147,180,0.2)', borderRadius: 4, marginTop: 8 }} />
-              <div style={{ height: 10, width: '90%', background: 'rgba(127,147,180,0.15)', borderRadius: 4, marginTop: 10 }} />
-            </div>
-          ))}
-        </div>
-      ) : filtered.length === 0 ? (
-        <div style={{ marginTop: 10, border: '1px dashed rgba(0,240,255,0.35)', borderRadius: 10, padding: 18, textAlign: 'center' }}>
-          <div style={{ color: '#c0cde3', fontFamily: 'Orbitron, sans-serif', fontSize: 13 }}>No memory files found</div>
-          <div style={{ color: '#6b7c96', fontSize: 11, marginTop: 6 }}>Try another keyword, tag, or path.</div>
-        </div>
+        <div style={{ color: '#7f93b4', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, marginTop: 8 }}>Loading memory documents…</div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 }}>
-          {filtered.map((d) => (
-            <div key={d.id} style={{ background: 'rgba(8,12,28,0.9)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12 }}>
-              <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 12 }}>{d.title}</div>
-              <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10, marginTop: 2 }}>{d.path}</div>
-              <div style={{ color: '#c0cde3', fontSize: 11, marginTop: 8 }}>{d.summary}</div>
-              <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {d.tags.map((t) => <span key={t} style={{ fontSize: 10, color: '#93a7ca', border: '1px solid rgba(0,240,255,0.2)', borderRadius: 999, padding: '2px 7px' }}>{t}</span>)}
-              </div>
-              <div style={{ marginTop: 8, color: '#5d7192', fontSize: 10 }}>Updated: {d.updatedAt}</div>
-            </div>
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 12, minHeight: 0, flex: 1 }}>
+          <div style={{ overflowY: 'auto', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 10, background: 'rgba(8,12,28,0.88)' }}>
+            {filtered.length === 0 ? (
+              <div style={{ color: '#7f93b4', fontSize: 12, textAlign: 'center', padding: '14px 8px' }}>No memory files found.</div>
+            ) : (
+              filtered.map((d) => (
+                <button
+                  key={d.id}
+                  onClick={() => openDoc(d.id)}
+                  style={{
+                    width: '100%',
+                    textAlign: 'left',
+                    marginBottom: 8,
+                    background: d.id === selectedId ? 'rgba(0,240,255,0.10)' : 'rgba(3,6,16,0.7)',
+                    border: d.id === selectedId ? '1px solid rgba(0,240,255,0.45)' : '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 8,
+                    padding: 10,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 11 }}>{d.title}</div>
+                  <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10, marginTop: 2 }}>{d.path}</div>
+                  <div style={{ color: '#c0cde3', fontSize: 11, marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.summary}</div>
+                  <div style={{ color: '#5d7192', fontSize: 10, marginTop: 6 }}>Updated: {d.updatedAt}</div>
+                </button>
+              ))
+            )}
+          </div>
+
+          <div style={{ overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12, background: 'rgba(8,12,28,0.9)', display: 'flex', flexDirection: 'column' }}>
+            {!selectedDoc ? (
+              <div style={{ color: '#7f93b4', fontSize: 12 }}>Select a memory document to view content.</div>
+            ) : (
+              <>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 13 }}>{selectedDoc.title}</div>
+                  <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10 }}>{selectedDoc.path}</div>
+                  <button
+                    onClick={saveDoc}
+                    style={{
+                      marginLeft: 'auto',
+                      border: '1px solid rgba(0,240,255,0.45)',
+                      background: 'rgba(0,240,255,0.08)',
+                      color: '#00f0ff',
+                      borderRadius: 8,
+                      padding: '6px 10px',
+                      cursor: 'pointer',
+                      fontFamily: 'Share Tech Mono, monospace',
+                      fontSize: 11,
+                    }}
+                  >
+                    Save
+                  </button>
+                </div>
+                <textarea
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  style={{
+                    width: '100%',
+                    flex: 1,
+                    minHeight: 0,
+                    resize: 'none',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    borderRadius: 8,
+                    background: 'rgba(3,6,16,0.85)',
+                    color: '#dfe8ff',
+                    padding: 12,
+                    fontFamily: 'Share Tech Mono, monospace',
+                    fontSize: 12,
+                    lineHeight: 1.45,
+                  }}
+                />
+                <div style={{ color: '#5d7192', fontSize: 10, marginTop: 8 }}>
+                  {savedAt ? `Saved at ${savedAt}` : 'Changes are local in this mock view.'}
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function Stat({ label, value, color }: { label: string; value: string; color: string }) {
+  return (
+    <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
+      <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>{label}</div>
+      <div style={{ color, fontFamily: 'Orbitron, sans-serif', fontSize: 16 }}>{value}</div>
     </div>
   );
 }
