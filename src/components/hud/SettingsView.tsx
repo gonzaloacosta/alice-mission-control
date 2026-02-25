@@ -91,7 +91,7 @@ export function SettingsView() {
             <InfoItem label="Frontend" value="React + Three.js" />
             <InfoItem label="API" value="Port 4446" />
             <InfoItem label="Gateway" value="Port 18789" />
-            <InfoItem label="Domain" value="app.gonzaloacosta.me" />
+            <InfoItem label="Domain" value="alice.gonzaloacosta.me" />
           </div>
         </Section>
 

@@ -2,7 +2,7 @@
 
 A cyberpunk-themed 3D mission control dashboard for managing AI agent projects. Built with React, Three.js (React Three Fiber), and a Node.js backend with PostgreSQL persistence.
 
-> **Live at:** [app.gonzaloacosta.me](https://app.gonzaloacosta.me)
+> **Live at:** [alice.gonzaloacosta.me](https://alice.gonzaloacosta.me)
 
 ## Overview
 
@@ -88,7 +88,7 @@ block-beta
 graph TB
   subgraph Internet
     USER["🌐 User Browser"]
-    CF["☁️ Cloudflare\nSSL + DNS\napp.gonzaloacosta.me"]
+    CF["☁️ Cloudflare\nSSL + DNS\nalice.gonzaloacosta.me"]
   end
 
   subgraph Host["🖥️ Host Server"]

@@ -93,7 +93,7 @@ function App() {
         )}
         {activeView === 'observatory' && (
           <div className="view-container full">
-            <IframeView src="/observatory/" title="K8s Observatory" />
+            <IframeView src="/kubiverse/" title="Kubiverse" />
           </div>
         )}
         {activeView === 'pki' && (

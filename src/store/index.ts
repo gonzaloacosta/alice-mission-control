@@ -77,7 +77,7 @@ const INITIAL_PROJECTS: Project[] = [
       { id: 'kubi-frontend', name: 'Frontend', role: 'React & R3F', state: 'active', task: 'Solar system viz', contribution: 0.8 },
       { id: 'kubi-devops', name: 'DevOps', role: 'Docker & Kind', state: 'active', task: 'Test clusters', contribution: 0.6 },
     ],
-    repoUrl: 'https://github.com/gonzaloacosta/k8s-observatory',
+    repoUrl: 'https://github.com/gonzaloacosta/kubiverse',
   },
   {
     id: 'vpn',

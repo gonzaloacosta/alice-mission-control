@@ -1,7 +1,9 @@
 // Project configuration mapping
 // Static defaults — overridden by persistent projects.json if it exists
 const DEFAULT_PROJECTS = {
-  cid: { dir: '/home/alice/github/cid', agents: ['backend', 'devops', 'devsecops', 'frontend', 'qa'] },
+  kubiverse: { dir: '/home/alice/github/kubiverse', agents: ['backend', 'devops', 'devsecops', 'frontend', 'qa'] },
+  // Backward-compat alias for older references
+  cid: { dir: '/home/alice/github/kubiverse', agents: ['backend', 'devops', 'devsecops', 'frontend', 'qa'] },
   vpn: { dir: '/home/alice/github/vpn-project', agents: [] },
   mctl: { dir: '/home/alice/github/alice-mission-control', agents: [] },
   books: { dir: '/home/alice/.openclaw/workspace', agents: [] },

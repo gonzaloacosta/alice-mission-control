@@ -4,7 +4,7 @@
 
 **Alice Mission Control** is a cyberpunk-themed 3D dashboard for managing AI agent projects. Built with React 19, Three.js (React Three Fiber), and a Node.js backend with PostgreSQL.
 
-**Live:** https://app.gonzaloacosta.me
+**Live:** https://alice.gonzaloacosta.me
 
 ## Architecture
 

@@ -1,7 +1,25 @@
 http://app.gonzaloacosta.me {
+    redir https://alice.gonzaloacosta.me{uri} 301
+}
+
+http://alice.gonzaloacosta.me {
     handle /dashboard/* {
         uri strip_prefix /dashboard
         reverse_proxy localhost:3333
+    }
+
+    handle /kubiverse-api/* {
+        uri strip_prefix /kubiverse-api
+        reverse_proxy localhost:4448
+    }
+
+    handle /kubiverse-ws/* {
+        uri strip_prefix /kubiverse-ws
+        reverse_proxy localhost:4448
+    }
+
+    handle /kubiverse/* {
+        reverse_proxy localhost:4447
     }
 
     handle /api/v1/agents/* {

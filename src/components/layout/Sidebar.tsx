@@ -38,10 +38,10 @@ const projectSubItems = projectGroups.flatMap((g) => g.items);
 
 // Top-level nav items
 const topLevelItems: { id: View; label: string; icon: string }[] = [
+  { id: 'observatory', label: 'Kubiverse', icon: '🔭' },
   { id: 'news', label: 'News Feed', icon: '📡' },
   { id: 'route', label: 'Route Planner', icon: '🧭' },
   { id: 'terminal', label: 'Terminal', icon: '🖥️' },
-  { id: 'observatory', label: 'K8s Observatory', icon: '🔭' },
   { id: 'pki', label: 'PKI Admin', icon: '🔐' },
   { id: 'settings', label: 'Settings', icon: '⚙️' },
 ];
@@ -49,6 +49,8 @@ const topLevelItems: { id: View; label: string; icon: string }[] = [
 export function Sidebar({ activeView, onNewProject }: SidebarProps) {
   const [clock, setClock] = useState('');
   const [projectsExpanded, setProjectsExpanded] = useState(true);
+  const [toolsExpanded, setToolsExpanded] = useState(true);
+  const [sessionsExpanded, setSessionsExpanded] = useState(true);
   const projects = useStore(s => s.projects);
   const selectedProjectId = useStore(s => s.selectedProjectId);
   const selectProject = useStore(s => s.selectProject);
@@ -58,10 +60,19 @@ export function Sidebar({ activeView, onNewProject }: SidebarProps) {
 
   // Auto-expand when a sub-item is active
   const isProjectSubView = projectSubItems.some(i => i.id === activeView) || activeView === 'projects';
+  const isToolsView = topLevelItems.some(i => i.id === activeView);
 
   useEffect(() => {
     if (isProjectSubView) setProjectsExpanded(true);
   }, [isProjectSubView]);
+
+  useEffect(() => {
+    if (isToolsView) setToolsExpanded(true);
+  }, [isToolsView]);
+
+  useEffect(() => {
+    if (selectedProjectId) setSessionsExpanded(true);
+  }, [selectedProjectId]);
 
   useEffect(() => {
     const update = () => setClock(new Date().toLocaleTimeString('en-US', { hour12: false }));
@@ -145,42 +156,85 @@ export function Sidebar({ activeView, onNewProject }: SidebarProps) {
         ))}
       </div>
 
-      {/* ── Top-level items ── */}
-      <div className="nav-section" style={{ marginTop: '8px' }}>Tools</div>
-
-      {topLevelItems.map(item => (
-        <button
-          key={item.id}
-          className={`nav-item ${activeView === item.id ? 'active' : ''}`}
-          onClick={() => setActiveView(item.id)}
-        >
-          <span className="icon">{item.icon}</span>
-          <span className="label">{item.label}</span>
-        </button>
-      ))}
-
-      {/* ── Sessions ── */}
-      <div className="nav-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-        <span>Sessions</span>
-        {onNewProject && (
-          <button
-            onClick={onNewProject}
-            style={{
-              background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.25)',
-              borderRadius: '4px', color: 'var(--cyan)', cursor: 'pointer',
-              fontSize: '14px', lineHeight: '1', padding: '2px 6px',
-              fontFamily: 'Share Tech Mono, monospace', transition: 'all 0.2s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.2)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.1)'; }}
-            title="Create new project"
-          >
-            +
-          </button>
-        )}
+      {/* ── Tools (collapsible section) ── */}
+      <div className="nav-section" style={{ marginTop: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <span>Tools</span>
+        <span style={{ fontSize: '10px', color: '#4a5a6a' }}>{topLevelItems.length}</span>
       </div>
 
-      <div className="sidebar-sessions">
+      <button
+        className={`nav-item ${isToolsView ? 'active' : ''}`}
+        onClick={() => setToolsExpanded(!toolsExpanded)}
+      >
+        <span className="icon">🧰</span>
+        <span className="label">Tools</span>
+        <span style={{
+          fontSize: '10px', color: '#4a5a6a', marginLeft: 'auto',
+          transition: 'transform 0.2s',
+          transform: toolsExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+        }}>
+          ▶
+        </span>
+      </button>
+
+      <div style={{
+        overflow: 'hidden',
+        maxHeight: toolsExpanded ? '360px' : '0',
+        transition: 'max-height 0.25s ease',
+      }}>
+        {topLevelItems.map(item => (
+          <button
+            key={item.id}
+            className={`nav-item ${activeView === item.id ? 'active' : ''}`}
+            onClick={() => setActiveView(item.id)}
+            style={{ paddingLeft: '28px' }}
+          >
+            <span className="icon" style={{ fontSize: '13px' }}>{item.icon}</span>
+            <span className="label">{item.label}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* ── Sessions (collapsible section) ── */}
+      <div className="nav-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+        <span>Sessions</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '10px', color: '#4a5a6a' }}>{projects.length}</span>
+          {onNewProject && (
+            <button
+              onClick={onNewProject}
+              style={{
+                background: 'rgba(0,240,255,0.1)', border: '1px solid rgba(0,240,255,0.25)',
+                borderRadius: '4px', color: 'var(--cyan)', cursor: 'pointer',
+                fontSize: '14px', lineHeight: '1', padding: '2px 6px',
+                fontFamily: 'Share Tech Mono, monospace', transition: 'all 0.2s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.2)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.1)'; }}
+              title="Create new project"
+            >
+              +
+            </button>
+          )}
+        </span>
+      </div>
+
+      <button
+        className={`nav-item ${selectedProjectId ? 'active' : ''}`}
+        onClick={() => setSessionsExpanded(!sessionsExpanded)}
+      >
+        <span className="icon">📁</span>
+        <span className="label">Sessions</span>
+        <span style={{
+          fontSize: '10px', color: '#4a5a6a', marginLeft: 'auto',
+          transition: 'transform 0.2s',
+          transform: sessionsExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+        }}>
+          ▶
+        </span>
+      </button>
+
+      <div className="sidebar-sessions" style={{ flex: 'unset', maxHeight: sessionsExpanded ? '240px' : '0', transition: 'max-height 0.25s ease' }}>
         {projects.map(project => (
           <button
             key={project.id}
