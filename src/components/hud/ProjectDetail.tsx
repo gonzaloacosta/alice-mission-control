@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
 import { getPhase, PHASE_LABELS } from '../../types';
 
@@ -16,9 +16,7 @@ export function ProjectDetail() {
   const focusedId = useStore(s => s.focusedProjectId);
   const unfocusProject = useStore(s => s.unfocusProject);
   const openChatTab = useStore(s => s.openChatTab);
-  const [height, setHeight] = useState(85);
   const [apiAgents, setApiAgents] = useState<string[]>([]);
-  const dragRef = useRef<{ startY: number; startH: number } | null>(null);
 
   const project = projects.find(p => p.id === focusedId);
 
@@ -34,22 +32,7 @@ export function ProjectDetail() {
       .catch(() => setApiAgents([]));
   }, [focusedId]);
 
-  const onDragStart = useCallback((e: React.PointerEvent) => {
-    e.preventDefault();
-    dragRef.current = { startY: e.clientY, startH: height };
-    const onMove = (ev: PointerEvent) => {
-      if (!dragRef.current) return;
-      const deltaVh = ((dragRef.current.startY - ev.clientY) / window.innerHeight) * 100;
-      setHeight(Math.max(20, Math.min(80, dragRef.current.startH + deltaVh)));
-    };
-    const onUp = () => {
-      dragRef.current = null;
-      window.removeEventListener('pointermove', onMove);
-      window.removeEventListener('pointerup', onUp);
-    };
-    window.addEventListener('pointermove', onMove);
-    window.addEventListener('pointerup', onUp);
-  }, [height]);
+  // Drag handling removed - not currently used
 
   const handleAgentClick = (agentName: string | null) => {
     if (project) {

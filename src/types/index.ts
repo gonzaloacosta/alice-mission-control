@@ -1,4 +1,4 @@
-export type AgentState = 'idle' | 'active' | 'warning' | 'error';
+export type AgentState = 'idle' | 'active' | 'warning' | 'error' | 'running' | 'recovery';
 export type ProjectPhase = 'forming' | 'growing' | 'maturing' | 'ready' | 'launched';
 
 // Legacy exports for compatibility (can be removed later)
@@ -6,14 +6,18 @@ export const STATE_COLORS: Record<AgentState, string> = {
   idle: '#5a6a7a',
   active: '#00ff88',
   warning: '#ffaa00',
-  error: '#ff4444'
+  error: '#ff4444',
+  running: '#00ccff',
+  recovery: '#ff8800'
 };
 
 export const STATE_EMISSIVE: Record<AgentState, string> = {
   idle: '#5a6a7a',
   active: '#00ff88',
   warning: '#ffaa00',
-  error: '#ff4444'
+  error: '#ff4444',
+  running: '#00ccff',
+  recovery: '#ff8800'
 };
 
 // Legacy types for compatibility
@@ -23,6 +27,14 @@ export interface Agent {
   type: string;
   state: AgentState;
   cluster: string;
+  // Additional properties used in legacy code
+  x?: number;
+  y?: number;
+  z?: number;
+  load?: number;
+  latencyMs?: number;
+  throughput?: number;
+  parentId?: string;
 }
 
 export interface Link {
@@ -30,6 +42,11 @@ export interface Link {
   source: string;
   target: string;
   type: string;
+  // Additional properties used in legacy code
+  sourceId?: string;
+  targetId?: string;
+  status?: string;
+  weight?: number;
 }
 
 export interface Project {
@@ -67,6 +84,8 @@ export interface SystemEvent {
   projectId: string;
   agentName: string;
   message: string;
+  // Additional property used in legacy code
+  agentId?: string;
 }
 
 export function getPhase(progress: number): ProjectPhase {

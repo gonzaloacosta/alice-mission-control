@@ -44,10 +44,12 @@ export function LogsView() {
       const data = await res.json();
       setEvents(data.events || []);
       // Extract unique projects
-      const slugs = [...new Set((data.events || []).map((e: EventRow) => e.project_slug))];
+      const eventsList = data.events || [];
+      const slugs = eventsList.map((e: EventRow) => e.project_slug).filter((slug: any) => typeof slug === 'string') as string[];
+      const uniqueSlugs = [...new Set(slugs)];
       setProjects(prev => {
-        const merged = [...new Set([...prev, ...slugs])].sort();
-        return merged.length !== prev.length ? merged : prev as string[];
+        const merged = [...new Set([...prev, ...uniqueSlugs])].sort();
+        return merged.length !== prev.length ? merged : prev;
       });
     } catch {}
   }, [projectFilter]);

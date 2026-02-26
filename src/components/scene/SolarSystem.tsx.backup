@@ -76,9 +76,106 @@ function OrbitPath({ radius, color }: { radius: number; color: string }) {
   return <Line points={points} color={color} transparent opacity={0.08} lineWidth={0.5} />;
 }
 
+// ═══ SATELLITE (Agent) ═══ [UNUSED - for future features]
+/*
+function Satellite({ agent, index, time }: {
+  agent: ProjectAgent; index: number; planetPos: THREE.Vector3; planetColor: string; time: number;
+}) {
+  const ref = useRef<THREE.Group>(null!);
+  const orbitR = 3.5 + index * 1.4;
+  const speed = 0.3 + index * 0.2;
+  const offset = index * Math.PI * 0.7;
+  const isActive = agent.state === 'active';
 
-// ═══ UNUSED COMPONENTS REMOVED FOR CLEAN BUILD ═══
+  useFrame(() => {
+    const a = time * speed + offset;
+    ref.current.position.set(
+      Math.cos(a) * orbitR,
+      Math.sin(a * 0.6) * 0.8,
+      Math.sin(a) * orbitR
+    );
+  });
 
+  return (
+    <group ref={ref}>
+      {/* Sat body */}
+      <mesh>
+        <octahedronGeometry args={[0.25, 1]} />
+        <meshStandardMaterial
+          color={isActive ? '#00ff88' : '#5a6a7a'}
+          emissive={isActive ? '#00ff88' : '#5a6a7a'}
+          emissiveIntensity={isActive ? 0.6 : 0.1}
+          metalness={0.7}
+          roughness={0.3}
+        />
+      </mesh>
+      {/* Glow */}
+      <mesh>
+        <sphereGeometry args={[0.4, 8, 8]} />
+        <meshBasicMaterial color={isActive ? '#00ff88' : '#5a6a7a'} transparent opacity={isActive ? 0.12 : 0.04} />
+      </mesh>
+      {/* Solar panels for active */}
+      {isActive && (
+        <>
+          <mesh position={[-0.5, 0, 0]}>
+            <planeGeometry args={[0.4, 0.15]} />
+            <meshBasicMaterial color="#1a4a7a" transparent opacity={0.7} side={THREE.DoubleSide} />
+          </mesh>
+          <mesh position={[0.5, 0, 0]}>
+            <planeGeometry args={[0.4, 0.15]} />
+            <meshBasicMaterial color="#1a4a7a" transparent opacity={0.7} side={THREE.DoubleSide} />
+          </mesh>
+        </>
+      )}
+      {/* Label */}
+      <Html position={[0, 0.7, 0]} center style={{ pointerEvents: 'none' }}>
+        <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '8px', color: isActive ? '#00ff88' : '#5a6a7a', whiteSpace: 'nowrap', textShadow: isActive ? '0 0 6px #00ff8850' : 'none' }}>
+          {agent.name}
+        </div>
+      </Html>
+    </group>
+  );
+}
+*/
+
+// ═══ ENERGY BEAM ═══ [UNUSED - for future features]
+/*
+function EnergyBeam({ from, to, color, intensity, time, offset }: {
+  from: THREE.Vector3; to: THREE.Vector3; color: string; intensity: number; time: number; offset: number;
+}) {
+  // Animated particles along beam
+  const particleCount = 4;
+  const particles = useMemo(() => {
+    return Array.from({ length: particleCount }, (_, i) => i);
+  }, []);
+
+  return (
+    <group>
+      {/* Base line */}
+      <Line
+        points={[from, to]}
+        color={color}
+        transparent
+        opacity={0.06 + intensity * 0.08 + Math.sin(time * 4 + offset) * 0.03}
+        lineWidth={0.5}
+      />
+      {/* Energy particles */}
+      {particles.map(i => {
+        const t = ((time * 1.5 + offset + i / particleCount) % 1);
+        const pos = new THREE.Vector3().lerpVectors(from, to, t);
+        return (
+          <mesh key={i} position={pos}>
+            <sphereGeometry args={[0.08, 4, 4]} />
+            <meshBasicMaterial color={color} transparent opacity={0.5 * (1 - t) * intensity} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+*/
+
+// ═══ PLANET (Project) ═══
 function Planet({ project }: { project: Project }) {
   const ref = useRef<THREE.Group>(null!);
   const coreRef = useRef<THREE.Mesh>(null!);

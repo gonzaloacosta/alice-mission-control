@@ -16,8 +16,8 @@ export function NetworkLinks() {
   const lineData = useMemo(() => {
     if (!showLinks) return [];
     return links.map(link => {
-      const src = agentMap.get(link.sourceId);
-      const tgt = agentMap.get(link.targetId);
+      const src = agentMap.get(link.sourceId || link.source);
+      const tgt = agentMap.get(link.targetId || link.target);
       if (!src || !tgt) return null;
       const color = link.status === 'down' ? '#ff3355' :
                     link.status === 'degraded' ? '#ffcc00' : '#00f0ff';
@@ -34,12 +34,10 @@ export function NetworkLinks() {
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"
-              count={2}
-              array={new Float32Array([
+              args={[new Float32Array([
                 d.points[0].x, d.points[0].y, d.points[0].z,
                 d.points[1].x, d.points[1].y, d.points[1].z,
-              ])}
-              itemSize={3}
+              ]), 3]}
             />
           </bufferGeometry>
           <lineBasicMaterial color={d.color} transparent opacity={d.opacity} />

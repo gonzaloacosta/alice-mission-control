@@ -1,8 +1,7 @@
-import React from 'react';
 import { useStore } from '../../store';
 
 // SVG icons matching BottomNav style
-const navIcons: Record<string, JSX.Element> = {
+const navIcons: Record<string, React.ReactElement> = {
   kanban: (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <rect x="3" y="3" width="5" height="18" rx="1"/>

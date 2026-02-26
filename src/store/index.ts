@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Project, SystemEvent } from '../types';
+import type { Project, SystemEvent, Agent, Link, AgentState } from '../types';
 import type { View } from '../components/layout/Sidebar';
 
 interface ChatMessage {
@@ -28,6 +28,15 @@ interface AppState {
   // UI state
   activeView: View;
   
+  // Legacy agent system state (for backward compatibility)
+  agents: Agent[];
+  links: Link[];
+  filterState: AgentState | 'all';
+  filterCluster: string | 'all';
+  searchQuery: string;
+  showLinks: boolean;
+  selectedAgentId: string | null;
+  
   // Chat feature state
   focusedProjectId: string | null;
   openChats: ChatTab[];
@@ -45,6 +54,13 @@ interface AppState {
   
   // UI actions
   setActiveView: (view: View) => void;
+  
+  // Legacy agent system actions  
+  setFilterState: (state: AgentState | 'all') => void;
+  setFilterCluster: (cluster: string | 'all') => void;
+  setSearchQuery: (query: string) => void;
+  toggleLinks: () => void;
+  selectAgent: (id: string | null) => void;
   
   // Chat actions
   focusProject: (id: string | null) => void;
@@ -203,6 +219,15 @@ export const useStore = create<AppState>()(persist((set, get) => ({
   // UI state
   activeView: 'overview' as View,
   
+  // Legacy agent system state (for backward compatibility)
+  agents: [],
+  links: [],
+  filterState: 'all',
+  filterCluster: 'all',
+  searchQuery: '',
+  showLinks: false,
+  selectedAgentId: null,
+  
   // Chat feature state
   focusedProjectId: null,
   openChats: [],
@@ -235,7 +260,7 @@ export const useStore = create<AppState>()(persist((set, get) => ({
     // Generate event
     const proj = updated[Math.floor(Math.random() * updated.length)];
     const agent = proj.agents[Math.floor(Math.random() * proj.agents.length)];
-    const severities = ['info', 'info', 'info', 'info', 'warning', 'error'] as const;
+    const severities = ['info', 'info', 'info', 'info', 'warning', 'error', 'critical'] as const;
     const sev = severities[Math.floor(Math.random() * severities.length)];
     const msgs = MESSAGES[sev === 'critical' ? 'error' : sev];
 
@@ -330,6 +355,13 @@ export const useStore = create<AppState>()(persist((set, get) => ({
     streamingChats: { ...state.streamingChats, [chatKey]: streaming }
   })),
   setCurrentSession: (sessionId) => set({ currentSessionId: sessionId }),
+  
+  // Legacy agent system action implementations
+  setFilterState: (filterState) => set({ filterState }),
+  setFilterCluster: (filterCluster) => set({ filterCluster }),
+  setSearchQuery: (searchQuery) => set({ searchQuery }),
+  toggleLinks: () => set(state => ({ showLinks: !state.showLinks })),
+  selectAgent: (selectedAgentId) => set({ selectedAgentId }),
 }), {
   name: 'alice-mission-control',
   partialize: (state) => ({

@@ -1,9 +1,9 @@
-import { useRef, useMemo, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useStore } from '../../store';
-import { STATE_COLORS, STATE_EMISSIVE } from '../../types';
-import type { Agent, AgentState } from '../../types';
+import { STATE_COLORS } from '../../types';
+// Agent type is inferred from store
 
 const tempObject = new THREE.Object3D();
 const tempColor = new THREE.Color();
@@ -57,7 +57,7 @@ export function AgentInstances() {
 
       const finalScale = scale * pulse * (isSelected ? 1.4 : 1);
 
-      tempObject.position.set(agent.x, agent.y, agent.z);
+      tempObject.position.set(agent.x || 0, agent.y || 0, agent.z || 0);
       tempObject.scale.setScalar(finalScale);
       tempObject.rotation.y = t * 0.5 + i;
       tempObject.updateMatrix();
@@ -82,8 +82,8 @@ export function AgentInstances() {
     if (glowRef.current.instanceColor) glowRef.current.instanceColor.needsUpdate = true;
   });
 
-  const handleClick = (e: THREE.Event & { instanceId?: number }) => {
-    e.stopPropagation();
+  const handleClick = (e: any) => {
+    e.stopPropagation?.();
     if (e.instanceId !== undefined && filteredAgents[e.instanceId]) {
       selectAgent(filteredAgents[e.instanceId].id);
     }

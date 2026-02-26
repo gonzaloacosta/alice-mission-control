@@ -1,6 +1,6 @@
 import type { Agent, AgentState, Link, SystemEvent } from '../types';
 
-const AGENT_TYPES = ['worker', 'orchestrator', 'gateway', 'monitor'] as const;
+// Removed unused AGENT_TYPES constant
 const CLUSTERS = ['alpha', 'beta', 'gamma', 'delta'];
 const STATES: AgentState[] = ['idle', 'running', 'warning', 'error', 'recovery'];
 const STATE_WEIGHTS = [0.15, 0.55, 0.15, 0.08, 0.07]; // probability distribution
@@ -16,7 +16,7 @@ function pickState(): AgentState {
 }
 
 // Distribute agents in a spherical cluster layout
-function generatePosition(index: number, total: number, cluster: string): [number, number, number] {
+function generatePosition(index: number, _total: number, cluster: string): [number, number, number] {
   const clusterIdx = CLUSTERS.indexOf(cluster);
   const clusterAngle = (clusterIdx / CLUSTERS.length) * Math.PI * 2;
   const clusterRadius = 25;
@@ -101,9 +101,12 @@ export function generateLinks(agents: Agent[]): Link[] {
   if (gateway) {
     orchestrators.forEach(o => {
       links.push({
+        id: `link-${gateway.id}-${o.id}`,
+        source: gateway.id,
+        target: o.id,
+        type: 'gateway-orchestrator',
         sourceId: gateway.id,
         targetId: o.id,
-        weight: 1,
         status: o.state === 'error' ? 'down' : o.state === 'warning' ? 'degraded' : 'active',
       });
     });
@@ -113,9 +116,13 @@ export function generateLinks(agents: Agent[]): Link[] {
   agents.filter(a => a.parentId).forEach(a => {
     if (Math.random() < 0.15) { // only show 15% of links for performance
       links.push({
+        id: `link-${a.parentId}-${a.id}`,
+        source: a.parentId!,
+        target: a.id,
+        type: 'orchestrator-worker',
         sourceId: a.parentId!,
         targetId: a.id,
-        weight: a.load,
+        weight: a.load || 0,
         status: a.state === 'error' ? 'down' : a.state === 'warning' ? 'degraded' : 'active',
       });
     }
@@ -139,6 +146,8 @@ export function generateEvent(agents: Agent[]): SystemEvent {
     id: `evt-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     timestamp: Date.now(),
     severity,
+    projectId: agent.cluster || 'default-project',
+    agentName: agent.name,
     agentId: agent.id,
     message: messages[severity][Math.floor(Math.random() * messages[severity].length)],
   };
@@ -152,8 +161,8 @@ export function tickAgents(agents: Agent[]): void {
       a.state = pickState();
     }
     // Fluctuate load
-    a.load = Math.max(0, Math.min(1, a.load + (Math.random() - 0.5) * 0.1));
-    a.latencyMs = Math.max(1, a.latencyMs + (Math.random() - 0.5) * 10);
-    a.throughput = Math.max(0, a.throughput + (Math.random() - 0.5) * 50);
+    a.load = Math.max(0, Math.min(1, (a.load || 0) + (Math.random() - 0.5) * 0.1));
+    a.latencyMs = Math.max(1, (a.latencyMs || 10) + (Math.random() - 0.5) * 10);
+    a.throughput = Math.max(0, (a.throughput || 100) + (Math.random() - 0.5) * 50);
   });
 }

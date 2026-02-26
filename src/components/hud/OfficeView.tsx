@@ -7,6 +7,8 @@ const STATE_LABELS: Record<AgentState, string> = {
   idle: 'IDLE',
   warning: 'WARNING',
   error: 'ERROR',
+  running: 'RUNNING',
+  recovery: 'RECOVERY',
 };
 
 const ROLE_AVATARS: Record<string, string> = {

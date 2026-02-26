@@ -369,14 +369,7 @@ export function TerminalView() {
     if (s) s.terminal.focus();
   }, [activeTabId]);
 
-  const handleRatioChange = useCallback((targetNode: SplitNode, newRatio: number) => {
-    const updateNode = (node: LayoutNode): LayoutNode => {
-      if (node.type === 'pane') return node;
-      if (node === targetNode) return { ...node, ratio: newRatio };
-      return { ...node, first: updateNode(node.first), second: updateNode(node.second) };
-    };
-    setTabs(prev => prev.map(tab => tab.id === activeTabId ? { ...tab, layout: updateNode(tab.layout) } : tab));
-  }, [activeTabId]);
+  // Ratio change handling removed - not currently used
 
   useEffect(() => { if (tabs.length === 0) createTab(); }, []);
   useEffect(() => { if (tabs.length === 0 && tabCounter.current > 0) createTab(); }, [tabs.length]);

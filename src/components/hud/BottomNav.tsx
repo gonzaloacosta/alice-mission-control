@@ -3,7 +3,7 @@ import { useStore } from '../../store';
 import type { View } from '../layout/Sidebar';
 
 // SVG icons for bottom nav and tools sheet
-const icons: Record<string, JSX.Element> = {
+const icons: Record<string, React.ReactElement> = {
   overview: (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
       <circle cx="12" cy="12" r="3"/>
