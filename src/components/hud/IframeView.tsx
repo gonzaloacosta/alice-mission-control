@@ -14,7 +14,7 @@ export function IframeView({ src, title }: IframeViewProps) {
           height: "100%",
           border: "none",
           borderRadius: "8px",
-          background: "#020208",
+          background: "var(--background)",
         }}
         allow="fullscreen"
       />

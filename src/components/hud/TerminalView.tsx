@@ -6,28 +6,28 @@ import 'xterm/css/xterm.css';
 const API_BASE = import.meta.env.VITE_API_URL || '';
 
 const THEME = {
-  background: '#0a0a12',
-  foreground: '#c8d8e8',
-  cursor: '#00f0ff',
-  cursorAccent: '#0a0a12',
+  background: 'var(--background)',
+  foreground: 'var(--foreground)',
+  cursor: 'var(--cyan)',
+  cursorAccent: 'var(--background)',
   selectionBackground: 'rgba(0, 240, 255, 0.2)',
-  selectionForeground: '#ffffff',
-  black: '#0a0a12',
-  red: '#ff3355',
-  green: '#00ff88',
-  yellow: '#ffcc00',
-  blue: '#4488ff',
-  magenta: '#aa44ff',
-  cyan: '#00f0ff',
-  white: '#c8d8e8',
-  brightBlack: '#4a5a6a',
-  brightRed: '#ff3355',
-  brightGreen: '#00ff88',
-  brightYellow: '#ffcc00',
-  brightBlue: '#4488ff',
-  brightMagenta: '#aa44ff',
-  brightCyan: '#00f0ff',
-  brightWhite: '#ffffff',
+  selectionForeground: 'var(--foreground)',
+  black: 'var(--background)',
+  red: 'var(--red)',
+  green: 'var(--green)',
+  yellow: 'var(--yellow)',
+  blue: 'var(--blue)',
+  magenta: 'var(--purple)',
+  cyan: 'var(--cyan)',
+  white: 'var(--foreground)',
+  brightBlack: 'var(--muted-foreground)',
+  brightRed: 'var(--red)',
+  brightGreen: 'var(--green)',
+  brightYellow: 'var(--yellow)',
+  brightBlue: 'var(--blue)',
+  brightMagenta: 'var(--purple)',
+  brightCyan: 'var(--cyan)',
+  brightWhite: 'var(--foreground)',
 };
 
 // ── Types ──────────────────────────────────────────────────
@@ -224,8 +224,8 @@ function TerminalPane({
         height: `${rect.h * 100}%`,
         display: 'flex',
         flexDirection: 'column',
-        background: '#0a0a12',
-        border: isActive ? '1px solid rgba(0,240,255,0.3)' : '1px solid rgba(0,240,255,0.08)',
+        background: 'var(--background)',
+        border: isActive ? '1px solid rgba(125,207,255,0.3)' : '1px solid rgba(125,207,255,0.08)',
         borderRadius: '4px',
         overflow: 'hidden',
         transition: 'left 0.2s, top 0.2s, width 0.2s, height 0.2s',
@@ -234,10 +234,10 @@ function TerminalPane({
       {/* Toolbar */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '2px 8px', background: 'rgba(0,240,255,0.03)',
-        borderBottom: '1px solid rgba(0,240,255,0.08)', minHeight: '28px', flexShrink: 0,
+        padding: '2px 8px', background: 'rgba(125,207,255,0.03)',
+        borderBottom: '1px solid rgba(125,207,255,0.08)', minHeight: '28px', flexShrink: 0,
       }}>
-        <span style={{ fontSize: '11px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace' }}>
+        <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace' }}>
           ● {sessionId.slice(0, 8)}
         </span>
         <div style={{ display: 'flex', gap: '2px' }}>
@@ -257,8 +257,8 @@ function TBtn({ label, title, onClick, danger }: { label: string; title: string;
     <button title={title} onClick={e => { e.stopPropagation(); onClick(); }}
       onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{
-        background: hover ? (danger ? 'rgba(255,51,85,0.15)' : 'rgba(0,240,255,0.08)') : 'transparent',
-        border: 'none', color: hover ? (danger ? '#ff3355' : '#00f0ff') : '#4a5a6a',
+        background: hover ? (danger ? 'rgba(247,118,142,0.15)' : 'rgba(125,207,255,0.08)') : 'transparent',
+        border: 'none', color: hover ? (danger ? 'var(--red)' : 'var(--cyan)') : 'var(--muted-foreground)',
         cursor: 'pointer', fontSize: '12px', padding: '2px 6px', borderRadius: '3px', lineHeight: 1,
       }}
     >{label}</button>
@@ -275,17 +275,17 @@ function TabButton({ tab, isActive, onClick, onClose, canClose }: {
     <div onClick={onClick} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}
       style={{
         display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 14px', cursor: 'pointer',
-        fontSize: '12px', color: isActive ? '#00f0ff' : '#4a5a6a',
-        background: isActive ? 'rgba(0,240,255,0.08)' : 'transparent',
-        borderBottom: isActive ? '2px solid #00f0ff' : '2px solid transparent',
-        transition: 'all 0.15s', whiteSpace: 'nowrap', fontFamily: 'Share Tech Mono, monospace',
+        fontSize: '12px', color: isActive ? 'var(--cyan)' : 'var(--muted-foreground)',
+        background: isActive ? 'rgba(125,207,255,0.08)' : 'transparent',
+        borderBottom: isActive ? '2px solid var(--cyan)' : '2px solid transparent',
+        transition: 'all 0.15s', whiteSpace: 'nowrap', fontFamily: 'JetBrains Mono, monospace',
       }}
     >
-      <span style={{ fontSize: '10px', color: isActive ? '#00ff88' : '#4a5a6a' }}>●</span>
+      <span style={{ fontSize: '10px', color: isActive ? 'var(--green)' : 'var(--muted-foreground)' }}>●</span>
       <span>{tab.name}</span>
       {canClose && (
         <span onClick={e => { e.stopPropagation(); onClose(); }}
-          style={{ fontSize: '10px', color: hover ? '#ff3355' : 'transparent', marginLeft: '4px', lineHeight: 1 }}>✕</span>
+          style={{ fontSize: '10px', color: hover ? 'var(--red)' : 'transparent', marginLeft: '4px', lineHeight: 1 }}>✕</span>
       )}
     </div>
   );
@@ -380,11 +380,11 @@ export function TerminalView() {
   const rectMap = new Map(rects.map(r => [r.id, r]));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', background: '#0a0a12', fontFamily: 'Share Tech Mono, monospace' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', background: 'var(--background)', fontFamily: 'JetBrains Mono, monospace' }}>
       {/* Tab bar */}
       <div style={{
-        display: 'flex', alignItems: 'center', background: 'rgba(8,12,28,0.98)',
-        borderBottom: '1px solid rgba(0,240,255,0.15)', minHeight: '36px', flexShrink: 0, overflow: 'hidden',
+        display: 'flex', alignItems: 'center', background: 'rgba(36,40,59,0.98)',
+        borderBottom: '1px solid rgba(125,207,255,0.15)', minHeight: '36px', flexShrink: 0, overflow: 'hidden',
       }}>
         <div style={{ display: 'flex', flex: 1, overflow: 'auto' }}>
           {tabs.map(tab => (
@@ -393,9 +393,9 @@ export function TerminalView() {
           ))}
         </div>
         <button onClick={createTab} title="New Tab"
-          style={{ background: 'transparent', border: 'none', color: '#4a5a6a', cursor: 'pointer', fontSize: '16px', padding: '4px 12px', lineHeight: 1 }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#00f0ff')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#4a5a6a')}
+          style={{ background: 'transparent', border: 'none', color: 'var(--muted-foreground)', cursor: 'pointer', fontSize: '16px', padding: '4px 12px', lineHeight: 1 }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--cyan)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted-foreground)')}
         >+</button>
       </div>
 

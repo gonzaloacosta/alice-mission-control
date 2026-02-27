@@ -241,7 +241,7 @@ export function ChatPanel() {
         <div style={{ textAlign: 'center' }}>
           <div style={{ fontSize: '48px', marginBottom: '16px' }}>💬</div>
           <h2 style={{ 
-            fontFamily: 'Orbitron, sans-serif', 
+            fontFamily: 'Geist, sans-serif', 
             color: 'var(--cyan)', 
             letterSpacing: '2px', 
             marginBottom: '12px',
@@ -250,10 +250,10 @@ export function ChatPanel() {
             MULTI-CHAT
           </h2>
           <p style={{ 
-            color: '#4a5a6a', 
+            color: 'var(--muted-foreground)', 
             fontSize: '14px', 
             marginBottom: '24px',
-            fontFamily: 'Share Tech Mono, monospace'
+            fontFamily: 'JetBrains Mono, monospace'
           }}>
             Open a chat from any project's agent list
           </p>
@@ -276,7 +276,7 @@ export function ChatPanel() {
         flexShrink: 0, 
         overflowX: 'auto',
         borderBottom: '1px solid var(--border)',
-        background: 'rgba(8,12,28,0.6)',
+        background: 'rgba(36,40,59,0.6)',
       }}>
         {openChats.map(chat => {
           const project = projects.find(p => p.id === chat.projectId);
@@ -292,12 +292,12 @@ export function ChatPanel() {
               style={{
                 padding: '12px 16px',
                 cursor: 'pointer',
-                background: isActive ? 'rgba(0,240,255,0.08)' : 'transparent',
+                background: isActive ? 'rgba(125,207,255,0.08)' : 'transparent',
                 borderBottom: isActive ? '2px solid var(--cyan)' : '2px solid transparent',
                 border: 'none',
-                borderRight: '1px solid rgba(0,240,255,0.04)',
-                color: isActive ? 'var(--cyan)' : '#6a7a8a',
-                fontFamily: 'Share Tech Mono, monospace',
+                borderRight: '1px solid rgba(125,207,255,0.04)',
+                color: isActive ? 'var(--cyan)' : 'var(--muted-foreground)',
+                fontFamily: 'JetBrains Mono, monospace',
                 fontSize: '11px',
                 whiteSpace: 'nowrap',
                 transition: 'all 0.15s',
@@ -368,17 +368,17 @@ export function ChatPanel() {
       {/* Messages area */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 20px' }}>
         {isLoadingHistory && (
-          <div style={{ textAlign: 'center', padding: '20px 0', color: '#4a5a6a' }}>
-            <div style={{ fontSize: '12px', fontFamily: 'Share Tech Mono, monospace' }}>
+          <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--muted-foreground)' }}>
+            <div style={{ fontSize: '12px', fontFamily: 'JetBrains Mono, monospace' }}>
               Loading chat history...
             </div>
           </div>
         )}
         
         {!isLoadingHistory && currentMessages.length === 0 && activeChat && activeProject && (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: '#4a5a6a' }}>
+          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '28px', marginBottom: '8px' }}>⚡</div>
-            <div style={{ fontSize: '12px', fontFamily: 'Share Tech Mono, monospace' }}>
+            <div style={{ fontSize: '12px', fontFamily: 'JetBrains Mono, monospace' }}>
               Send a task to{' '}
               <span style={{ color: 'var(--cyan)' }}>
                 {activeChat.agentName || 'Default Agent'}
@@ -403,17 +403,17 @@ export function ChatPanel() {
                 message.type === 'error' ? 'var(--red)' : 'var(--green)'
               }`,
               background: message.type === 'user'
-                ? 'rgba(0,240,255,0.04)'
+                ? 'rgba(125,207,255,0.04)'
                 : message.type === 'error'
-                ? 'rgba(255,51,85,0.04)'
-                : 'rgba(0,255,136,0.04)',
+                ? 'rgba(247,118,142,0.04)'
+                : 'rgba(158,206,106,0.04)',
               marginLeft: message.type === 'user' ? '40px' : '0',
               marginRight: message.type === 'assistant' ? '40px' : '0',
             }}
           >
             <div style={{
               fontSize: '9px',
-              color: '#4a5a6a',
+              color: 'var(--muted-foreground)',
               letterSpacing: '1px',
               textTransform: 'uppercase',
               marginBottom: '6px'
@@ -424,8 +424,8 @@ export function ChatPanel() {
             </div>
             <div className={message.type !== 'user' ? 'markdown-body' : ''} style={{
               fontSize: '13px',
-              fontFamily: 'Share Tech Mono, monospace',
-              color: message.type === 'error' ? 'var(--red)' : '#c8d8e8',
+              fontFamily: 'JetBrains Mono, monospace',
+              color: message.type === 'error' ? 'var(--red)' : 'var(--foreground)',
               whiteSpace: message.type === 'user' ? 'pre-wrap' : undefined,
               lineHeight: '1.5',
             }}>
@@ -443,11 +443,11 @@ export function ChatPanel() {
             borderRadius: '6px',
             marginRight: '40px',
             borderLeft: '3px solid var(--green)',
-            background: 'rgba(0,255,136,0.04)',
+            background: 'rgba(158,206,106,0.04)',
           }}>
             <div style={{
               fontSize: '9px',
-              color: '#4a5a6a',
+              color: 'var(--muted-foreground)',
               letterSpacing: '1px',
               textTransform: 'uppercase',
               marginBottom: '6px'
@@ -457,7 +457,7 @@ export function ChatPanel() {
             <div style={{
               fontSize: '13px',
               color: 'var(--green)',
-              fontFamily: 'Share Tech Mono, monospace',
+              fontFamily: 'JetBrains Mono, monospace',
               display: 'flex',
               alignItems: 'center',
               gap: '8px'
@@ -476,7 +476,7 @@ export function ChatPanel() {
         flexShrink: 0,
         padding: '12px 20px',
         borderTop: '1px solid var(--border)',
-        background: 'rgba(8,12,28,0.98)',
+        background: 'rgba(36,40,59,0.98)',
       }}>
         <div style={{ display: 'flex', gap: '8px' }}>
           <textarea
@@ -492,13 +492,13 @@ export function ChatPanel() {
             rows={2}
             style={{
               flex: 1,
-              background: 'rgba(0,240,255,0.03)',
+              background: 'rgba(125,207,255,0.03)',
               border: '1px solid var(--border)',
-              color: '#c8d8e8',
+              color: 'var(--foreground)',
               padding: '10px 12px',
               borderRadius: '6px',
               resize: 'none',
-              fontFamily: 'Share Tech Mono, monospace',
+              fontFamily: 'JetBrains Mono, monospace',
               fontSize: '12px',
               outline: 'none',
             }}
@@ -506,12 +506,12 @@ export function ChatPanel() {
           {isStreaming ? (
             <button onClick={handleStopStreaming} style={{
               padding: '0 16px',
-              background: 'rgba(255,51,85,0.1)',
+              background: 'rgba(247,118,142,0.1)',
               color: 'var(--red)',
-              border: '1px solid rgba(255,51,85,0.3)',
+              border: '1px solid rgba(247,118,142,0.3)',
               borderRadius: '6px',
               cursor: 'pointer',
-              fontFamily: 'Share Tech Mono, monospace',
+              fontFamily: 'JetBrains Mono, monospace',
               fontSize: '11px',
               letterSpacing: '1px',
             }}>STOP</button>
@@ -521,12 +521,12 @@ export function ChatPanel() {
               disabled={!inputValue.trim() || !activeChat} 
               style={{
                 padding: '0 16px',
-                background: 'rgba(0,240,255,0.1)',
+                background: 'rgba(125,207,255,0.1)',
                 color: 'var(--cyan)',
-                border: '1px solid rgba(0,240,255,0.3)',
+                border: '1px solid rgba(125,207,255,0.3)',
                 borderRadius: '6px',
                 cursor: 'pointer',
-                fontFamily: 'Share Tech Mono, monospace',
+                fontFamily: 'JetBrains Mono, monospace',
                 fontSize: '11px',
                 letterSpacing: '1px',
                 opacity: (inputValue.trim() && activeChat) ? 1 : 0.3,
@@ -536,7 +536,7 @@ export function ChatPanel() {
         </div>
         <div style={{
           fontSize: '9px',
-          color: '#3a4a5a',
+          color: 'var(--border)',
           marginTop: '6px',
           letterSpacing: '1px'
         }}>

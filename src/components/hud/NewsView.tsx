@@ -17,16 +17,16 @@ interface NewsFeed {
 }
 
 const CATEGORY_STYLES: Record<string, { color: string; bg: string; icon: string }> = {
-  ai:        { color: '#00ff88', bg: 'rgba(0,255,136,0.06)',  icon: '🤖' },
-  cybersec:  { color: '#ff3355', bg: 'rgba(255,51,85,0.06)',  icon: '🔒' },
-  argentina: { color: '#4488ff', bg: 'rgba(68,136,255,0.06)', icon: '🇦🇷' },
-  spain:     { color: '#ffcc00', bg: 'rgba(255,204,0,0.06)',  icon: '🇪🇸' },
-  tech:      { color: '#aa44ff', bg: 'rgba(170,68,255,0.06)', icon: '💻' },
-  weather:   { color: '#00f0ff', bg: 'rgba(0,240,255,0.06)',  icon: '🌤️' },
-  world:     { color: '#6a8aaa', bg: 'rgba(106,138,170,0.06)',icon: '🌍' },
+  ai:        { color: 'var(--green)', bg: 'rgba(158,206,106,0.06)',  icon: '🤖' },
+  cybersec:  { color: 'var(--red)', bg: 'rgba(247,118,142,0.06)',  icon: '🔒' },
+  argentina: { color: 'var(--blue)', bg: 'rgba(122,162,247,0.06)', icon: '🇦🇷' },
+  spain:     { color: 'var(--yellow)', bg: 'rgba(224,175,104,0.06)',  icon: '🇪🇸' },
+  tech:      { color: 'var(--purple)', bg: 'rgba(187,154,247,0.06)', icon: '💻' },
+  weather:   { color: 'var(--cyan)', bg: 'rgba(125,207,255,0.06)',  icon: '🌤️' },
+  world:     { color: 'var(--blue)', bg: 'rgba(106,138,170,0.06)',icon: '🌍' },
 };
 
-const DEFAULT_STYLE = { color: '#6a7a8a', bg: 'rgba(106,122,138,0.06)', icon: '📰' };
+const DEFAULT_STYLE = { color: 'var(--muted-foreground)', bg: 'rgba(86,95,137,0.06)', icon: '📰' };
 
 export function NewsView() {
   const [feed, setFeed] = useState<NewsFeed | null>(null);
@@ -64,22 +64,22 @@ export function NewsView() {
       <div className="detail-header" style={{ flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
           <h2 style={{
-            fontFamily: 'Orbitron, sans-serif', fontSize: '14px',
+            fontFamily: 'Geist, sans-serif', fontSize: '14px',
             color: 'var(--cyan)', letterSpacing: '2px', margin: 0,
           }}>
             📡 NEWS FEED
           </h2>
           <span style={{
             fontSize: '11px', padding: '2px 8px', borderRadius: '4px',
-            background: 'rgba(0,240,255,0.08)', color: 'var(--cyan)',
-            border: '1px solid rgba(0,240,255,0.15)',
-            fontFamily: 'Orbitron, sans-serif',
+            background: 'rgba(125,207,255,0.08)', color: 'var(--cyan)',
+            border: '1px solid rgba(125,207,255,0.15)',
+            fontFamily: 'Geist, sans-serif',
           }}>
             {filtered.length}
           </span>
           {feed?.updatedAt && (
             <span style={{
-              fontSize: '10px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace',
+              fontSize: '10px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace',
               marginLeft: 'auto',
             }}>
               Updated: {new Date(feed.updatedAt).toLocaleString('en-US', {
@@ -95,10 +95,10 @@ export function NewsView() {
             onClick={() => setFilter(null)}
             style={{
               fontSize: '10px', padding: '4px 10px', borderRadius: '12px',
-              border: `1px solid ${!filter ? 'var(--cyan)' : 'rgba(0,240,255,0.15)'}`,
-              background: !filter ? 'rgba(0,240,255,0.12)' : 'transparent',
-              color: !filter ? 'var(--cyan)' : '#6a7a8a',
-              cursor: 'pointer', fontFamily: 'Share Tech Mono, monospace',
+              border: `1px solid ${!filter ? 'var(--cyan)' : 'rgba(125,207,255,0.15)'}`,
+              background: !filter ? 'rgba(125,207,255,0.12)' : 'transparent',
+              color: !filter ? 'var(--cyan)' : 'var(--muted-foreground)',
+              cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace',
               transition: 'all 0.15s',
             }}
           >
@@ -115,8 +115,8 @@ export function NewsView() {
                   fontSize: '10px', padding: '4px 10px', borderRadius: '12px',
                   border: `1px solid ${active ? style.color : style.color + '30'}`,
                   background: active ? style.bg : 'transparent',
-                  color: active ? style.color : '#6a7a8a',
-                  cursor: 'pointer', fontFamily: 'Share Tech Mono, monospace',
+                  color: active ? style.color : 'var(--muted-foreground)',
+                  cursor: 'pointer', fontFamily: 'JetBrains Mono, monospace',
                   transition: 'all 0.15s', textTransform: 'uppercase',
                 }}
               >
@@ -130,28 +130,28 @@ export function NewsView() {
       {/* Content */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
         {loading && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#4a5a6a' }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '32px', marginBottom: '12px' }}>📡</div>
-            <div style={{ fontSize: '13px', fontFamily: 'Share Tech Mono, monospace' }}>Loading feed...</div>
+            <div style={{ fontSize: '13px', fontFamily: 'JetBrains Mono, monospace' }}>Loading feed...</div>
           </div>
         )}
 
         {error && !loading && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#4a5a6a' }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '32px', marginBottom: '12px' }}>📰</div>
-            <div style={{ fontSize: '13px', fontFamily: 'Share Tech Mono, monospace', marginBottom: '8px' }}>
+            <div style={{ fontSize: '13px', fontFamily: 'JetBrains Mono, monospace', marginBottom: '8px' }}>
               No news data yet
             </div>
-            <div style={{ fontSize: '11px', color: '#3a4a5a' }}>
+            <div style={{ fontSize: '11px', color: 'var(--border)' }}>
               News will appear here after the daily briefing runs
             </div>
           </div>
         )}
 
         {!loading && !error && filtered.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#4a5a6a' }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔍</div>
-            <div style={{ fontSize: '13px', fontFamily: 'Share Tech Mono, monospace' }}>
+            <div style={{ fontSize: '13px', fontFamily: 'JetBrains Mono, monospace' }}>
               No items in this category
             </div>
           </div>
@@ -163,17 +163,17 @@ export function NewsView() {
             <div
               key={item.id}
               style={{
-                padding: '16px 20px', borderBottom: '1px solid rgba(0,240,255,0.04)',
+                padding: '16px 20px', borderBottom: '1px solid rgba(125,207,255,0.04)',
                 transition: 'background 0.15s', cursor: item.url ? 'pointer' : 'default',
               }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,240,255,0.02)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'rgba(125,207,255,0.02)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
               onClick={() => item.url && window.open(item.url, '_blank')}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
                 {/* Category badge */}
                 <span style={{
-                  fontSize: '9px', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+                  fontSize: '9px', fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
                   padding: '3px 8px', borderRadius: '3px',
                   background: cat.bg, color: cat.color, border: `1px solid ${cat.color}30`,
                   fontWeight: 700, textTransform: 'uppercase',
@@ -183,7 +183,7 @@ export function NewsView() {
 
                 {/* Source */}
                 <span style={{
-                  fontSize: '10px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace',
+                  fontSize: '10px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace',
                 }}>
                   {item.source}
                 </span>
@@ -191,9 +191,9 @@ export function NewsView() {
                 {item.sourceTag && (
                   <span style={{
                     fontSize: '9px', padding: '2px 6px', borderRadius: '3px',
-                    background: 'rgba(106,138,170,0.08)', color: '#6a8aaa',
+                    background: 'rgba(106,138,170,0.08)', color: 'var(--blue)',
                     border: '1px solid rgba(106,138,170,0.15)',
-                    fontFamily: 'Share Tech Mono, monospace',
+                    fontFamily: 'JetBrains Mono, monospace',
                   }}>
                     {item.sourceTag}
                   </span>
@@ -201,7 +201,7 @@ export function NewsView() {
 
                 {/* Timestamp */}
                 <span style={{
-                  fontSize: '10px', color: '#3a4a5a', fontFamily: 'Orbitron, sans-serif',
+                  fontSize: '10px', color: 'var(--border)', fontFamily: 'Geist, sans-serif',
                   marginLeft: 'auto',
                 }}>
                   {item.timestamp}
@@ -210,8 +210,8 @@ export function NewsView() {
 
               {/* Headline */}
               <div style={{
-                fontSize: '14px', color: '#e0eaf4', fontWeight: 600,
-                fontFamily: 'Share Tech Mono, monospace', lineHeight: '1.5',
+                fontSize: '14px', color: 'var(--foreground)', fontWeight: 600,
+                fontFamily: 'JetBrains Mono, monospace', lineHeight: '1.5',
                 marginBottom: '6px',
               }}>
                 {item.headline}
@@ -219,7 +219,7 @@ export function NewsView() {
 
               {/* Summary */}
               <div style={{
-                fontSize: '12px', color: '#7a8a9a', fontFamily: 'Share Tech Mono, monospace',
+                fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace',
                 lineHeight: '1.6',
               }}>
                 {item.summary}
@@ -229,7 +229,7 @@ export function NewsView() {
               {item.url && (
                 <div style={{
                   fontSize: '10px', color: 'var(--cyan)', marginTop: '8px',
-                  fontFamily: 'Share Tech Mono, monospace', opacity: 0.6,
+                  fontFamily: 'JetBrains Mono, monospace', opacity: 0.6,
                 }}>
                   ↗ Click to open source
                 </div>

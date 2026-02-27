@@ -30,10 +30,10 @@ interface EditingCard extends Partial<KanbanCard> {
 }
 
 const PRIORITY_COLORS: Record<string, { color: string; label: string; icon: string }> = {
-  critical: { color: '#ff3355', label: 'CRITICAL', icon: '🔴' },
-  high:     { color: '#ffcc00', label: 'HIGH',     icon: '🟡' },
-  medium:   { color: '#00ff88', label: 'MEDIUM',   icon: '🟢' },
-  low:      { color: '#6a7a8a', label: 'LOW',      icon: '⚪' },
+  critical: { color: 'var(--red)', label: 'CRITICAL', icon: '🔴' },
+  high:     { color: 'var(--yellow)', label: 'HIGH',     icon: '🟡' },
+  medium:   { color: 'var(--green)', label: 'MEDIUM',   icon: '🟢' },
+  low:      { color: 'var(--muted-foreground)', label: 'LOW',      icon: '⚪' },
 };
 
 export function KanbanView() {
@@ -69,7 +69,7 @@ export function KanbanView() {
 
   const totalCards = filteredColumns.reduce((sum, col) => sum + col.cards.length, 0);
 
-  const getProjectColor = (pid: string) => projects.find(p => p.id === pid)?.color || '#00f0ff';
+  const getProjectColor = (pid: string) => projects.find(p => p.id === pid)?.color || 'var(--cyan)';
 
   // ─── Drag & Drop ───
   const handleDragStart = (e: React.DragEvent, card: KanbanCard) => {
@@ -164,13 +164,13 @@ export function KanbanView() {
       <div className="detail-header" style={{ flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'space-between', width: '100%' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
+            <h2 style={{ fontFamily: 'Geist, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
               KANBAN BOARD
             </h2>
             <span style={{
               fontSize: '11px', padding: '2px 8px', borderRadius: '4px',
-              background: 'rgba(0,240,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(0,240,255,0.15)',
-              fontFamily: 'Orbitron, sans-serif',
+              background: 'rgba(125,207,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(125,207,255,0.15)',
+              fontFamily: 'Geist, sans-serif',
             }}>
               {totalCards}
             </span>
@@ -180,9 +180,9 @@ export function KanbanView() {
             value={filterProject}
             onChange={e => setFilterProject(e.target.value)}
             style={{
-              background: 'rgba(8,12,28,0.96)', border: '1px solid rgba(0,240,255,0.2)',
+              background: 'rgba(36,40,59,0.96)', border: '1px solid rgba(125,207,255,0.2)',
               borderRadius: '4px', color: 'var(--cyan)', padding: '4px 8px',
-              fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', outline: 'none',
+              fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', outline: 'none',
             }}
           >
             <option value="all">ALL PROJECTS</option>
@@ -195,8 +195,8 @@ export function KanbanView() {
 
       {/* Board */}
       {loading ? (
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4a5a6a' }}>
-          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '13px' }}>Loading board...</div>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--muted-foreground)' }}>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '13px' }}>Loading board...</div>
         </div>
       ) : (
         <div style={{
@@ -211,26 +211,26 @@ export function KanbanView() {
               style={{
                 flex: '1 1 0', minWidth: '200px', maxWidth: '280px',
                 display: 'flex', flexDirection: 'column',
-                background: dragOverCol === col.id ? 'rgba(0,240,255,0.04)' : 'rgba(8,12,28,0.6)',
-                border: `1px solid ${dragOverCol === col.id ? 'rgba(0,240,255,0.3)' : 'rgba(0,240,255,0.08)'}`,
+                background: dragOverCol === col.id ? 'rgba(125,207,255,0.04)' : 'rgba(36,40,59,0.6)',
+                border: `1px solid ${dragOverCol === col.id ? 'rgba(125,207,255,0.3)' : 'rgba(125,207,255,0.08)'}`,
                 borderRadius: '8px', transition: 'all 0.2s',
               }}
             >
               {/* Column header */}
               <div style={{
-                padding: '10px 12px', borderBottom: '1px solid rgba(0,240,255,0.08)',
+                padding: '10px 12px', borderBottom: '1px solid rgba(125,207,255,0.08)',
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: col.color, boxShadow: `0 0 6px ${col.color}44` }} />
                   <span style={{
-                    fontFamily: 'Orbitron, sans-serif', fontSize: '10px', letterSpacing: '1.5px',
+                    fontFamily: 'Geist, sans-serif', fontSize: '10px', letterSpacing: '1.5px',
                     color: col.color, textTransform: 'uppercase',
                   }}>
                     {col.name}
                   </span>
                   <span style={{
-                    fontSize: '10px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace',
+                    fontSize: '10px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace',
                   }}>
                     {col.cards.length}
                   </span>
@@ -238,7 +238,7 @@ export function KanbanView() {
                 <button
                   onClick={() => setEditing({ isNew: true, columnName: col.name, title: '', description: '', assignee: '', priority: 'low', project_id: filterProject !== 'all' ? filterProject : allProjects[0] })}
                   style={{
-                    background: 'none', border: '1px solid rgba(0,240,255,0.15)', borderRadius: '4px',
+                    background: 'none', border: '1px solid rgba(125,207,255,0.15)', borderRadius: '4px',
                     color: 'var(--cyan)', cursor: 'pointer', fontSize: '12px', lineHeight: '1',
                     padding: '2px 6px', opacity: 0.6, transition: 'opacity 0.2s',
                   }}
@@ -264,18 +264,18 @@ export function KanbanView() {
                       ref={dragCard?.id === card.id ? dragRef : undefined}
                       style={{
                         padding: '10px', borderRadius: '6px', cursor: 'grab',
-                        background: 'rgba(8,12,28,0.96)',
-                        border: '1px solid rgba(0,240,255,0.08)',
+                        background: 'rgba(36,40,59,0.96)',
+                        border: '1px solid rgba(125,207,255,0.08)',
                         backdropFilter: 'blur(8px)',
                         transition: 'all 0.15s',
                         opacity: dragCard?.id === card.id ? 0.4 : 1,
                       }}
                       onMouseEnter={e => {
-                        e.currentTarget.style.border = '1px solid rgba(0,240,255,0.25)';
-                        e.currentTarget.style.boxShadow = '0 0 12px rgba(0,240,255,0.08)';
+                        e.currentTarget.style.border = '1px solid rgba(125,207,255,0.25)';
+                        e.currentTarget.style.boxShadow = '0 0 12px rgba(125,207,255,0.08)';
                       }}
                       onMouseLeave={e => {
-                        e.currentTarget.style.border = '1px solid rgba(0,240,255,0.08)';
+                        e.currentTarget.style.border = '1px solid rgba(125,207,255,0.08)';
                         e.currentTarget.style.boxShadow = 'none';
                       }}
                     >
@@ -284,7 +284,7 @@ export function KanbanView() {
                         <span style={{
                           fontSize: '9px', padding: '1px 6px', borderRadius: '3px',
                           background: `${projColor}18`, color: projColor, border: `1px solid ${projColor}33`,
-                          fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px', textTransform: 'uppercase',
+                          fontFamily: 'Geist, sans-serif', letterSpacing: '1px', textTransform: 'uppercase',
                         }}>
                           {card.project_id}
                         </span>
@@ -292,15 +292,15 @@ export function KanbanView() {
                       </div>
                       {/* Title */}
                       <div style={{
-                        fontFamily: 'Share Tech Mono, monospace', fontSize: '12px',
-                        color: '#e0e6ed', lineHeight: '1.4', marginBottom: card.assignee ? '6px' : 0,
+                        fontFamily: 'JetBrains Mono, monospace', fontSize: '12px',
+                        color: 'var(--foreground)', lineHeight: '1.4', marginBottom: card.assignee ? '6px' : 0,
                       }}>
                         {card.title}
                       </div>
                       {/* Assignee */}
                       {card.assignee && (
                         <div style={{
-                          fontSize: '10px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace',
+                          fontSize: '10px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace',
                         }}>
                           → {card.assignee}
                         </div>
@@ -325,11 +325,11 @@ export function KanbanView() {
           }}
         >
           <div style={{
-            background: 'rgba(8,12,28,0.98)', border: '1px solid rgba(0,240,255,0.2)',
+            background: 'rgba(36,40,59,0.98)', border: '1px solid rgba(125,207,255,0.2)',
             borderRadius: '12px', padding: '24px', width: '400px', maxWidth: '90vw',
-            boxShadow: '0 0 40px rgba(0,240,255,0.1)',
+            boxShadow: '0 0 40px rgba(125,207,255,0.1)',
           }}>
-            <h3 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '12px', color: 'var(--cyan)', letterSpacing: '2px', margin: '0 0 16px' }}>
+            <h3 style={{ fontFamily: 'Geist, sans-serif', fontSize: '12px', color: 'var(--cyan)', letterSpacing: '2px', margin: '0 0 16px' }}>
               {editing.isNew ? 'NEW CARD' : 'EDIT CARD'}
             </h3>
 
@@ -390,14 +390,14 @@ export function KanbanView() {
 
             <div style={{ display: 'flex', gap: '8px', marginTop: '16px', justifyContent: 'flex-end' }}>
               {!editing.isNew && (
-                <button onClick={() => editing.id && handleDelete(editing.id)} style={{ ...btnStyle, color: '#ff3355', borderColor: '#ff335533' }}>
+                <button onClick={() => editing.id && handleDelete(editing.id)} style={{ ...btnStyle, color: 'var(--red)', borderColor: 'color-mix(in srgb, var(--red) 20%, transparent)' }}>
                   DELETE
                 </button>
               )}
-              <button onClick={() => setEditing(null)} style={{ ...btnStyle, color: '#6a7a8a', borderColor: '#6a7a8a33' }}>
+              <button onClick={() => setEditing(null)} style={{ ...btnStyle, color: 'var(--muted-foreground)', borderColor: 'color-mix(in srgb, var(--muted-foreground) 20%, transparent)' }}>
                 CANCEL
               </button>
-              <button onClick={handleSave} style={{ ...btnStyle, color: 'var(--cyan)', borderColor: 'rgba(0,240,255,0.3)', background: 'rgba(0,240,255,0.08)' }}>
+              <button onClick={handleSave} style={{ ...btnStyle, color: 'var(--cyan)', borderColor: 'rgba(125,207,255,0.3)', background: 'rgba(125,207,255,0.08)' }}>
                 {editing.isNew ? 'CREATE' : 'SAVE'}
               </button>
             </div>
@@ -410,21 +410,21 @@ export function KanbanView() {
 
 const inputStyle: React.CSSProperties = {
   width: '100%', boxSizing: 'border-box',
-  background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)',
-  borderRadius: '4px', color: '#e0e6ed', padding: '8px 10px',
-  fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', outline: 'none',
+  background: 'rgba(125,207,255,0.04)', border: '1px solid rgba(125,207,255,0.15)',
+  borderRadius: '4px', color: 'var(--foreground)', padding: '8px 10px',
+  fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', outline: 'none',
 };
 
 const btnStyle: React.CSSProperties = {
   background: 'none', border: '1px solid', borderRadius: '4px',
   padding: '6px 16px', cursor: 'pointer',
-  fontFamily: 'Orbitron, sans-serif', fontSize: '10px', letterSpacing: '1px',
+  fontFamily: 'Geist, sans-serif', fontSize: '10px', letterSpacing: '1px',
 };
 
 function ModalField({ label, children, style }: { label: string; children: React.ReactNode; style?: React.CSSProperties }) {
   return (
     <div style={{ marginBottom: '12px', ...style }}>
-      <label style={{ display: 'block', fontFamily: 'Orbitron, sans-serif', fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', marginBottom: '4px' }}>
+      <label style={{ display: 'block', fontFamily: 'Geist, sans-serif', fontSize: '9px', color: 'var(--muted-foreground)', letterSpacing: '1px', marginBottom: '4px' }}>
         {label}
       </label>
       {children}

@@ -54,7 +54,7 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <h2 style={{
-              fontFamily: 'Orbitron, sans-serif', fontSize: '14px',
+              fontFamily: 'Geist, sans-serif', fontSize: '14px',
               color: 'var(--cyan)', letterSpacing: '2px', margin: 0,
             }}>
               PROJECTS
@@ -65,9 +65,9 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '5px 10px', borderRadius: '6px',
-              background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.2)',
+              background: 'rgba(125,207,255,0.06)', border: '1px solid rgba(125,207,255,0.2)',
               color: 'var(--cyan)', fontSize: '10px',
-              fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+              fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
               cursor: 'pointer', transition: 'all 0.2s',
             }}
           >
@@ -82,9 +82,9 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
             style={{
               display: 'flex', alignItems: 'center', gap: '6px',
               padding: '6px 12px', borderRadius: '6px',
-              background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.12)',
-              color: '#6a7a8a', fontSize: '11px',
-              fontFamily: 'Share Tech Mono, monospace',
+              background: 'rgba(125,207,255,0.04)', border: '1px solid rgba(125,207,255,0.12)',
+              color: 'var(--muted-foreground)', fontSize: '11px',
+              fontFamily: 'JetBrains Mono, monospace',
               cursor: 'pointer', transition: 'all 0.15s',
             }}
           >
@@ -105,8 +105,8 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
               style={{
                 display: 'flex', alignItems: 'center', gap: '14px',
                 padding: '16px 20px',
-                borderBottom: '1px solid rgba(0,240,255,0.04)',
-                background: selected ? 'rgba(0,240,255,0.04)' : 'transparent',
+                borderBottom: '1px solid rgba(125,207,255,0.04)',
+                background: selected ? 'rgba(125,207,255,0.04)' : 'transparent',
                 cursor: 'pointer', transition: 'background 0.15s',
               }}
             >
@@ -122,21 +122,21 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
                   <span style={{
-                    fontSize: '13px', fontFamily: 'Orbitron, sans-serif',
+                    fontSize: '13px', fontFamily: 'Geist, sans-serif',
                     letterSpacing: '1px', color: project.color, fontWeight: 700,
                   }}>
                     {project.name}
                   </span>
                   <span style={{
-                    fontSize: '10px', color: '#4a5a6a',
-                    fontFamily: 'Share Tech Mono, monospace',
+                    fontSize: '10px', color: 'var(--muted-foreground)',
+                    fontFamily: 'JetBrains Mono, monospace',
                   }}>
                     {project.version}
                   </span>
                 </div>
                 <div style={{
-                  fontSize: '11px', color: '#5a6a7a',
-                  fontFamily: 'Share Tech Mono, monospace',
+                  fontSize: '11px', color: 'var(--muted-foreground)',
+                  fontFamily: 'JetBrains Mono, monospace',
                   overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
                   {project.description}
@@ -144,7 +144,7 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
                 {/* Progress bar */}
                 <div style={{
                   marginTop: '8px', height: '3px', borderRadius: '2px',
-                  background: 'rgba(0,240,255,0.06)', overflow: 'hidden',
+                  background: 'rgba(125,207,255,0.06)', overflow: 'hidden',
                 }}>
                   <div style={{
                     height: '100%', borderRadius: '2px',
@@ -158,25 +158,25 @@ export function ProjectsListView({ onNewProject }: ProjectsListViewProps) {
               {/* Stats */}
               <div style={{ textAlign: 'right', flexShrink: 0 }}>
                 <div style={{
-                  fontSize: '10px', color: '#4a5a6a',
-                  fontFamily: 'Share Tech Mono, monospace',
+                  fontSize: '10px', color: 'var(--muted-foreground)',
+                  fontFamily: 'JetBrains Mono, monospace',
                 }}>
                   {project.tasks.done}/{project.tasks.total} tasks
                 </div>
                 <div style={{
                   fontSize: '10px', marginTop: '2px',
-                  color: activeAgents > 0 ? '#00ff88' : '#4a5a6a',
-                  fontFamily: 'Share Tech Mono, monospace',
+                  color: activeAgents > 0 ? 'var(--green)' : 'var(--muted-foreground)',
+                  fontFamily: 'JetBrains Mono, monospace',
                 }}>
                   {activeAgents}/{project.agents.length} agents
                 </div>
                 <div style={{
                   fontSize: '9px', marginTop: '4px', padding: '2px 6px',
                   borderRadius: '3px',
-                  background: project.status === 'building' ? 'rgba(255,204,0,0.08)' : 'rgba(0,255,136,0.08)',
-                  color: project.status === 'building' ? '#ffcc00' : '#00ff88',
-                  border: `1px solid ${project.status === 'building' ? 'rgba(255,204,0,0.2)' : 'rgba(0,255,136,0.2)'}`,
-                  fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+                  background: project.status === 'building' ? 'rgba(224,175,104,0.08)' : 'rgba(158,206,106,0.08)',
+                  color: project.status === 'building' ? 'var(--yellow)' : 'var(--green)',
+                  border: `1px solid ${project.status === 'building' ? 'rgba(224,175,104,0.2)' : 'rgba(158,206,106,0.2)'}`,
+                  fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
                 }}>
                   {project.status.toUpperCase()}
                 </div>

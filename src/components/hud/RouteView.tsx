@@ -146,30 +146,30 @@ function windRelativeAngle(routeBearing: number, windDir: number): number {
 
 function windLabel(angle: number): { label: string; color: string } {
   const abs = Math.abs(angle);
-  if (abs < 45) return { label: 'Tailwind', color: '#00ff88' };
-  if (abs < 90) return { label: 'Cross-tail', color: '#88ff88' };
-  if (abs < 135) return { label: 'Cross-head', color: '#ffcc00' };
-  return { label: 'Headwind', color: '#ff3355' };
+  if (abs < 45) return { label: 'Tailwind', color: 'var(--green)' };
+  if (abs < 90) return { label: 'Cross-tail', color: 'var(--green)' };
+  if (abs < 135) return { label: 'Cross-head', color: 'var(--yellow)' };
+  return { label: 'Headwind', color: 'var(--red)' };
 }
 
 // Custom marker icons
 const startIcon = L.divIcon({
   className: '',
-  html: '<div style="width:14px;height:14px;background:#00ff88;border-radius:50%;border:2px solid #0a0a12;box-shadow:0 0 8px #00ff88"></div>',
+  html: '<div style="width:14px;height:14px;background:var(--green);border-radius:50%;border:2px solid var(--background);box-shadow:0 0 8px var(--green)"></div>',
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 });
 
 const endIcon = L.divIcon({
   className: '',
-  html: '<div style="width:14px;height:14px;background:#ff3355;border-radius:50%;border:2px solid #0a0a12;box-shadow:0 0 8px #ff3355"></div>',
+  html: '<div style="width:14px;height:14px;background:var(--red);border-radius:50%;border:2px solid var(--background);box-shadow:0 0 8px var(--red)"></div>',
   iconSize: [14, 14],
   iconAnchor: [7, 7],
 });
 
 const sampleIcon = L.divIcon({
   className: '',
-  html: '<div style="width:8px;height:8px;background:#00f0ff;border-radius:50%;border:1px solid #0a0a12;box-shadow:0 0 6px #00f0ff"></div>',
+  html: '<div style="width:8px;height:8px;background:var(--cyan);border-radius:50%;border:1px solid var(--background);box-shadow:0 0 6px var(--cyan)"></div>',
   iconSize: [8, 8],
   iconAnchor: [4, 4],
 });
@@ -190,35 +190,35 @@ function FitBounds({ points }: { points: GpxPoint[] }) {
 // ── Styles ──
 
 const cardStyle: React.CSSProperties = {
-  background: 'rgba(8,12,28,0.8)',
-  border: '1px solid rgba(0,240,255,0.15)',
+  background: 'rgba(36,40,59,0.8)',
+  border: '1px solid rgba(125,207,255,0.15)',
   borderRadius: '8px',
   padding: '14px',
   backdropFilter: 'blur(8px)',
 };
 
 const labelStyle: React.CSSProperties = {
-  fontFamily: 'Orbitron, sans-serif',
+  fontFamily: 'Geist, sans-serif',
   fontSize: '9px',
-  color: '#4a5a6a',
+  color: 'var(--muted-foreground)',
   letterSpacing: '1.5px',
   textTransform: 'uppercase' as const,
   marginBottom: '4px',
 };
 
 const valueStyle: React.CSSProperties = {
-  fontFamily: 'Orbitron, sans-serif',
+  fontFamily: 'Geist, sans-serif',
   fontSize: '16px',
   fontWeight: 700,
 };
 
 const btnStyle: React.CSSProperties = {
-  background: 'rgba(0,240,255,0.08)',
-  border: '1px solid rgba(0,240,255,0.25)',
+  background: 'rgba(125,207,255,0.08)',
+  border: '1px solid rgba(125,207,255,0.25)',
   borderRadius: '6px',
   color: 'var(--cyan)',
   cursor: 'pointer',
-  fontFamily: 'Orbitron, sans-serif',
+  fontFamily: 'Geist, sans-serif',
   fontSize: '10px',
   letterSpacing: '1px',
   padding: '8px 16px',
@@ -269,7 +269,7 @@ export function RouteView() {
       const segPoints = points.slice(startIdx, endIdx + 1).map(p => [p.lat, p.lon] as [number, number]);
 
       const wp = weather[i];
-      let color = '#00f0ff';
+      let color = 'var(--cyan)';
       if (wp && !wp.loading && wp.windDirection !== undefined) {
         const relAngle = windRelativeAngle(routeBearing, wp.windDirection);
         color = windLabel(relAngle).color;
@@ -455,47 +455,47 @@ export function RouteView() {
       {/* Header */}
       <div className="detail-header" style={{ flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', width: '100%' }}>
-          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Geist, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
             ROUTE PLANNER
           </h2>
           {routeName && (
             <span style={{
               fontSize: '11px', padding: '2px 8px', borderRadius: '4px',
-              background: 'rgba(0,240,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(0,240,255,0.15)',
-              fontFamily: 'Share Tech Mono, monospace',
+              background: 'rgba(125,207,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(125,207,255,0.15)',
+              fontFamily: 'JetBrains Mono, monospace',
             }}>{routeName}</span>
           )}
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px', alignItems: 'center' }}>
             <button onClick={() => setShowSavedRoutes(!showSavedRoutes)} style={{
               ...btnStyle,
-              background: showSavedRoutes ? 'rgba(0,240,255,0.15)' : 'rgba(0,240,255,0.08)',
-              borderColor: showSavedRoutes ? 'rgba(0,240,255,0.4)' : 'rgba(0,240,255,0.25)',
+              background: showSavedRoutes ? 'rgba(125,207,255,0.15)' : 'rgba(125,207,255,0.08)',
+              borderColor: showSavedRoutes ? 'rgba(125,207,255,0.4)' : 'rgba(125,207,255,0.25)',
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.15)'; }}
-              onMouseLeave={e => { if (!showSavedRoutes) e.currentTarget.style.background = 'rgba(0,240,255,0.08)'; }}>
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.15)'; }}
+              onMouseLeave={e => { if (!showSavedRoutes) e.currentTarget.style.background = 'rgba(125,207,255,0.08)'; }}>
               SAVED ROUTES
             </button>
             {points.length > 0 && rawGpx && (
               <button onClick={saveCurrentRoute} disabled={saving} style={{
                 ...btnStyle,
-                background: 'rgba(0,255,136,0.08)',
-                borderColor: 'rgba(0,255,136,0.25)',
-                color: '#00ff88',
+                background: 'rgba(158,206,106,0.08)',
+                borderColor: 'rgba(158,206,106,0.25)',
+                color: 'var(--green)',
                 opacity: saving ? 0.5 : 1,
               }}
-                onMouseEnter={e => { if (!saving) e.currentTarget.style.background = 'rgba(0,255,136,0.15)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,255,136,0.08)'; }}>
+                onMouseEnter={e => { if (!saving) e.currentTarget.style.background = 'rgba(158,206,106,0.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(158,206,106,0.08)'; }}>
                 {saving ? 'SAVING...' : 'SAVE ROUTE'}
               </button>
             )}
             <button onClick={loadSample} style={btnStyle}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.08)'; }}>
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.08)'; }}>
               LOAD SAMPLE
             </button>
             <button onClick={() => fileInputRef.current?.click()} style={btnStyle}
-              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.15)'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.08)'; }}>
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.08)'; }}>
               UPLOAD GPX
             </button>
             <input ref={fileInputRef} type="file" accept=".gpx" style={{ display: 'none' }}
@@ -511,11 +511,11 @@ export function RouteView() {
           <div style={{ ...cardStyle, marginBottom: '16px' }}>
             <div style={{ ...labelStyle, marginBottom: '12px', fontSize: '10px' }}>SAVED ROUTES</div>
             {loadingRoutes ? (
-              <div style={{ color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', padding: '12px 0' }}>
+              <div style={{ color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', padding: '12px 0' }}>
                 Loading...
               </div>
             ) : savedRoutes.length === 0 ? (
-              <div style={{ color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', padding: '12px 0' }}>
+              <div style={{ color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', padding: '12px 0' }}>
                 No saved routes yet. Upload a GPX file and click SAVE ROUTE.
               </div>
             ) : (
@@ -524,26 +524,26 @@ export function RouteView() {
                   <div key={route.id} style={{
                     display: 'flex', alignItems: 'center', gap: '12px',
                     padding: '10px 12px', borderRadius: '6px',
-                    background: 'rgba(0,240,255,0.03)',
-                    border: '1px solid rgba(0,240,255,0.08)',
+                    background: 'rgba(125,207,255,0.03)',
+                    border: '1px solid rgba(125,207,255,0.08)',
                     cursor: 'pointer',
                     transition: 'all 0.2s',
                   }}
                     onMouseEnter={e => {
-                      e.currentTarget.style.background = 'rgba(0,240,255,0.07)';
-                      e.currentTarget.style.borderColor = 'rgba(0,240,255,0.2)';
+                      e.currentTarget.style.background = 'rgba(125,207,255,0.07)';
+                      e.currentTarget.style.borderColor = 'rgba(125,207,255,0.2)';
                     }}
                     onMouseLeave={e => {
-                      e.currentTarget.style.background = 'rgba(0,240,255,0.03)';
-                      e.currentTarget.style.borderColor = 'rgba(0,240,255,0.08)';
+                      e.currentTarget.style.background = 'rgba(125,207,255,0.03)';
+                      e.currentTarget.style.borderColor = 'rgba(125,207,255,0.08)';
                     }}
                     onClick={() => loadSavedRoute(route.id)}
                   >
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '13px', color: 'var(--cyan)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '13px', color: 'var(--cyan)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {route.name}
                       </div>
-                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '11px', color: '#4a5a6a', marginTop: '2px', display: 'flex', gap: '12px' }}>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '2px', display: 'flex', gap: '12px' }}>
                         {route.distance_km != null && <span>{route.distance_km.toFixed(1)} km</span>}
                         {route.elevation_gain != null && <span>+{route.elevation_gain.toFixed(0)} m</span>}
                         <span>{new Date(route.created_at).toLocaleDateString()}</span>
@@ -552,20 +552,20 @@ export function RouteView() {
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteSavedRoute(route.id); }}
                       style={{
-                        background: 'rgba(255,51,85,0.06)',
-                        border: '1px solid rgba(255,51,85,0.2)',
+                        background: 'rgba(247,118,142,0.06)',
+                        border: '1px solid rgba(247,118,142,0.2)',
                         borderRadius: '4px',
-                        color: '#ff3355',
+                        color: 'var(--red)',
                         cursor: 'pointer',
-                        fontFamily: 'Orbitron, sans-serif',
+                        fontFamily: 'Geist, sans-serif',
                         fontSize: '9px',
                         letterSpacing: '0.5px',
                         padding: '4px 10px',
                         transition: 'all 0.2s',
                         flexShrink: 0,
                       }}
-                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.15)'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.06)'; }}
+                      onMouseEnter={e => { e.currentTarget.style.background = 'rgba(247,118,142,0.15)'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'rgba(247,118,142,0.06)'; }}
                     >
                       DELETE
                     </button>
@@ -584,28 +584,28 @@ export function RouteView() {
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             style={{
-              border: `2px dashed ${dragOver ? 'var(--cyan)' : 'rgba(0,240,255,0.2)'}`,
+              border: `2px dashed ${dragOver ? 'var(--cyan)' : 'rgba(125,207,255,0.2)'}`,
               borderRadius: '12px',
               padding: '60px 20px',
               textAlign: 'center',
               cursor: 'pointer',
-              background: dragOver ? 'rgba(0,240,255,0.04)' : 'transparent',
+              background: dragOver ? 'rgba(125,207,255,0.04)' : 'transparent',
               transition: 'all 0.3s',
               maxWidth: '600px',
               margin: '60px auto',
             }}
           >
             <div style={{ fontSize: '40px', marginBottom: '16px', opacity: 0.6 }}>🧭</div>
-            <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '13px', color: 'var(--cyan)', letterSpacing: '2px', marginBottom: '8px' }}>
+            <div style={{ fontFamily: 'Geist, sans-serif', fontSize: '13px', color: 'var(--cyan)', letterSpacing: '2px', marginBottom: '8px' }}>
               DROP GPX FILE HERE
             </div>
-            <div style={{ fontSize: '12px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace' }}>
+            <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace' }}>
               or click to browse
             </div>
             <div style={{ marginTop: '24px' }}>
-              <button onClick={(e) => { e.stopPropagation(); loadSample(); }} style={{ ...btnStyle, background: 'rgba(0,255,136,0.08)', borderColor: 'rgba(0,255,136,0.25)', color: '#00ff88' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,255,136,0.15)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,255,136,0.08)'; }}>
+              <button onClick={(e) => { e.stopPropagation(); loadSample(); }} style={{ ...btnStyle, background: 'rgba(158,206,106,0.08)', borderColor: 'rgba(158,206,106,0.25)', color: 'var(--green)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(158,206,106,0.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(158,206,106,0.08)'; }}>
                 LOAD SAMPLE ROUTE
               </button>
             </div>
@@ -621,19 +621,19 @@ export function RouteView() {
                 </div>
                 <div style={cardStyle}>
                   <div style={labelStyle}>Elev. Gain</div>
-                  <div style={{ ...valueStyle, color: '#00ff88' }}>+{stats.elevationGain.toFixed(0)} m</div>
+                  <div style={{ ...valueStyle, color: 'var(--green)' }}>+{stats.elevationGain.toFixed(0)} m</div>
                 </div>
                 <div style={cardStyle}>
                   <div style={labelStyle}>Elev. Loss</div>
-                  <div style={{ ...valueStyle, color: '#ff3355' }}>-{stats.elevationLoss.toFixed(0)} m</div>
+                  <div style={{ ...valueStyle, color: 'var(--red)' }}>-{stats.elevationLoss.toFixed(0)} m</div>
                 </div>
                 <div style={cardStyle}>
                   <div style={labelStyle}>Min / Max Elev</div>
-                  <div style={{ ...valueStyle, color: '#ffcc00', fontSize: '14px' }}>{stats.minEle.toFixed(0)} / {stats.maxEle.toFixed(0)} m</div>
+                  <div style={{ ...valueStyle, color: 'var(--yellow)', fontSize: '14px' }}>{stats.minEle.toFixed(0)} / {stats.maxEle.toFixed(0)} m</div>
                 </div>
                 <div style={cardStyle}>
                   <div style={labelStyle}>Points</div>
-                  <div style={{ ...valueStyle, color: '#aa44ff' }}>{points.length.toLocaleString()}</div>
+                  <div style={{ ...valueStyle, color: 'var(--purple)' }}>{points.length.toLocaleString()}</div>
                 </div>
               </div>
             )}
@@ -644,7 +644,7 @@ export function RouteView() {
                 <MapContainer
                   center={[points[0].lat, points[0].lon]}
                   zoom={12}
-                  style={{ height: '400px', width: '100%', background: '#0a0a12' }}
+                  style={{ height: '400px', width: '100%', background: 'var(--background)' }}
                   zoomControl={false}
                 >
                   <TileLayer
@@ -657,18 +657,18 @@ export function RouteView() {
                       <Polyline key={i} positions={seg.positions} pathOptions={{ color: seg.color, weight: 4, opacity: 0.8 }} />
                     ))
                   ) : (
-                    <Polyline positions={polyline} pathOptions={{ color: '#00f0ff', weight: 4, opacity: 0.8 }} />
+                    <Polyline positions={polyline} pathOptions={{ color: 'var(--cyan)', weight: 4, opacity: 0.8 }} />
                   )}
                   <Marker position={[points[0].lat, points[0].lon]} icon={startIcon}>
-                    <Popup><span style={{ color: '#000' }}>Start</span></Popup>
+                    <Popup><span style={{ color: 'var(--background)' }}>Start</span></Popup>
                   </Marker>
                   <Marker position={[points[points.length - 1].lat, points[points.length - 1].lon]} icon={endIcon}>
-                    <Popup><span style={{ color: '#000' }}>End</span></Popup>
+                    <Popup><span style={{ color: 'var(--background)' }}>End</span></Popup>
                   </Marker>
                   {weather.filter(w => !w.loading).map(wp => (
                     <Marker key={wp.index} position={[wp.lat, wp.lon]} icon={sampleIcon}>
                       <Popup>
-                        <div style={{ color: '#000', fontSize: '11px', fontFamily: 'monospace' }}>
+                        <div style={{ color: 'var(--background)', fontSize: '11px', fontFamily: 'monospace' }}>
                           <div><strong>Point {wp.index + 1}</strong> ({wp.distanceKm.toFixed(1)} km)</div>
                           {wp.temperature !== undefined && <div>Temp: {wp.temperature}°C</div>}
                           {wp.windSpeed !== undefined && <div>Wind: {wp.windSpeed} km/h</div>}
@@ -689,9 +689,9 @@ export function RouteView() {
                   onChange={e => setDepartureTime(e.target.value)}
                   style={{
                     width: '100%', boxSizing: 'border-box',
-                    background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.2)',
+                    background: 'rgba(125,207,255,0.04)', border: '1px solid rgba(125,207,255,0.2)',
                     borderRadius: '4px', color: 'var(--cyan)', padding: '8px',
-                    fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', outline: 'none',
+                    fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', outline: 'none',
                     colorScheme: 'dark',
                   }}
                 />
@@ -701,8 +701,8 @@ export function RouteView() {
                   width: '100%',
                   textAlign: 'center',
                 }}
-                  onMouseEnter={e => { if (!loading) e.currentTarget.style.background = 'rgba(0,240,255,0.15)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.08)'; }}>
+                  onMouseEnter={e => { if (!loading) e.currentTarget.style.background = 'rgba(125,207,255,0.15)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.08)'; }}>
                   {loading ? 'FETCHING...' : 'UPDATE WEATHER'}
                 </button>
 
@@ -711,24 +711,24 @@ export function RouteView() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '4px' }}>
                     <div>
                       <div style={labelStyle}>Temperature</div>
-                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', color: '#c8d8e8' }}>
-                        <span style={{ color: '#4488ff' }}>{weatherStats.minTemp.toFixed(1)}°</span>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: 'var(--foreground)' }}>
+                        <span style={{ color: 'var(--blue)' }}>{weatherStats.minTemp.toFixed(1)}°</span>
                         {' / '}
-                        <span style={{ color: '#ffcc00' }}>{weatherStats.avgTemp.toFixed(1)}°</span>
+                        <span style={{ color: 'var(--yellow)' }}>{weatherStats.avgTemp.toFixed(1)}°</span>
                         {' / '}
-                        <span style={{ color: '#ff3355' }}>{weatherStats.maxTemp.toFixed(1)}°</span>
-                        <span style={{ color: '#4a5a6a', fontSize: '10px' }}> min/avg/max</span>
+                        <span style={{ color: 'var(--red)' }}>{weatherStats.maxTemp.toFixed(1)}°</span>
+                        <span style={{ color: 'var(--muted-foreground)', fontSize: '10px' }}> min/avg/max</span>
                       </div>
                     </div>
                     <div>
                       <div style={labelStyle}>Wind</div>
-                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', color: '#c8d8e8' }}>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: 'var(--foreground)' }}>
                         avg {weatherStats.avgWind.toFixed(1)} km/h, max {weatherStats.maxWind.toFixed(1)} km/h
                       </div>
                     </div>
                     <div>
                       <div style={labelStyle}>Rain Probability</div>
-                      <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '12px', color: weatherStats.maxPrecip > 50 ? '#ff3355' : weatherStats.maxPrecip > 20 ? '#ffcc00' : '#00ff88' }}>
+                      <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: weatherStats.maxPrecip > 50 ? 'var(--red)' : weatherStats.maxPrecip > 20 ? 'var(--yellow)' : 'var(--green)' }}>
                         avg {weatherStats.avgPrecip.toFixed(0)}%, max {weatherStats.maxPrecip.toFixed(0)}%
                       </div>
                     </div>
@@ -742,11 +742,11 @@ export function RouteView() {
               <div style={cardStyle}>
                 <div style={{ ...labelStyle, marginBottom: '12px', fontSize: '10px' }}>WEATHER ALONG ROUTE</div>
                 <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'Share Tech Mono, monospace', fontSize: '12px' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px' }}>
                     <thead>
-                      <tr style={{ borderBottom: '1px solid rgba(0,240,255,0.15)' }}>
+                      <tr style={{ borderBottom: '1px solid rgba(125,207,255,0.15)' }}>
                         {['#', 'Distance', 'Temp', 'Wind', 'Dir', 'Rain %', 'Wind Analysis'].map(h => (
-                          <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontFamily: 'Orbitron, sans-serif', fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', fontWeight: 400 }}>{h}</th>
+                          <th key={h} style={{ padding: '8px 10px', textAlign: 'left', fontFamily: 'Geist, sans-serif', fontSize: '9px', color: 'var(--muted-foreground)', letterSpacing: '1px', fontWeight: 400 }}>{h}</th>
                         ))}
                       </tr>
                     </thead>
@@ -754,36 +754,36 @@ export function RouteView() {
                       {weather.map(wp => {
                         if (wp.loading) {
                           return (
-                            <tr key={wp.index} style={{ borderBottom: '1px solid rgba(0,240,255,0.06)' }}>
-                              <td style={{ padding: '8px 10px', color: '#4a5a6a' }}>{wp.index + 1}</td>
-                              <td style={{ padding: '8px 10px', color: '#4a5a6a' }}>{wp.distanceKm.toFixed(1)} km</td>
-                              <td colSpan={5} style={{ padding: '8px 10px', color: '#4a5a6a' }}>Loading...</td>
+                            <tr key={wp.index} style={{ borderBottom: '1px solid rgba(125,207,255,0.06)' }}>
+                              <td style={{ padding: '8px 10px', color: 'var(--muted-foreground)' }}>{wp.index + 1}</td>
+                              <td style={{ padding: '8px 10px', color: 'var(--muted-foreground)' }}>{wp.distanceKm.toFixed(1)} km</td>
+                              <td colSpan={5} style={{ padding: '8px 10px', color: 'var(--muted-foreground)' }}>Loading...</td>
                             </tr>
                           );
                         }
                         const relAngle = wp.windDirection !== undefined ? windRelativeAngle(routeBearing, wp.windDirection) : null;
                         const windInfo = relAngle !== null ? windLabel(relAngle) : null;
                         return (
-                          <tr key={wp.index} style={{ borderBottom: '1px solid rgba(0,240,255,0.06)' }}
-                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(0,240,255,0.03)'; }}
+                          <tr key={wp.index} style={{ borderBottom: '1px solid rgba(125,207,255,0.06)' }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(125,207,255,0.03)'; }}
                             onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}>
                             <td style={{ padding: '8px 10px', color: 'var(--cyan)' }}>{wp.index + 1}</td>
-                            <td style={{ padding: '8px 10px', color: '#c8d8e8' }}>{wp.distanceKm.toFixed(1)} km</td>
-                            <td style={{ padding: '8px 10px', color: wp.temperature !== undefined && wp.temperature > 30 ? '#ff3355' : wp.temperature !== undefined && wp.temperature < 5 ? '#4488ff' : '#ffcc00' }}>
+                            <td style={{ padding: '8px 10px', color: 'var(--foreground)' }}>{wp.distanceKm.toFixed(1)} km</td>
+                            <td style={{ padding: '8px 10px', color: wp.temperature !== undefined && wp.temperature > 30 ? 'var(--red)' : wp.temperature !== undefined && wp.temperature < 5 ? 'var(--blue)' : 'var(--yellow)' }}>
                               {wp.temperature !== undefined ? `${wp.temperature}°C` : '—'}
                             </td>
-                            <td style={{ padding: '8px 10px', color: (wp.windSpeed ?? 0) > 30 ? '#ff3355' : '#c8d8e8' }}>
+                            <td style={{ padding: '8px 10px', color: (wp.windSpeed ?? 0) > 30 ? 'var(--red)' : 'var(--foreground)' }}>
                               {wp.windSpeed !== undefined ? `${wp.windSpeed} km/h` : '—'}
                             </td>
                             <td style={{ padding: '8px 10px' }}>
                               {wp.windDirection !== undefined ? (
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                   <span style={{ display: 'inline-block', transform: `rotate(${wp.windDirection}deg)`, color: 'var(--cyan)', fontSize: '14px' }}>↑</span>
-                                  <span style={{ color: '#6a7a8a' }}>{wp.windDirection}°</span>
+                                  <span style={{ color: 'var(--muted-foreground)' }}>{wp.windDirection}°</span>
                                 </span>
                               ) : '—'}
                             </td>
-                            <td style={{ padding: '8px 10px', color: (wp.precipProbability ?? 0) > 50 ? '#ff3355' : (wp.precipProbability ?? 0) > 20 ? '#ffcc00' : '#00ff88' }}>
+                            <td style={{ padding: '8px 10px', color: (wp.precipProbability ?? 0) > 50 ? 'var(--red)' : (wp.precipProbability ?? 0) > 20 ? 'var(--yellow)' : 'var(--green)' }}>
                               {wp.precipProbability !== undefined ? `${wp.precipProbability}%` : '—'}
                             </td>
                             <td style={{ padding: '8px 10px' }}>
@@ -792,7 +792,7 @@ export function RouteView() {
                                   fontSize: '10px', padding: '2px 8px', borderRadius: '3px',
                                   background: `${windInfo.color}15`, color: windInfo.color,
                                   border: `1px solid ${windInfo.color}30`,
-                                  fontFamily: 'Orbitron, sans-serif', letterSpacing: '0.5px',
+                                  fontFamily: 'Geist, sans-serif', letterSpacing: '0.5px',
                                 }}>
                                   {windInfo.label}
                                 </span>
@@ -807,9 +807,9 @@ export function RouteView() {
 
                 {/* Wind summary */}
                 {weather.filter(w => w.windDirection !== undefined).length > 0 && (
-                  <div style={{ marginTop: '16px', padding: '12px', borderRadius: '6px', background: 'rgba(0,240,255,0.03)', border: '1px solid rgba(0,240,255,0.1)' }}>
+                  <div style={{ marginTop: '16px', padding: '12px', borderRadius: '6px', background: 'rgba(125,207,255,0.03)', border: '1px solid rgba(125,207,255,0.1)' }}>
                     <div style={{ ...labelStyle, marginBottom: '8px' }}>WIND ANALYSIS SUMMARY</div>
-                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontFamily: 'Share Tech Mono, monospace', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px' }}>
                       {(() => {
                         const analyzed = weather
                           .filter(w => w.windDirection !== undefined)
@@ -819,18 +819,18 @@ export function RouteView() {
                         const total = analyzed.length;
                         return Object.entries(counts).map(([label, count]) => {
                           const info = analyzed.find(a => a.label === label);
-                          const color = info?.color || '#6a7a8a';
+                          const color = info?.color || 'var(--muted-foreground)';
                           return (
                             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, boxShadow: `0 0 4px ${color}` }} />
                               <span style={{ color }}>{label}: {count}/{total}</span>
-                              <span style={{ color: '#4a5a6a' }}>({total > 0 ? Math.round(count / total * 100) : 0}%)</span>
+                              <span style={{ color: 'var(--muted-foreground)' }}>({total > 0 ? Math.round(count / total * 100) : 0}%)</span>
                             </div>
                           );
                         });
                       })()}
                     </div>
-                    <div style={{ marginTop: '8px', fontSize: '11px', color: '#6a7a8a', fontFamily: 'Share Tech Mono, monospace' }}>
+                    <div style={{ marginTop: '8px', fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace' }}>
                       Route bearing: {routeBearing.toFixed(0)}° ({
                         routeBearing < 22.5 || routeBearing >= 337.5 ? 'N' :
                         routeBearing < 67.5 ? 'NE' :
@@ -849,9 +849,9 @@ export function RouteView() {
             {/* Clear route button */}
             <div style={{ textAlign: 'center', paddingBottom: '20px' }}>
               <button onClick={() => { setPoints([]); setWeather([]); setRouteName(''); setRawGpx(''); }}
-                style={{ ...btnStyle, color: '#ff3355', borderColor: 'rgba(255,51,85,0.25)', background: 'rgba(255,51,85,0.06)' }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.12)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,51,85,0.06)'; }}>
+                style={{ ...btnStyle, color: 'var(--red)', borderColor: 'rgba(247,118,142,0.25)', background: 'rgba(247,118,142,0.06)' }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(247,118,142,0.12)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(247,118,142,0.06)'; }}>
                 CLEAR ROUTE
               </button>
             </div>

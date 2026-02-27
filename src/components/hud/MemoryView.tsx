@@ -110,14 +110,14 @@ export function MemoryView() {
 
   return (
     <div style={{ padding: '20px 24px', height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <h2 style={{ margin: 0, color: '#dfe8ff', fontFamily: 'Orbitron, sans-serif', letterSpacing: '0.08em' }}>🧠 MEMORY BROWSER</h2>
-      <p style={{ marginTop: 6, color: '#6b7c96', fontFamily: 'Share Tech Mono, monospace', fontSize: 12 }}>
+      <h2 style={{ margin: 0, color: 'var(--foreground)', fontFamily: 'Geist, sans-serif', letterSpacing: '0.08em' }}>🧠 MEMORY BROWSER</h2>
+      <p style={{ marginTop: 6, color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', fontSize: 12 }}>
         Click a memory file to view/edit content (mock editor)
       </p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginTop: 10 }}>
-        <Stat label="Documents" value={String(docs.length)} color="#dfe8ff" />
-        <Stat label="Matches" value={String(filtered.length)} color="#00f0ff" />
+        <Stat label="Documents" value={String(docs.length)} color="var(--foreground)" />
+        <Stat label="Matches" value={String(filtered.length)} color="var(--cyan)" />
       </div>
 
       <input
@@ -128,23 +128,23 @@ export function MemoryView() {
           width: '100%',
           marginTop: 10,
           marginBottom: 10,
-          background: 'rgba(8,12,28,0.92)',
-          color: '#dfe8ff',
-          border: '1px solid rgba(0,240,255,0.25)',
+          background: 'rgba(36,40,59,0.92)',
+          color: 'var(--foreground)',
+          border: '1px solid rgba(125,207,255,0.25)',
           borderRadius: 8,
           padding: '10px 12px',
-          fontFamily: 'Share Tech Mono, monospace',
+          fontFamily: 'JetBrains Mono, monospace',
           fontSize: 12,
         }}
       />
 
       {loading ? (
-        <div style={{ color: '#7f93b4', fontFamily: 'Share Tech Mono, monospace', fontSize: 12, marginTop: 8 }}>Loading memory documents…</div>
+        <div style={{ color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', fontSize: 12, marginTop: 8 }}>Loading memory documents…</div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 12, minHeight: 0, flex: 1 }}>
-          <div style={{ overflowY: 'auto', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 10, background: 'rgba(8,12,28,0.88)' }}>
+          <div style={{ overflowY: 'auto', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 10, background: 'rgba(36,40,59,0.88)' }}>
             {filtered.length === 0 ? (
-              <div style={{ color: '#7f93b4', fontSize: 12, textAlign: 'center', padding: '14px 8px' }}>No memory files found.</div>
+              <div style={{ color: 'var(--muted-foreground)', fontSize: 12, textAlign: 'center', padding: '14px 8px' }}>No memory files found.</div>
             ) : (
               filtered.map((d) => (
                 <button
@@ -154,41 +154,41 @@ export function MemoryView() {
                     width: '100%',
                     textAlign: 'left',
                     marginBottom: 8,
-                    background: d.id === selectedId ? 'rgba(0,240,255,0.10)' : 'rgba(3,6,16,0.7)',
-                    border: d.id === selectedId ? '1px solid rgba(0,240,255,0.45)' : '1px solid rgba(255,255,255,0.08)',
+                    background: d.id === selectedId ? 'rgba(125,207,255,0.10)' : 'rgba(3,6,16,0.7)',
+                    border: d.id === selectedId ? '1px solid rgba(125,207,255,0.45)' : '1px solid rgba(255,255,255,0.08)',
                     borderRadius: 8,
                     padding: 10,
                     cursor: 'pointer',
                   }}
                 >
-                  <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 11 }}>{d.title}</div>
-                  <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10, marginTop: 2 }}>{d.path}</div>
-                  <div style={{ color: '#c0cde3', fontSize: 11, marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.summary}</div>
-                  <div style={{ color: '#5d7192', fontSize: 10, marginTop: 6 }}>Updated: {d.updatedAt}</div>
+                  <div style={{ color: 'var(--cyan)', fontFamily: 'Geist, sans-serif', fontSize: 11 }}>{d.title}</div>
+                  <div style={{ color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', fontSize: 10, marginTop: 2 }}>{d.path}</div>
+                  <div style={{ color: 'var(--foreground)', fontSize: 11, marginTop: 6, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{d.summary}</div>
+                  <div style={{ color: 'var(--muted-foreground)', fontSize: 10, marginTop: 6 }}>Updated: {d.updatedAt}</div>
                 </button>
               ))
             )}
           </div>
 
-          <div style={{ overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12, background: 'rgba(8,12,28,0.9)', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: 12, background: 'rgba(36,40,59,0.9)', display: 'flex', flexDirection: 'column' }}>
             {!selectedDoc ? (
-              <div style={{ color: '#7f93b4', fontSize: 12 }}>Select a memory document to view content.</div>
+              <div style={{ color: 'var(--muted-foreground)', fontSize: 12 }}>Select a memory document to view content.</div>
             ) : (
               <>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                  <div style={{ color: '#00f0ff', fontFamily: 'Orbitron, sans-serif', fontSize: 13 }}>{selectedDoc.title}</div>
-                  <div style={{ color: '#7488a8', fontFamily: 'Share Tech Mono, monospace', fontSize: 10 }}>{selectedDoc.path}</div>
+                  <div style={{ color: 'var(--cyan)', fontFamily: 'Geist, sans-serif', fontSize: 13 }}>{selectedDoc.title}</div>
+                  <div style={{ color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', fontSize: 10 }}>{selectedDoc.path}</div>
                   <button
                     onClick={saveDoc}
                     style={{
                       marginLeft: 'auto',
-                      border: '1px solid rgba(0,240,255,0.45)',
-                      background: 'rgba(0,240,255,0.08)',
-                      color: '#00f0ff',
+                      border: '1px solid rgba(125,207,255,0.45)',
+                      background: 'rgba(125,207,255,0.08)',
+                      color: 'var(--cyan)',
                       borderRadius: 8,
                       padding: '6px 10px',
                       cursor: 'pointer',
-                      fontFamily: 'Share Tech Mono, monospace',
+                      fontFamily: 'JetBrains Mono, monospace',
                       fontSize: 11,
                     }}
                   >
@@ -206,14 +206,14 @@ export function MemoryView() {
                     border: '1px solid rgba(255,255,255,0.1)',
                     borderRadius: 8,
                     background: 'rgba(3,6,16,0.85)',
-                    color: '#dfe8ff',
+                    color: 'var(--foreground)',
                     padding: 12,
-                    fontFamily: 'Share Tech Mono, monospace',
+                    fontFamily: 'JetBrains Mono, monospace',
                     fontSize: 12,
                     lineHeight: 1.45,
                   }}
                 />
-                <div style={{ color: '#5d7192', fontSize: 10, marginTop: 8 }}>
+                <div style={{ color: 'var(--muted-foreground)', fontSize: 10, marginTop: 8 }}>
                   {savedAt ? `Saved at ${savedAt}` : 'Changes are local in this mock view.'}
                 </div>
               </>
@@ -227,9 +227,9 @@ export function MemoryView() {
 
 function Stat({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(8,12,28,0.9)' }}>
-      <div style={{ color: '#6b7c96', fontSize: 10, fontFamily: 'Share Tech Mono, monospace' }}>{label}</div>
-      <div style={{ color, fontFamily: 'Orbitron, sans-serif', fontSize: 16 }}>{value}</div>
+    <div style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '10px 12px', background: 'rgba(36,40,59,0.9)' }}>
+      <div style={{ color: 'var(--muted-foreground)', fontSize: 10, fontFamily: 'JetBrains Mono, monospace' }}>{label}</div>
+      <div style={{ color, fontFamily: 'Geist, sans-serif', fontSize: 16 }}>{value}</div>
     </div>
   );
 }

@@ -46,9 +46,9 @@ function TerminalLines({ active }: { active: boolean }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          color: '#30435c',
+          color: 'var(--muted-foreground)',
           fontSize: '10px',
-          fontFamily: 'Share Tech Mono, monospace',
+          fontFamily: 'JetBrains Mono, monospace',
         }}
       >
         STANDBY
@@ -207,10 +207,10 @@ function Workstation({ agent, projectColor }: { agent: ProjectAgent; projectColo
         />
         <span
           style={{
-            fontFamily: 'Orbitron, sans-serif',
+            fontFamily: 'Geist, sans-serif',
             fontSize: 11,
             fontWeight: 600,
-            color: '#e0e8f0',
+            color: 'var(--foreground)',
             letterSpacing: '0.05em',
             textTransform: 'uppercase',
             overflow: 'hidden',
@@ -223,7 +223,7 @@ function Workstation({ agent, projectColor }: { agent: ProjectAgent; projectColo
         <span
           style={{
             marginLeft: 'auto',
-            fontFamily: 'Share Tech Mono, monospace',
+            fontFamily: 'JetBrains Mono, monospace',
             fontSize: 9,
             color: stateColor,
             letterSpacing: '0.08em',
@@ -238,9 +238,9 @@ function Workstation({ agent, projectColor }: { agent: ProjectAgent; projectColo
 
       <div
         style={{
-          fontFamily: 'Share Tech Mono, monospace',
+          fontFamily: 'JetBrains Mono, monospace',
           fontSize: 10,
-          color: '#607496',
+          color: 'var(--muted-foreground)',
           marginBottom: 5,
           whiteSpace: 'nowrap',
           textOverflow: 'ellipsis',
@@ -252,9 +252,9 @@ function Workstation({ agent, projectColor }: { agent: ProjectAgent; projectColo
 
       <div
         style={{
-          fontFamily: 'Share Tech Mono, monospace',
+          fontFamily: 'JetBrains Mono, monospace',
           fontSize: 10,
-          color: isActive ? projectColor : '#466081',
+          color: isActive ? projectColor : 'var(--muted-foreground)',
           whiteSpace: 'nowrap',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
@@ -301,7 +301,7 @@ export function OfficeView() {
         padding: 'clamp(16px, 2.2vw, 24px)',
         height: '100%',
         overflowY: 'auto',
-        background: 'linear-gradient(180deg, rgba(8,12,28,0.96) 0%, rgba(4,6,16,0.99) 100%)',
+        background: 'linear-gradient(180deg, rgba(36,40,59,0.96) 0%, rgba(4,6,16,0.99) 100%)',
       }}
     >
       <style>{`
@@ -340,30 +340,30 @@ export function OfficeView() {
           <div>
             <h2
               style={{
-                fontFamily: 'Orbitron, sans-serif',
+                fontFamily: 'Geist, sans-serif',
                 fontSize: 16,
                 fontWeight: 700,
-                color: '#e0e8f0',
+                color: 'var(--foreground)',
                 margin: 0,
                 letterSpacing: '0.1em',
               }}
             >
               DIGITAL OFFICE
             </h2>
-            <span style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: 11, color: '#607496' }}>
+            <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: 'var(--muted-foreground)' }}>
               Live workspace for all project agents
             </span>
           </div>
         </div>
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          <div style={{ border: '1px solid rgba(0,240,255,0.25)', color: '#8bdcff', background: 'rgba(0,240,255,0.08)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
+          <div style={{ border: '1px solid rgba(125,207,255,0.25)', color: 'var(--cyan)', background: 'rgba(125,207,255,0.08)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
             {projects.length} PROJECTS
           </div>
-          <div style={{ border: '1px solid rgba(255,255,255,0.16)', color: '#adc0dd', background: 'rgba(255,255,255,0.06)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
+          <div style={{ border: '1px solid rgba(255,255,255,0.16)', color: 'var(--foreground)', background: 'rgba(255,255,255,0.06)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
             {totalAgents} AGENTS
           </div>
-          <div style={{ border: '1px solid rgba(0,255,136,0.25)', color: '#87f8bf', background: 'rgba(0,255,136,0.08)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
+          <div style={{ border: '1px solid rgba(158,206,106,0.25)', color: 'var(--green)', background: 'rgba(158,206,106,0.08)', borderRadius: 999, padding: '3px 10px', fontSize: 10 }}>
             {totalActive} ACTIVE
           </div>
         </div>
@@ -372,12 +372,12 @@ export function OfficeView() {
       {projects.length === 0 && (
         <div
           style={{
-            border: '1px dashed rgba(0,240,255,0.22)',
+            border: '1px dashed rgba(125,207,255,0.22)',
             borderRadius: 12,
             padding: 20,
-            color: '#7f93b4',
+            color: 'var(--muted-foreground)',
             textAlign: 'center',
-            background: 'rgba(8,12,28,0.6)',
+            background: 'rgba(36,40,59,0.6)',
           }}
         >
           No projects yet. Create one from the sidebar to populate the office.
@@ -401,7 +401,7 @@ export function OfficeView() {
               />
               <span
                 style={{
-                  fontFamily: 'Orbitron, sans-serif',
+                  fontFamily: 'Geist, sans-serif',
                   fontSize: 12,
                   fontWeight: 700,
                   color: project.color,
@@ -412,9 +412,9 @@ export function OfficeView() {
               </span>
               <span
                 style={{
-                  fontFamily: 'Share Tech Mono, monospace',
+                  fontFamily: 'JetBrains Mono, monospace',
                   fontSize: 10,
-                  color: '#607496',
+                  color: 'var(--muted-foreground)',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
@@ -426,9 +426,9 @@ export function OfficeView() {
               <span
                 style={{
                   marginLeft: 'auto',
-                  fontFamily: 'Share Tech Mono, monospace',
+                  fontFamily: 'JetBrains Mono, monospace',
                   fontSize: 10,
-                  color: '#88a2c8',
+                  color: 'var(--muted-foreground)',
                   whiteSpace: 'nowrap',
                 }}
               >

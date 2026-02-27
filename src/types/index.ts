@@ -3,21 +3,21 @@ export type ProjectPhase = 'forming' | 'growing' | 'maturing' | 'ready' | 'launc
 
 // Legacy exports for compatibility (can be removed later)
 export const STATE_COLORS: Record<AgentState, string> = {
-  idle: '#5a6a7a',
-  active: '#00ff88',
-  warning: '#ffaa00',
-  error: '#ff4444',
-  running: '#00ccff',
-  recovery: '#ff8800'
+  idle: 'var(--muted-foreground)',
+  active: 'var(--green)',
+  warning: 'var(--yellow)',
+  error: 'var(--red)',
+  running: 'var(--cyan)',
+  recovery: 'var(--neon-orange)'
 };
 
 export const STATE_EMISSIVE: Record<AgentState, string> = {
-  idle: '#5a6a7a',
-  active: '#00ff88',
-  warning: '#ffaa00',
-  error: '#ff4444',
-  running: '#00ccff',
-  recovery: '#ff8800'
+  idle: 'var(--muted-foreground)',
+  active: 'var(--green)',
+  warning: 'var(--yellow)',
+  error: 'var(--red)',
+  running: 'var(--cyan)',
+  recovery: 'var(--neon-orange)'
 };
 
 // Legacy types for compatibility

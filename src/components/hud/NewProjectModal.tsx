@@ -62,21 +62,21 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
     }} onClick={onClose}>
       <div style={{
         width: '560px', maxHeight: '80vh', overflowY: 'auto',
-        background: 'rgba(8,12,28,0.98)', border: '1px solid rgba(0,240,255,0.2)',
+        background: 'rgba(36,40,59,0.98)', border: '1px solid rgba(125,207,255,0.2)',
         borderRadius: '12px', padding: '32px',
-        boxShadow: '0 0 40px rgba(0,240,255,0.1)',
+        boxShadow: '0 0 40px rgba(125,207,255,0.1)',
       }} onClick={e => e.stopPropagation()}>
         {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '24px' }}>
           <span style={{ fontSize: '28px' }}>🚀</span>
           <div>
             <h2 style={{
-              fontFamily: 'Orbitron, sans-serif', fontSize: '16px',
+              fontFamily: 'Geist, sans-serif', fontSize: '16px',
               color: 'var(--cyan)', letterSpacing: '2px', margin: 0,
             }}>
               NEW PROJECT
             </h2>
-            <div style={{ fontSize: '11px', color: '#4a5a6a', fontFamily: 'Share Tech Mono, monospace', marginTop: '4px' }}>
+            <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', marginTop: '4px' }}>
               Creates repo from template, initializes Claude Code agents
             </div>
           </div>
@@ -85,8 +85,8 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
         {/* Name field */}
         <div style={{ marginBottom: '16px' }}>
           <label style={{
-            display: 'block', fontSize: '10px', color: '#6a7a8a',
-            fontFamily: 'Orbitron, sans-serif', letterSpacing: '2px', marginBottom: '8px',
+            display: 'block', fontSize: '10px', color: 'var(--muted-foreground)',
+            fontFamily: 'Geist, sans-serif', letterSpacing: '2px', marginBottom: '8px',
           }}>
             PROJECT NAME
           </label>
@@ -98,16 +98,16 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             disabled={loading}
             style={{
               width: '100%', padding: '12px 16px',
-              background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)',
-              borderRadius: '8px', color: '#e0eaf4', fontSize: '14px',
-              fontFamily: 'Share Tech Mono, monospace', outline: 'none',
+              background: 'rgba(125,207,255,0.04)', border: '1px solid rgba(125,207,255,0.15)',
+              borderRadius: '8px', color: 'var(--foreground)', fontSize: '14px',
+              fontFamily: 'JetBrains Mono, monospace', outline: 'none',
               transition: 'border-color 0.2s',
               boxSizing: 'border-box',
             }}
-            onFocus={e => e.target.style.borderColor = 'rgba(0,240,255,0.4)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(0,240,255,0.15)'}
+            onFocus={e => e.target.style.borderColor = 'rgba(125,207,255,0.4)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(125,207,255,0.15)'}
           />
-          <div style={{ fontSize: '10px', color: '#3a4a5a', marginTop: '4px', fontFamily: 'Share Tech Mono, monospace' }}>
+          <div style={{ fontSize: '10px', color: 'var(--border)', marginTop: '4px', fontFamily: 'JetBrains Mono, monospace' }}>
             Will create: github.com/gonzaloacosta/{name ? name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') : '...'}
           </div>
         </div>
@@ -115,8 +115,8 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
         {/* Idea field */}
         <div style={{ marginBottom: '24px' }}>
           <label style={{
-            display: 'block', fontSize: '10px', color: '#6a7a8a',
-            fontFamily: 'Orbitron, sans-serif', letterSpacing: '2px', marginBottom: '8px',
+            display: 'block', fontSize: '10px', color: 'var(--muted-foreground)',
+            fontFamily: 'Geist, sans-serif', letterSpacing: '2px', marginBottom: '8px',
           }}>
             PROJECT IDEA
           </label>
@@ -128,15 +128,15 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             rows={6}
             style={{
               width: '100%', padding: '12px 16px',
-              background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.15)',
-              borderRadius: '8px', color: '#e0eaf4', fontSize: '13px',
-              fontFamily: 'Share Tech Mono, monospace', outline: 'none',
+              background: 'rgba(125,207,255,0.04)', border: '1px solid rgba(125,207,255,0.15)',
+              borderRadius: '8px', color: 'var(--foreground)', fontSize: '13px',
+              fontFamily: 'JetBrains Mono, monospace', outline: 'none',
               resize: 'vertical', lineHeight: '1.6',
               transition: 'border-color 0.2s',
               boxSizing: 'border-box',
             }}
-            onFocus={e => e.target.style.borderColor = 'rgba(0,240,255,0.4)'}
-            onBlur={e => e.target.style.borderColor = 'rgba(0,240,255,0.15)'}
+            onFocus={e => e.target.style.borderColor = 'rgba(125,207,255,0.4)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(125,207,255,0.15)'}
           />
         </div>
 
@@ -144,8 +144,8 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
         {error && (
           <div style={{
             padding: '10px 14px', marginBottom: '16px', borderRadius: '8px',
-            background: 'rgba(255,51,85,0.08)', border: '1px solid rgba(255,51,85,0.2)',
-            color: '#ff3355', fontSize: '12px', fontFamily: 'Share Tech Mono, monospace',
+            background: 'rgba(247,118,142,0.08)', border: '1px solid rgba(247,118,142,0.2)',
+            color: 'var(--red)', fontSize: '12px', fontFamily: 'JetBrains Mono, monospace',
           }}>
             ❌ {error}
           </div>
@@ -157,12 +157,12 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             {steps.map((s, i) => (
               <div key={i} style={{
                 display: 'flex', alignItems: 'center', gap: '8px',
-                padding: '6px 0', fontSize: '11px', fontFamily: 'Share Tech Mono, monospace',
-                color: s.success ? '#00ff88' : '#ff3355',
+                padding: '6px 0', fontSize: '11px', fontFamily: 'JetBrains Mono, monospace',
+                color: s.success ? 'var(--green)' : 'var(--red)',
               }}>
                 <span>{s.success ? '✅' : '❌'}</span>
                 <span>{s.step.replace(/_/g, ' ')}</span>
-                {s.note && <span style={{ color: '#4a5a6a' }}>({s.note})</span>}
+                {s.note && <span style={{ color: 'var(--muted-foreground)' }}>({s.note})</span>}
               </div>
             ))}
           </div>
@@ -175,9 +175,9 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             disabled={loading}
             style={{
               padding: '10px 24px', borderRadius: '8px',
-              background: 'transparent', border: '1px solid rgba(106,122,138,0.3)',
-              color: '#6a7a8a', fontSize: '12px',
-              fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+              background: 'transparent', border: '1px solid rgba(86,95,137,0.3)',
+              color: 'var(--muted-foreground)', fontSize: '12px',
+              fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
               cursor: 'pointer', transition: 'all 0.2s',
             }}
           >
@@ -188,10 +188,10 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
             disabled={loading || name.trim().length < 2 || idea.trim().length < 10}
             style={{
               padding: '10px 24px', borderRadius: '8px',
-              background: loading ? 'rgba(0,240,255,0.05)' : 'rgba(0,240,255,0.12)',
-              border: '1px solid rgba(0,240,255,0.3)',
-              color: loading ? '#4a5a6a' : 'var(--cyan)', fontSize: '12px',
-              fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+              background: loading ? 'rgba(125,207,255,0.05)' : 'rgba(125,207,255,0.12)',
+              border: '1px solid rgba(125,207,255,0.3)',
+              color: loading ? 'var(--muted-foreground)' : 'var(--cyan)', fontSize: '12px',
+              fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
               cursor: loading ? 'wait' : 'pointer', transition: 'all 0.2s',
             }}
           >
@@ -202,13 +202,13 @@ export function NewProjectModal({ onClose, onCreated }: NewProjectModalProps) {
         {/* What it does */}
         <div style={{
           marginTop: '24px', padding: '14px', borderRadius: '8px',
-          background: 'rgba(0,240,255,0.02)', border: '1px solid rgba(0,240,255,0.06)',
+          background: 'rgba(125,207,255,0.02)', border: '1px solid rgba(125,207,255,0.06)',
         }}>
-          <div style={{ fontSize: '9px', color: '#4a5a6a', fontFamily: 'Orbitron, sans-serif', letterSpacing: '2px', marginBottom: '8px' }}>
+          <div style={{ fontSize: '9px', color: 'var(--muted-foreground)', fontFamily: 'Geist, sans-serif', letterSpacing: '2px', marginBottom: '8px' }}>
             WHAT THIS DOES
           </div>
-          <div style={{ fontSize: '11px', color: '#5a6a7a', fontFamily: 'Share Tech Mono, monospace', lineHeight: '1.8' }}>
-            1. Creates GitHub repo from <span style={{ color: '#6a8aaa' }}>project-template</span><br/>
+          <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace', lineHeight: '1.8' }}>
+            1. Creates GitHub repo from <span style={{ color: 'var(--blue)' }}>project-template</span><br/>
             2. Fills CLAUDE.md with your idea<br/>
             3. Sets up 7 Claude Code agents (backend, frontend, devops, devsecops, qa, reviewer, planner)<br/>
             4. Creates Notion project page with TODOs<br/>

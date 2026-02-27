@@ -19,8 +19,8 @@ export function NetworkLinks() {
       const src = agentMap.get(link.sourceId || link.source);
       const tgt = agentMap.get(link.targetId || link.target);
       if (!src || !tgt) return null;
-      const color = link.status === 'down' ? '#ff3355' :
-                    link.status === 'degraded' ? '#ffcc00' : '#00f0ff';
+      const color = link.status === 'down' ? 'var(--red)' :
+                    link.status === 'degraded' ? 'var(--yellow)' : 'var(--cyan)';
       return { points: [src, tgt], color, opacity: link.status === 'active' ? 0.08 : 0.15 };
     }).filter(Boolean) as { points: THREE.Vector3[]; color: string; opacity: number }[];
   }, [links, agentMap, showLinks]);

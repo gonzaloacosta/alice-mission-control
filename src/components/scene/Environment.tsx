@@ -9,10 +9,10 @@ export function Environment() {
   return (
     <>
       {/* Fog */}
-      <fog attach="fog" args={['#0a0a12', 30, 120]} />
+      <fog attach="fog" args={['#1a1b26', 30, 120]} />
 
       {/* Ambient */}
-      <ambientLight intensity={0.15} color="#112244" />
+      <ambientLight intensity={0.15} color="#24283b" />
 
       {/* Stars */}
       <Stars radius={150} depth={80} count={4000} factor={3} saturation={0.5} fade speed={0.5} />
@@ -20,7 +20,7 @@ export function Environment() {
       {/* Grid */}
       <gridHelper
         ref={gridRef}
-        args={[120, 60, '#0a2a4a', '#0a1a2a']}
+        args={[120, 60, "#292e42", "#1a1b26"]}
         position={[0, -5, 0]}
         // @ts-ignore
         material-transparent={true}
@@ -29,8 +29,8 @@ export function Environment() {
       />
 
       {/* Core beacon light */}
-      <pointLight position={[0, 2, 0]} color="#00f0ff" intensity={3} distance={60} decay={2} />
-      <pointLight position={[0, 10, 0]} color="#ffffff" intensity={0.3} distance={80} />
+      <pointLight position={[0, 2, 0]} color="#7dcfff" intensity={3} distance={60} decay={2} />
+      <pointLight position={[0, 10, 0]} color="#c0caf5" intensity={0.3} distance={80} />
     </>
   );
 }
@@ -53,19 +53,19 @@ export function CoreBeacon() {
       {/* Core */}
       <mesh ref={ref}>
         <icosahedronGeometry args={[2, 3]} />
-        <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.7} />
+        <meshBasicMaterial color="#7dcfff" wireframe transparent opacity={0.7} />
       </mesh>
 
       {/* Glow */}
       <mesh ref={glowRef}>
         <icosahedronGeometry args={[2.8, 2]} />
-        <meshBasicMaterial color="#00f0ff" transparent opacity={0.06} />
+        <meshBasicMaterial color="#7dcfff" transparent opacity={0.06} />
       </mesh>
 
       {/* Corona ring */}
       <mesh ref={ringRef} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[3.5, 0.04, 8, 64]} />
-        <meshBasicMaterial color="#00f0ff" transparent opacity={0.15} />
+        <meshBasicMaterial color="#7dcfff" transparent opacity={0.15} />
       </mesh>
 
       {/* Label */}

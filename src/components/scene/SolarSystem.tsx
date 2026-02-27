@@ -27,34 +27,34 @@ export function Sun() {
       {/* Core */}
       <mesh ref={coreRef}>
         <icosahedronGeometry args={[3, 4]} />
-        <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.65} />
+        <meshBasicMaterial color="#9ece6a" wireframe transparent opacity={0.65} />
       </mesh>
       {/* Inner solid */}
       <mesh>
         <icosahedronGeometry args={[2.4, 3]} />
-        <meshStandardMaterial color="#00f0ff" emissive="#00f0ff" emissiveIntensity={0.8} transparent opacity={0.3} />
+        <meshStandardMaterial color="#9ece6a" emissive="#9ece6a" emissiveIntensity={0.8} transparent opacity={0.3} />
       </mesh>
       {/* Glow */}
       <mesh ref={glowRef}>
         <icosahedronGeometry args={[4, 2]} />
-        <meshBasicMaterial color="#00f0ff" transparent opacity={0.05} />
+        <meshBasicMaterial color="#9ece6a" transparent opacity={0.05} />
       </mesh>
       {/* Corona */}
       <mesh ref={coronaRef}>
         <icosahedronGeometry args={[5, 1]} />
-        <meshBasicMaterial color="#00f0ff" wireframe transparent opacity={0.03} />
+        <meshBasicMaterial color="#9ece6a" wireframe transparent opacity={0.03} />
       </mesh>
       {/* Ring */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[5.5, 0.04, 8, 64]} />
-        <meshBasicMaterial color="#00f0ff" transparent opacity={0.12} />
+        <meshBasicMaterial color="#9ece6a" transparent opacity={0.12} />
       </mesh>
       {/* Lights */}
-      <pointLight color="#00f0ff" intensity={3} distance={80} decay={2} />
-      <pointLight color="#ffffff" intensity={0.5} distance={100} position={[0, 8, 0]} />
+      <pointLight color="#9ece6a" intensity={3} distance={80} decay={2} />
+      <pointLight color="var(--foreground)" intensity={0.5} distance={100} position={[0, 8, 0]} />
       {/* Label */}
       <Html position={[0, 6, 0]} center style={{ pointerEvents: 'none' }}>
-        <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '10px', color: '#00f0ff', letterSpacing: '3px', textShadow: '0 0 10px #00f0ff50', textAlign: 'center', opacity: 0.7 }}>
+        <div style={{ fontFamily: 'Geist, sans-serif', fontSize: '10px', color: '#9ece6a', letterSpacing: '3px', textShadow: '0 0 10px rgba(158,206,106,0.35)', textAlign: 'center', opacity: 0.7 }}>
           {coreName}
         </div>
       </Html>
@@ -73,7 +73,7 @@ function OrbitPath({ radius, color }: { radius: number; color: string }) {
     return pts;
   }, [radius]);
 
-  return <Line points={points} color={color} transparent opacity={0.08} lineWidth={0.5} />;
+  return <Line points={points} color={color} transparent opacity={0.05} lineWidth={0.5} />;
 }
 
 
@@ -195,7 +195,7 @@ function Planet({ project }: { project: Project }) {
       {isSelected && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[project.size * 1.4, 0.03, 8, 64]} />
-          <meshBasicMaterial color="#ffffff" transparent opacity={0.3} />
+          <meshBasicMaterial color="var(--foreground)" transparent opacity={0.3} />
         </mesh>
       )}
 
@@ -203,7 +203,7 @@ function Planet({ project }: { project: Project }) {
       {isFocused && (
         <mesh rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[project.size * 1.6, 0.05, 8, 64]} />
-          <meshBasicMaterial color="#00f0ff" transparent opacity={0.6} />
+          <meshBasicMaterial color="var(--cyan)" transparent opacity={0.6} />
         </mesh>
       )}
 
@@ -211,18 +211,29 @@ function Planet({ project }: { project: Project }) {
       <SatelliteSystem project={project} />
 
       {/* Label */}
-      <Html position={[0, project.size + 1.5, 0]} center style={{ pointerEvents: 'none' }}>
-        <div style={{ textAlign: 'center', cursor: 'pointer' }} onClick={handlePlanetClick}>
-          <div style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '11px', letterSpacing: '2px', color: project.color, textShadow: `0 0 10px ${project.color}50`, textTransform: 'uppercase' }}>
+      <Html position={[0, project.size + 1.7, 0]} center style={{ pointerEvents: 'none' }}>
+        <div
+          style={{
+            textAlign: 'center',
+            minWidth: '92px',
+            padding: '4px 6px',
+            borderRadius: '8px',
+            background: 'rgba(26,27,38,0.72)',
+            border: '1px solid rgba(125,207,255,0.2)',
+            backdropFilter: 'blur(6px)',
+          }}
+          onClick={handlePlanetClick}
+        >
+          <div style={{ fontFamily: 'Geist, sans-serif', fontSize: 'clamp(8px, 2.5vw, 10px)', letterSpacing: '1.2px', fontWeight: 600, color: project.color, textShadow: `0 0 8px ${project.color}55`, textTransform: 'uppercase' }}>
             {project.name}
           </div>
-          <div style={{ width: '80px', height: '3px', background: `${project.color}15`, borderRadius: '2px', margin: '4px auto', overflow: 'hidden' }}>
-            <div style={{ width: `${p * 100}%`, height: '100%', background: project.color, borderRadius: '2px' }} />
+          <div style={{ width: '100%', height: '3px', background: 'rgba(125,207,255,0.12)', borderRadius: '999px', margin: '4px auto', overflow: 'hidden' }}>
+            <div style={{ width: `${p * 100}%`, height: '100%', background: project.color, borderRadius: '999px' }} />
           </div>
-          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px' }}>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 'clamp(7px, 2vw, 9px)', color: 'var(--foreground)', letterSpacing: '0.5px' }}>
             {Math.round(p * 100)}% · {project.version}
           </div>
-          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '8px', color: project.color, letterSpacing: '1px', marginTop: '2px', opacity: 0.7 }}>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 'clamp(6px, 1.8vw, 8px)', color: 'var(--muted-foreground)', letterSpacing: '0.8px', marginTop: '2px' }}>
             {PHASE_LABELS[phase]}
           </div>
         </div>
@@ -289,8 +300,8 @@ function SatelliteWithBeam({ agent, index, planetColor, planetSize }: {
         <mesh>
           <octahedronGeometry args={[0.22, 1]} />
           <meshStandardMaterial
-            color={isActive ? '#00ff88' : '#5a6a7a'}
-            emissive={isActive ? '#00ff88' : '#5a6a7a'}
+            color={isActive ? 'var(--green)' : 'var(--muted-foreground)'}
+            emissive={isActive ? 'var(--green)' : 'var(--muted-foreground)'}
             emissiveIntensity={isActive ? 0.5 : 0.1}
             metalness={0.7} roughness={0.3}
           />
@@ -298,22 +309,22 @@ function SatelliteWithBeam({ agent, index, planetColor, planetSize }: {
         {/* Glow */}
         <mesh>
           <sphereGeometry args={[0.35, 6, 6]} />
-          <meshBasicMaterial color={isActive ? '#00ff88' : '#5a6a7a'} transparent opacity={isActive ? 0.1 : 0.03} />
+          <meshBasicMaterial color={isActive ? 'var(--green)' : 'var(--muted-foreground)'} transparent opacity={isActive ? 0.1 : 0.03} />
         </mesh>
         {/* Panels */}
         {isActive && <>
           <mesh position={[-0.45, 0, 0]}>
             <planeGeometry args={[0.35, 0.12]} />
-            <meshBasicMaterial color="#1a4a7a" transparent opacity={0.7} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="var(--border)" transparent opacity={0.7} side={THREE.DoubleSide} />
           </mesh>
           <mesh position={[0.45, 0, 0]}>
             <planeGeometry args={[0.35, 0.12]} />
-            <meshBasicMaterial color="#1a4a7a" transparent opacity={0.7} side={THREE.DoubleSide} />
+            <meshBasicMaterial color="var(--border)" transparent opacity={0.7} side={THREE.DoubleSide} />
           </mesh>
         </>}
         {/* Name */}
         <Html position={[0, 0.6, 0]} center style={{ pointerEvents: 'none' }}>
-          <div style={{ fontFamily: 'Share Tech Mono, monospace', fontSize: '7px', color: isActive ? '#00ff88' : '#5a6a7a', whiteSpace: 'nowrap', textShadow: isActive ? '0 0 4px #00ff8840' : 'none' }}>
+          <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '6px', color: isActive ? 'var(--green)' : 'var(--muted-foreground)', whiteSpace: 'nowrap', opacity: isActive ? 0.9 : 0.55, textShadow: isActive ? '0 0 4px color-mix(in srgb, var(--green) 25%, transparent)' : 'none' }}>
             {agent.name}
           </div>
         </Html>

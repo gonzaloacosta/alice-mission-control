@@ -44,7 +44,7 @@ function ProjectCard({ project }: { project: Project }) {
     <div
       className="group rounded-xl p-5 transition-all duration-300 ease-out hover:-translate-y-1"
       style={{
-        background: '#111827',
+        background: 'var(--card)',
         border: `1px solid ${project.color}33`,
         boxShadow: 'none',
       }}

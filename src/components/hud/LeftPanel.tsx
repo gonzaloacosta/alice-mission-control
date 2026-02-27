@@ -19,7 +19,7 @@ export function LeftPanel() {
 
   return (
     <div className="fixed top-16 left-3 z-20 w-52 rounded-lg overflow-hidden"
-         style={{ background: 'rgba(8,12,28,0.92)', border: '1px solid rgba(0,240,255,0.12)', backdropFilter: 'blur(16px)' }}>
+         style={{ background: 'rgba(36,40,59,0.92)', border: '1px solid rgba(125,207,255,0.12)', backdropFilter: 'blur(16px)' }}>
 
       {/* Search */}
       <div className="p-3 border-b border-cyan-900/20">
@@ -29,7 +29,7 @@ export function LeftPanel() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full bg-transparent border border-cyan-900/30 rounded px-2 py-1.5 text-xs text-gray-300 placeholder-gray-600 outline-none focus:border-cyan-500/50"
-          style={{ fontFamily: 'Share Tech Mono, monospace' }}
+          style={{ fontFamily: 'JetBrains Mono, monospace' }}
         />
       </div>
 
@@ -43,9 +43,9 @@ export function LeftPanel() {
               onClick={() => setFilterState(s)}
               className="px-2 py-0.5 rounded text-[10px] tracking-wider transition-all"
               style={{
-                background: filterState === s ? `${s === 'all' ? '#00f0ff' : STATE_COLORS[s as AgentState]}20` : 'transparent',
-                border: `1px solid ${filterState === s ? (s === 'all' ? '#00f0ff' : STATE_COLORS[s as AgentState]) + '40' : 'rgba(0,240,255,0.08)'}`,
-                color: filterState === s ? (s === 'all' ? '#00f0ff' : STATE_COLORS[s as AgentState]) : '#5a6a7a',
+                background: filterState === s ? `${s === 'all' ? 'var(--cyan)' : STATE_COLORS[s as AgentState]}20` : 'transparent',
+                border: `1px solid ${filterState === s ? (s === 'all' ? 'var(--cyan)' : STATE_COLORS[s as AgentState]) + '40' : 'rgba(125,207,255,0.08)'}`,
+                color: filterState === s ? (s === 'all' ? 'var(--cyan)' : STATE_COLORS[s as AgentState]) : 'var(--muted-foreground)',
               }}
             >
               {s.toUpperCase()}
@@ -64,9 +64,9 @@ export function LeftPanel() {
               onClick={() => setFilterCluster(c)}
               className="px-2 py-0.5 rounded text-[10px] tracking-wider transition-all"
               style={{
-                background: filterCluster === c ? 'rgba(0,240,255,0.1)' : 'transparent',
-                border: `1px solid ${filterCluster === c ? 'rgba(0,240,255,0.3)' : 'rgba(0,240,255,0.08)'}`,
-                color: filterCluster === c ? '#00f0ff' : '#5a6a7a',
+                background: filterCluster === c ? 'rgba(125,207,255,0.1)' : 'transparent',
+                border: `1px solid ${filterCluster === c ? 'rgba(125,207,255,0.3)' : 'rgba(125,207,255,0.08)'}`,
+                color: filterCluster === c ? 'var(--cyan)' : 'var(--muted-foreground)',
               }}
             >
               {c.toUpperCase()}
@@ -90,9 +90,9 @@ export function LeftPanel() {
               onClick={() => setQuality(q)}
               className="px-2 py-0.5 rounded text-[10px] tracking-wider"
               style={{
-                background: quality === q ? 'rgba(0,240,255,0.1)' : 'transparent',
-                border: `1px solid ${quality === q ? 'rgba(0,240,255,0.3)' : 'rgba(0,240,255,0.08)'}`,
-                color: quality === q ? '#00f0ff' : '#5a6a7a',
+                background: quality === q ? 'rgba(125,207,255,0.1)' : 'transparent',
+                border: `1px solid ${quality === q ? 'rgba(125,207,255,0.3)' : 'rgba(125,207,255,0.08)'}`,
+                color: quality === q ? 'var(--cyan)' : 'var(--muted-foreground)',
               }}
             >
               {q.toUpperCase()}

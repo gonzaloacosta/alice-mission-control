@@ -21,12 +21,12 @@ const SOURCE_ICONS: Record<string, string> = {
 };
 
 const TYPE_COLORS: Record<string, string> = {
-  task_complete: '#00ff88',
-  task_start: '#00f0ff',
-  task_fail: '#ff3355',
-  build_pass: '#00ff88',
-  build_fail: '#ff3355',
-  commit: '#ffcc00',
+  task_complete: 'var(--green)',
+  task_start: 'var(--cyan)',
+  task_fail: 'var(--red)',
+  build_pass: 'var(--green)',
+  build_fail: 'var(--red)',
+  commit: 'var(--yellow)',
 };
 
 export function LogsView() {
@@ -82,13 +82,13 @@ export function LogsView() {
       {/* Header */}
       <div className="detail-header" style={{ flexShrink: 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
+          <h2 style={{ fontFamily: 'Geist, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
             EVENT LOG
           </h2>
           <span style={{
             fontSize: '11px', padding: '2px 8px', borderRadius: '4px',
-            background: 'rgba(0,240,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(0,240,255,0.15)',
-            fontFamily: 'Orbitron, sans-serif',
+            background: 'rgba(125,207,255,0.08)', color: 'var(--cyan)', border: '1px solid rgba(125,207,255,0.15)',
+            fontFamily: 'Geist, sans-serif',
           }}>
             {events.length}
           </span>
@@ -96,8 +96,8 @@ export function LogsView() {
             value={projectFilter}
             onChange={e => setProjectFilter(e.target.value)}
             style={{
-              marginLeft: 'auto', background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.15)',
-              color: 'var(--cyan)', fontFamily: 'Share Tech Mono, monospace', fontSize: '11px',
+              marginLeft: 'auto', background: 'rgba(125,207,255,0.06)', border: '1px solid rgba(125,207,255,0.15)',
+              color: 'var(--cyan)', fontFamily: 'JetBrains Mono, monospace', fontSize: '11px',
               padding: '4px 8px', borderRadius: '4px', outline: 'none',
             }}
           >
@@ -110,22 +110,22 @@ export function LogsView() {
       {/* Event list */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
         {events.length === 0 && (
-          <div style={{ textAlign: 'center', padding: '60px 20px', color: '#4a5a6a' }}>
+          <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--muted-foreground)' }}>
             <div style={{ fontSize: '32px', marginBottom: '12px' }}>📋</div>
-            <div style={{ fontSize: '13px', fontFamily: 'Share Tech Mono, monospace' }}>No events recorded yet</div>
+            <div style={{ fontSize: '13px', fontFamily: 'JetBrains Mono, monospace' }}>No events recorded yet</div>
           </div>
         )}
 
         {events.map(evt => {
           const icon = SOURCE_ICONS[evt.source] || '📌';
-          const typeColor = TYPE_COLORS[evt.event_type] || '#00f0ff';
+          const typeColor = TYPE_COLORS[evt.event_type] || 'var(--cyan)';
           return (
             <div key={evt.id} style={{
               display: 'flex', alignItems: 'flex-start', gap: '14px',
-              padding: '12px 20px', borderBottom: '1px solid rgba(0,240,255,0.04)',
+              padding: '12px 20px', borderBottom: '1px solid rgba(125,207,255,0.04)',
               transition: 'background 0.15s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,240,255,0.02)')}
+            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(125,207,255,0.02)')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
             >
               {/* Source icon */}
@@ -133,7 +133,7 @@ export function LogsView() {
 
               {/* Type badge */}
               <span style={{
-                fontSize: '9px', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
+                fontSize: '9px', fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
                 padding: '3px 8px', borderRadius: '3px', flexShrink: 0, marginTop: '2px',
                 background: `${typeColor}10`, color: typeColor, border: `1px solid ${typeColor}30`,
                 fontWeight: 700,
@@ -145,19 +145,19 @@ export function LogsView() {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
                   <span style={{
-                    fontSize: '12px', fontFamily: 'Orbitron, sans-serif', letterSpacing: '1px',
-                    color: '#00f0ff', fontWeight: 700,
+                    fontSize: '12px', fontFamily: 'Geist, sans-serif', letterSpacing: '1px',
+                    color: 'var(--cyan)', fontWeight: 700,
                   }}>
                     {evt.project_slug.toUpperCase()}
                   </span>
                   {evt.agent_name && (
-                    <span style={{ fontSize: '11px', color: '#6a7a8a', fontFamily: 'Share Tech Mono, monospace' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'JetBrains Mono, monospace' }}>
                       {evt.agent_name}
                     </span>
                   )}
                 </div>
                 <div style={{
-                  fontSize: '13px', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+                  fontSize: '13px', color: 'var(--foreground)', fontFamily: 'JetBrains Mono, monospace',
                   lineHeight: '1.5',
                 }}>
                   {evt.summary}
@@ -166,7 +166,7 @@ export function LogsView() {
 
               {/* Timestamp */}
               <span style={{
-                fontSize: '11px', color: '#4a5a6a', fontFamily: 'Orbitron, sans-serif',
+                fontSize: '11px', color: 'var(--muted-foreground)', fontFamily: 'Geist, sans-serif',
                 flexShrink: 0, marginTop: '2px',
               }}>
                 {new Date(evt.created_at).toLocaleTimeString('en-US', { hour12: false })}

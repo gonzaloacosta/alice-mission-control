@@ -1,14 +1,14 @@
 import { useState } from 'react';
 import { useStore } from '../../store';
 
-const SEV = { info: '#5a6a7a', warning: '#ffcc00', error: '#ff3355', critical: '#ff3355' };
+const SEV = { info: 'var(--muted-foreground)', warning: 'var(--yellow)', error: 'var(--red)', critical: 'var(--red)' };
 
 export function EventLog() {
   const events = useStore(s => s.events);
   const projects = useStore(s => s.projects);
   const [open, setOpen] = useState(false);
 
-  const getColor = (pid: string) => projects.find(p => p.id === pid)?.color || '#5a6a7a';
+  const getColor = (pid: string) => projects.find(p => p.id === pid)?.color || 'var(--muted-foreground)';
   const errorCount = events.filter(e => e.severity === 'error' || e.severity === 'critical').length;
 
   return (
@@ -18,13 +18,13 @@ export function EventLog() {
         <button
           onClick={() => setOpen(true)}
           className="fixed top-16 right-3 z-20 flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
-          style={{ background: 'rgba(8,12,28,0.88)', border: '1px solid rgba(0,240,255,0.12)', backdropFilter: 'blur(12px)' }}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5a6a7a" strokeWidth="1.5">
+          style={{ background: 'rgba(36,40,59,0.88)', border: '1px solid rgba(125,207,255,0.12)', backdropFilter: 'blur(12px)' }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--muted-foreground)" strokeWidth="1.5">
             <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>
           </svg>
           <span className="text-[10px] tracking-wider text-gray-500">LOG</span>
           {errorCount > 0 && (
-            <span className="text-[9px] px-1.5 rounded-full" style={{ background: '#ff335520', color: '#ff3355', border: '1px solid #ff335530' }}>
+            <span className="text-[9px] px-1.5 rounded-full" style={{ background: 'color-mix(in srgb, var(--red) 12%, transparent)', color: 'var(--red)', border: '1px solid color-mix(in srgb, var(--red) 18%, transparent)' }}>
               {errorCount}
             </span>
           )}
@@ -35,12 +35,12 @@ export function EventLog() {
       <div className="fixed top-14 right-0 z-30 h-[calc(100vh-56px)] w-80 transition-transform duration-300"
            style={{
              transform: open ? 'translateX(0)' : 'translateX(100%)',
-             background: 'rgba(8,12,28,0.95)',
-             borderLeft: '1px solid rgba(0,240,255,0.12)',
+             background: 'rgba(36,40,59,0.95)',
+             borderLeft: '1px solid rgba(125,207,255,0.12)',
              backdropFilter: 'blur(20px)',
            }}>
         {/* Header */}
-        <div className="px-4 py-3 flex justify-between items-center border-b" style={{ borderColor: 'rgba(0,240,255,0.08)' }}>
+        <div className="px-4 py-3 flex justify-between items-center border-b" style={{ borderColor: 'rgba(125,207,255,0.08)' }}>
           <div className="flex items-center gap-2">
             <span className="text-[9px] text-gray-600 tracking-[3px]">EVENT LOG</span>
             <span className="text-[9px] text-gray-700">{events.length}</span>
@@ -51,7 +51,7 @@ export function EventLog() {
         {/* Events */}
         <div className="overflow-y-auto h-[calc(100%-44px)] px-4 py-1">
           {events.map(evt => (
-            <div key={evt.id} className="flex items-start gap-2 py-2 border-b" style={{ borderColor: 'rgba(0,240,255,0.03)' }}>
+            <div key={evt.id} className="flex items-start gap-2 py-2 border-b" style={{ borderColor: 'rgba(125,207,255,0.03)' }}>
               <span className="w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0"
                     style={{ background: SEV[evt.severity], boxShadow: evt.severity !== 'info' ? `0 0 4px ${SEV[evt.severity]}` : 'none' }} />
               <div className="flex-1 min-w-0">

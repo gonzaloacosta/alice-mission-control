@@ -10,7 +10,7 @@ export function SettingsView() {
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div className="detail-header" style={{ flexShrink: 0 }}>
-        <h2 style={{ fontFamily: 'Orbitron, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
+        <h2 style={{ fontFamily: 'Geist, sans-serif', fontSize: '14px', color: 'var(--cyan)', letterSpacing: '2px', margin: 0 }}>
           SETTINGS
         </h2>
       </div>
@@ -27,10 +27,10 @@ export function SettingsView() {
                 onClick={() => setQuality(q)}
                 style={{
                   flex: 1, padding: '14px 12px', borderRadius: '6px', cursor: 'pointer',
-                  background: quality === q ? 'rgba(0,240,255,0.08)' : 'rgba(0,240,255,0.02)',
-                  border: `1px solid ${quality === q ? 'rgba(0,240,255,0.3)' : 'var(--border)'}`,
-                  color: quality === q ? 'var(--cyan)' : '#6a7a8a',
-                  fontFamily: 'Orbitron, sans-serif', fontSize: '11px', letterSpacing: '2px',
+                  background: quality === q ? 'rgba(125,207,255,0.08)' : 'rgba(125,207,255,0.02)',
+                  border: `1px solid ${quality === q ? 'rgba(125,207,255,0.3)' : 'var(--border)'}`,
+                  color: quality === q ? 'var(--cyan)' : 'var(--muted-foreground)',
+                  fontFamily: 'Geist, sans-serif', fontSize: '11px', letterSpacing: '2px',
                   transition: 'all 0.2s',
                 }}
               >
@@ -38,7 +38,7 @@ export function SettingsView() {
               </button>
             ))}
           </div>
-          <div style={{ fontSize: '12px', color: '#6a7a8a', marginTop: '10px', fontFamily: 'Share Tech Mono, monospace' }}>
+          <div style={{ fontSize: '12px', color: 'var(--muted-foreground)', marginTop: '10px', fontFamily: 'JetBrains Mono, monospace' }}>
             {quality === 'low' ? '⚡ No postprocessing — best performance' :
              quality === 'medium' ? '✨ Bloom enabled — balanced' :
              '🌟 Bloom + Vignette + MSAA — best visuals'}
@@ -51,10 +51,10 @@ export function SettingsView() {
             onClick={togglePause}
             style={{
               width: '100%', padding: '14px', borderRadius: '6px', cursor: 'pointer',
-              background: paused ? 'rgba(255,51,85,0.08)' : 'rgba(0,255,136,0.06)',
-              border: `1px solid ${paused ? 'rgba(255,51,85,0.25)' : 'rgba(0,255,136,0.2)'}`,
+              background: paused ? 'rgba(247,118,142,0.08)' : 'rgba(158,206,106,0.06)',
+              border: `1px solid ${paused ? 'rgba(247,118,142,0.25)' : 'rgba(158,206,106,0.2)'}`,
               color: paused ? 'var(--red)' : 'var(--green)',
-              fontFamily: 'Orbitron, sans-serif', fontSize: '12px', letterSpacing: '2px',
+              fontFamily: 'Geist, sans-serif', fontSize: '12px', letterSpacing: '2px',
               transition: 'all 0.2s',
             }}
           >
@@ -98,7 +98,7 @@ export function SettingsView() {
         {/* Footer */}
         <div style={{
           textAlign: 'center', padding: '24px 0 12px', fontSize: '11px',
-          color: '#3a4a5a', fontFamily: 'Share Tech Mono, monospace',
+          color: 'var(--border)', fontFamily: 'JetBrains Mono, monospace',
         }}>
           Mission Control Pro · Built by Alice 🤓
         </div>
@@ -111,9 +111,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   return (
     <div style={{ marginBottom: '28px' }}>
       <div style={{
-        fontSize: '10px', color: '#4a5a6a', letterSpacing: '2px', textTransform: 'uppercase',
-        fontFamily: 'Orbitron, sans-serif', marginBottom: '14px', fontWeight: 700,
-        paddingBottom: '8px', borderBottom: '1px solid rgba(0,240,255,0.06)',
+        fontSize: '10px', color: 'var(--muted-foreground)', letterSpacing: '2px', textTransform: 'uppercase',
+        fontFamily: 'Geist, sans-serif', marginBottom: '14px', fontWeight: 700,
+        paddingBottom: '8px', borderBottom: '1px solid rgba(125,207,255,0.06)',
       }}>
         {title}
       </div>
@@ -126,13 +126,13 @@ function InfoItem({ label, value }: { label: string; value: string }) {
   return (
     <div style={{ padding: '10px 0' }}>
       <div style={{
-        fontSize: '9px', color: '#4a5a6a', letterSpacing: '1px', textTransform: 'uppercase',
+        fontSize: '9px', color: 'var(--muted-foreground)', letterSpacing: '1px', textTransform: 'uppercase',
         marginBottom: '4px',
       }}>
         {label}
       </div>
       <div style={{
-        fontSize: '13px', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+        fontSize: '13px', color: 'var(--foreground)', fontFamily: 'JetBrains Mono, monospace',
       }}>
         {value}
       </div>
@@ -149,19 +149,19 @@ function LinkCard({ icon, label, href }: { icon: string; label: string; href: st
       style={{
         display: 'flex', alignItems: 'center', gap: '12px',
         padding: '14px 16px', borderRadius: '6px', textDecoration: 'none',
-        background: 'rgba(0,240,255,0.02)', border: '1px solid var(--border)',
-        color: '#c8d8e8', fontSize: '13px', fontFamily: 'Share Tech Mono, monospace',
+        background: 'rgba(125,207,255,0.02)', border: '1px solid var(--border)',
+        color: 'var(--foreground)', fontSize: '13px', fontFamily: 'JetBrains Mono, monospace',
         transition: 'all 0.2s',
       }}
       onMouseEnter={e => {
-        e.currentTarget.style.background = 'rgba(0,240,255,0.06)';
-        e.currentTarget.style.borderColor = 'rgba(0,240,255,0.25)';
-        e.currentTarget.style.color = '#00f0ff';
+        e.currentTarget.style.background = 'rgba(125,207,255,0.06)';
+        e.currentTarget.style.borderColor = 'rgba(125,207,255,0.25)';
+        e.currentTarget.style.color = 'var(--cyan)';
       }}
       onMouseLeave={e => {
-        e.currentTarget.style.background = 'rgba(0,240,255,0.02)';
-        e.currentTarget.style.borderColor = 'rgba(0,240,255,0.15)';
-        e.currentTarget.style.color = '#c8d8e8';
+        e.currentTarget.style.background = 'rgba(125,207,255,0.02)';
+        e.currentTarget.style.borderColor = 'rgba(125,207,255,0.15)';
+        e.currentTarget.style.color = 'var(--foreground)';
       }}
     >
       <span style={{ fontSize: '18px' }}>{icon}</span>

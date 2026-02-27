@@ -42,7 +42,7 @@ export function RightPanel() {
               </div>
               <div className="detail-item">
                 <label>Tasks</label>
-                <span className="detail-value" style={{ fontFamily: 'Orbitron, sans-serif', color: 'var(--cyan)' }}>
+                <span className="detail-value" style={{ fontFamily: 'Geist, sans-serif', color: 'var(--cyan)' }}>
                   {project.tasks.done}/{project.tasks.total}
                 </span>
               </div>
@@ -95,8 +95,8 @@ export function RightPanel() {
                     onClick={() => handleAgentClick(null)}
                     style={{
                       width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '6px',
-                      background: 'rgba(0,240,255,0.04)', border: '1px solid var(--border)',
-                      borderRadius: '6px', cursor: 'pointer', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+                      background: 'rgba(125,207,255,0.04)', border: '1px solid var(--border)',
+                      borderRadius: '6px', cursor: 'pointer', color: 'var(--foreground)', fontFamily: 'JetBrains Mono, monospace',
                       fontSize: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     }}
                   >
@@ -110,8 +110,8 @@ export function RightPanel() {
                       onClick={() => handleAgentClick(agent.name)}
                       style={{
                         width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: '6px',
-                        background: 'rgba(0,240,255,0.04)', border: '1px solid var(--border)',
-                        borderRadius: '6px', cursor: 'pointer', color: '#c8d8e8', fontFamily: 'Share Tech Mono, monospace',
+                        background: 'rgba(125,207,255,0.04)', border: '1px solid var(--border)',
+                        borderRadius: '6px', cursor: 'pointer', color: 'var(--foreground)', fontFamily: 'JetBrains Mono, monospace',
                         fontSize: '12px',
                       }}
                     >
@@ -119,16 +119,16 @@ export function RightPanel() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                           <div style={{
                             width: '6px', height: '6px', borderRadius: '50%',
-                            background: agent.state === 'active' ? 'var(--green)' : '#3a4a5a',
+                            background: agent.state === 'active' ? 'var(--green)' : 'var(--border)',
                             boxShadow: agent.state === 'active' ? '0 0 6px var(--green)' : 'none',
                           }} />
                           <span>{agent.name}</span>
-                          <span style={{ fontSize: '9px', color: '#4a5a6a' }}>{agent.role}</span>
+                          <span style={{ fontSize: '9px', color: 'var(--muted-foreground)' }}>{agent.role}</span>
                         </div>
                         <span style={{ fontSize: '10px', color: 'var(--cyan)' }}>CHAT →</span>
                       </div>
-                      <div style={{ marginTop: '4px', height: '3px', borderRadius: '2px', background: 'rgba(0,240,255,0.04)', overflow: 'hidden' }}>
-                        <div style={{ height: '100%', width: `${agent.contribution * 100}%`, background: agent.state === 'active' ? project.color : '#3a4a5a', borderRadius: '2px' }} />
+                      <div style={{ marginTop: '4px', height: '3px', borderRadius: '2px', background: 'rgba(125,207,255,0.04)', overflow: 'hidden' }}>
+                        <div style={{ height: '100%', width: `${agent.contribution * 100}%`, background: agent.state === 'active' ? project.color : 'var(--border)', borderRadius: '2px' }} />
                       </div>
                     </button>
                   ))}

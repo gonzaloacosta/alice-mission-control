@@ -46,7 +46,7 @@ export function ProjectDetail() {
 
   return (
     <div className="absolute top-0 left-0 right-0 bottom-0 z-20 overflow-hidden flex flex-col"
-         style={{ background: 'rgba(8,12,28,0.96)', backdropFilter: 'blur(20px)' }}>
+         style={{ background: 'rgba(36,40,59,0.96)', backdropFilter: 'blur(20px)' }}>
 
       {/* Header */}
       <div className="px-5 py-2 flex justify-between items-center"
@@ -60,7 +60,7 @@ export function ProjectDetail() {
           </div>
         </div>
         <button onClick={unfocusProject}
-          className="px-3 py-1.5 border rounded-lg flex items-center justify-center text-[#00f0ff] hover:text-white text-sm font-mono border-[#00f0ff]/30 hover:border-[#00f0ff]/60 bg-[#00f0ff]/10 hover:bg-[#00f0ff]/20 transition-all">
+          className="px-3 py-1.5 border rounded-lg flex items-center justify-center text-sm font-mono transition-all" style={{ color: 'var(--cyan)', borderColor: 'rgba(125,207,255,0.3)', background: 'rgba(125,207,255,0.1)' }}>
           ✕ Close
         </button>
       </div>
@@ -70,7 +70,7 @@ export function ProjectDetail() {
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-3 mb-4">
           <StatBox label="VERSION" value={project.version} color={project.color} />
-          <StatBox label="STATUS" value={project.status.toUpperCase()} color={project.status === 'orbiting' ? '#00ff88' : '#ffcc00'} />
+          <StatBox label="STATUS" value={project.status.toUpperCase()} color={project.status === 'orbiting' ? 'var(--green)' : 'var(--yellow)'} />
           <StatBox label="TASKS" value={`${project.tasks.done}/${project.tasks.total}`} color={project.color} />
           <StatBox label="PHASE" value={PHASE_LABELS[phase]} color={project.color} />
         </div>
@@ -81,7 +81,7 @@ export function ProjectDetail() {
             <span>EVOLUTION</span>
             <span className="font-orbitron" style={{ color: project.color }}>{Math.round(project.progress * 100)}%</span>
           </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(0,240,255,0.06)' }}>
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(125,207,255,0.06)' }}>
             <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${project.progress * 100}%`, background: `linear-gradient(90deg, ${project.color}80, ${project.color})` }} />
           </div>
         </div>
@@ -92,14 +92,14 @@ export function ProjectDetail() {
             {project.notionUrl && (
               <a href={project.notionUrl} target="_blank" rel="noopener noreferrer"
                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[10px] tracking-wider transition-all hover:opacity-80"
-                 style={{ background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.15)', color: '#a0b0c0' }}>
+                 style={{ background: 'rgba(125,207,255,0.06)', border: '1px solid rgba(125,207,255,0.15)', color: 'var(--foreground)' }}>
                 📋 Notion
               </a>
             )}
             {project.repoUrl && (
               <a href={project.repoUrl} target="_blank" rel="noopener noreferrer"
                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-[10px] tracking-wider transition-all hover:opacity-80"
-                 style={{ background: 'rgba(0,240,255,0.06)', border: '1px solid rgba(0,240,255,0.15)', color: '#a0b0c0' }}>
+                 style={{ background: 'rgba(125,207,255,0.06)', border: '1px solid rgba(125,207,255,0.15)', color: 'var(--foreground)' }}>
                 ⚙️ GitHub
               </a>
             )}
@@ -112,8 +112,8 @@ export function ProjectDetail() {
           {/* Default agent */}
           <button
             onClick={() => handleAgentClick(null)}
-            className="w-full text-left p-3 rounded-lg border transition-all hover:border-[#00f0ff]/40 group"
-            style={{ background: 'rgba(0,240,255,0.04)', borderColor: 'rgba(0,240,255,0.12)' }}
+            className="w-full text-left p-3 rounded-lg border transition-all hover:opacity-90 group"
+            style={{ background: 'rgba(125,207,255,0.04)', borderColor: 'rgba(125,207,255,0.12)' }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -122,11 +122,11 @@ export function ProjectDetail() {
                   ⚡
                 </div>
                 <div>
-                  <span className="text-xs text-gray-300 group-hover:text-[#00f0ff] transition-colors">Default Agent</span>
+                  <span className="text-xs text-foreground group-hover:text-neon-cyan transition-colors">Default Agent</span>
                   <div className="text-[10px] text-gray-600">General project assistant</div>
                 </div>
               </div>
-              <span className="text-[10px] text-[#00f0ff]/50 group-hover:text-[#00f0ff] transition-colors">CHAT →</span>
+              <span className="text-[10px] transition-colors" style={{ color: "rgba(125,207,255,0.7)" }}>CHAT →</span>
             </div>
           </button>
 
@@ -137,30 +137,30 @@ export function ProjectDetail() {
               <button
                 key={agent.id}
                 onClick={() => handleAgentClick(isApiAgent ? agent.name.toLowerCase() : null)}
-                className="w-full text-left p-3 rounded-lg border transition-all hover:border-[#00f0ff]/40 group"
-                style={{ background: 'rgba(0,240,255,0.04)', borderColor: 'rgba(0,240,255,0.12)' }}
+                className="w-full text-left p-3 rounded-lg border transition-all hover:opacity-90 group"
+                style={{ background: 'rgba(125,207,255,0.04)', borderColor: 'rgba(125,207,255,0.12)' }}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                         style={{ background: agent.state === 'active' ? '#00ff88' : '#3a4a5a',
-                                  boxShadow: agent.state === 'active' ? '0 0 6px #00ff88' : 'none' }} />
+                         style={{ background: agent.state === 'active' ? 'var(--green)' : 'var(--border)',
+                                  boxShadow: agent.state === 'active' ? '0 0 6px var(--green)' : 'none' }} />
                     <div>
-                      <span className="text-xs text-gray-300 group-hover:text-[#00f0ff] transition-colors">{agent.name}</span>
+                      <span className="text-xs text-foreground group-hover:text-neon-cyan transition-colors">{agent.name}</span>
                       <span className="text-[9px] ml-2 px-1.5 py-0 rounded"
-                            style={{ background: agent.state === 'active' ? '#00ff8815' : 'transparent',
-                                     color: agent.state === 'active' ? '#00ff88' : '#5a6a7a',
-                                     border: `1px solid ${agent.state === 'active' ? '#00ff8830' : '#5a6a7a20'}` }}>
+                            style={{ background: agent.state === 'active' ? 'color-mix(in srgb, var(--green) 8%, transparent)' : 'transparent',
+                                     color: agent.state === 'active' ? 'var(--green)' : 'var(--muted-foreground)',
+                                     border: `1px solid ${agent.state === 'active' ? 'color-mix(in srgb, var(--green) 18%, transparent)' : 'color-mix(in srgb, var(--muted-foreground) 12%, transparent)'}` }}>
                         {agent.role}
                       </span>
                       <div className="text-[10px] text-gray-600 mt-0.5">{agent.task}</div>
                     </div>
                   </div>
-                  <span className="text-[10px] text-[#00f0ff]/50 group-hover:text-[#00f0ff] transition-colors">CHAT →</span>
+                  <span className="text-[10px] transition-colors" style={{ color: "rgba(125,207,255,0.7)" }}>CHAT →</span>
                 </div>
                 {/* Energy bar */}
-                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(0,240,255,0.04)' }}>
-                  <div className="h-full rounded-full transition-all" style={{ width: `${agent.contribution * 100}%`, background: agent.state === 'active' ? project.color : '#3a4a5a' }} />
+                <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(125,207,255,0.04)' }}>
+                  <div className="h-full rounded-full transition-all" style={{ width: `${agent.contribution * 100}%`, background: agent.state === 'active' ? project.color : 'var(--border)' }} />
                 </div>
               </button>
             );
@@ -173,7 +173,7 @@ export function ProjectDetail() {
 
 function StatBox({ label, value, color }: { label: string; value: string; color: string }) {
   return (
-    <div className="p-2 rounded-lg text-center" style={{ background: 'rgba(0,240,255,0.04)', border: '1px solid rgba(0,240,255,0.08)' }}>
+    <div className="p-2 rounded-lg text-center" style={{ background: 'rgba(125,207,255,0.04)', border: '1px solid rgba(125,207,255,0.08)' }}>
       <div className="text-[8px] text-gray-600 tracking-widest">{label}</div>
       <div className="font-orbitron text-[11px] mt-0.5" style={{ color }}>{value}</div>
     </div>

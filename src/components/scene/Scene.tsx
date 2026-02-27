@@ -15,14 +15,14 @@ export function Scene() {
       onPointerMissed={() => selectProject(null)}
       style={{ width: '100%', height: '100%' }}
     >
-      <color attach="background" args={['#0a0a12']} />
-      <fog attach="fog" args={['#0a0a12', 40, 150]} />
-      <ambientLight intensity={0.12} color="#112244" />
+      <color attach="background" args={['#1a1b26']} />
+      <fog attach="fog" args={['#1a1b26', 40, 150]} />
+      <ambientLight intensity={0.12} color="#24283b" />
       <Stars radius={180} depth={80} count={5000} factor={3} saturation={0.5} fade speed={0.3} />
 
       {/* Grid floor */}
       <gridHelper
-        args={[200, 80, '#0a2a4a', '#0a1a2a']}
+        args={[200, 80, "#292e42", "#1a1b26"]}
         position={[0, -6, 0]}
         // @ts-ignore
         material-transparent={true}
